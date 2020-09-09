@@ -21,8 +21,6 @@ import com.example.music.R;
 import com.example.music.fragment.MediaPlaybackFragment;
 
 public class MediaPlaybackService extends Service {
-    public static final String ID_CHANNEL = "999";
-    private static final CharSequence NANME_CHANNEL ="App_Music" ;
 
     private SongManager mSongManager;
     private MusicBinder mBinder = new MusicBinder();
@@ -52,27 +50,6 @@ public class MediaPlaybackService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-//        Log.d("XXX","aaaaaaa");
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            NotificationChannel channel = new NotificationChannel(ID_CHANNEL,NANME_CHANNEL,NotificationManager.IMPORTANCE_LOW);
-//            NotificationManager manager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//            manager.createNotificationChannel(channel);
-//
-//
-//            RemoteViews notification_small = new RemoteViews(getPackageName(), R.layout.notifiation_small);
-//            RemoteViews notification_big = new RemoteViews(getPackageName(), R.layout.notifiation_big);
-//
-//
-//            if (notification_small!=null){
-//                //ImageView imageView= notification_small.setOnClickFillInIntent(R.id.iconPrevious,new Intent());
-//            }
-//            NotificationCompat.Builder builder= new NotificationCompat.Builder(this, ID_CHANNEL)
-//                    .setSmallIcon(R.drawable.ic_list_music)
-//                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-//                    .setCustomContentView(notification_small)
-//                    .setCustomBigContentView(notification_big);
-//            manager.notify(10,builder.build());
-//        }
         return START_STICKY;
     }
 

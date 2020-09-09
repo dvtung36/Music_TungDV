@@ -46,6 +46,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
+import com.example.music.Notification;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.model.Song;
@@ -71,6 +72,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private Button mBtnPay;
     private TextView mSongName, mSongAuthor;
     private boolean isVertical;
+
 
 
     public MediaPlaybackService mMusicService;
@@ -117,13 +119,10 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
 
+            Notification.setListSong(mListSong);
             mMusicService.getMediaManager().setmListSong(mListSong); //put mListSong -> MediaPlaybackService
 
             getDataBottom();
-
-            if(mMusicService!=null&& mMusicService.getMediaManager().getmCurrentPlay()>=0){
-                createNotification();
-            }
 
             mSongAdapter.notifyDataSetChanged();
         }
@@ -163,56 +162,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    public void createNotification() {
+    public void createChannel() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(ID_CHANNEL, NANME_CHANNEL, NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = (NotificationManager) getActivity().getSystemService(mMusicService.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
-
-            Intent intentNextMedia = new Intent("Next_Media");
-            intentNextMedia.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-            PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(getActivity(), 0, intentNextMedia, 0);
-
-            Intent intent = new Intent(getActivity(), ActivityMusic.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            RemoteViews notification_small = new RemoteViews(getActivity().getPackageName(), R.layout.notifiation_small);
-            RemoteViews notification_big = new RemoteViews(getActivity().getPackageName(), R.layout.notifiation_big);
-
-            notification_small.setOnClickPendingIntent(R.id.icon_next_notification, pendingSwitchIntent);
-
-
-
-            if (notification_small != null) {
-                //ImageView imageView= notification_small.setOnClickFillInIntent(R.id.iconPrevious,new Intent());
-            }
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), ID_CHANNEL)
-                    .setSmallIcon(R.drawable.ic_list_music)
-                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                    .setCustomContentView(notification_small)
-                    .setContentIntent(contentIntent)
-                    .setCustomBigContentView(notification_big);
-            manager.notify(10, builder.build());
-        }
-    }
-
-
-    public static class NextMediaReceiver extends BroadcastReceiver {
-
-        private MediaPlaybackService mMusicService ;
-        private List<Song> mListSong = new ArrayList<>();
-        public NextMediaReceiver nextMediaReceiver;
-        private TextView  mSongNameNotification, mSongAuthorNotification;
-        private ImageView mImageNotification;
-
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Toast.makeText(context, "Receive", Toast.LENGTH_SHORT).show();                  // Receive click next media notification
-
         }
     }
 
@@ -261,7 +216,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     @Override
                     public void onItemClick(Song song, int pos) {
 
-                        createNotification();
+                        createChannel();
+                        Notification.createNotification(getActivity(),song);
 
                         for (int i = 0; i < mListSong.size(); i++) {
                             mListSong.get(i).setmIsPlay(false);

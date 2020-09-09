@@ -3,6 +3,7 @@ package com.example.music.service;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.example.music.model.Song;
@@ -85,8 +86,9 @@ public class SongManager {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Log.d("media","complete");
-                mPlayer.reset();
                 int current= getmCurrentPlay() +1;
+                mPlayer.reset();
+                setmCurrentPlay(current);
                 String pathNext=mListSong.get(current).getmSongArt();
                 setmCurrentPlay(current);
                 playSong(pathNext);

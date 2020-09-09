@@ -20,7 +20,7 @@
         </activity>
         <service android:name=".service.MediaPlaybackService"/>
 
-        <receiver android:name=".fragment.AllSongsFragment$NextMediaReceiver" android:exported="false">
+        <receiver android:name=".BroadcastReceiver.NextMediaReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="Next_Media" />
             </intent-filter>
