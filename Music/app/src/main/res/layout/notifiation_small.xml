@@ -19,7 +19,6 @@
             android:layout_height="50dp"
             android:layout_margin="2dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/chidan"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

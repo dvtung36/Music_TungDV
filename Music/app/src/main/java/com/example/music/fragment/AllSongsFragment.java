@@ -4,19 +4,20 @@ package com.example.music.fragment;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,7 +48,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
-import com.example.music.Notification;
+import com.example.music.Notifications.Notification;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.model.Song;
@@ -74,9 +76,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private boolean isVertical;
 
 
-
     public MediaPlaybackService mMusicService;
-
 
 
     public AllSongsFragment() {
@@ -86,6 +86,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
+        Log.d("AllSongFragment", "oncreateView");
         initView(view);
         return view;
     }
@@ -110,20 +111,18 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         getActivity().bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 
 
-
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("AllSongFragment", "ServiceConnection");
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
 
-            Notification.setListSong(mListSong);
             mMusicService.getMediaManager().setmListSong(mListSong); //put mListSong -> MediaPlaybackService
 
             getDataBottom();
-
             mSongAdapter.notifyDataSetChanged();
         }
 
@@ -168,6 +167,44 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
             NotificationChannel channel = new NotificationChannel(ID_CHANNEL, NANME_CHANNEL, NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = (NotificationManager) getActivity().getSystemService(mMusicService.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
+        }
+    }
+
+    public void createNotification(Context context, Song song, int pos) {
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
+
+            Intent intentNextMedia = new Intent("Next_Media");
+            intentNextMedia.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+            PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(context, 0, intentNextMedia, 0);
+
+            Intent intent = new Intent(context, ActivityMusic.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            RemoteViews notification_small = new RemoteViews(context.getPackageName(), R.layout.notifiation_small);
+            RemoteViews notification_big = new RemoteViews(context.getPackageName(), R.layout.notifiation_big);
+
+            notification_small.setOnClickPendingIntent(R.id.icon_next_notification, pendingSwitchIntent);
+
+
+            notification_small.setImageViewResource(R.id.image_music_notification, R.drawable.ic_nct);
+            notification_big.setTextViewText(R.id.tv_song_name_notification, song.getmSongName());
+            notification_big.setTextViewText(R.id.tv_song_author_notification, song.getmSongAuthor());
+            notification_big.setImageViewResource(R.id.image_music_notification,R.drawable.ic_nct);
+
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, ID_CHANNEL)
+                    .setSmallIcon(R.drawable.ic_list_music)
+                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                    .setCustomContentView(notification_small)
+                    .setContentIntent(contentIntent)
+                    .setCustomBigContentView(notification_big);
+            notificationManagerCompat.notify(10, builder.build());
+
+
         }
     }
 
@@ -217,7 +254,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     public void onItemClick(Song song, int pos) {
 
                         createChannel();
-                        Notification.createNotification(getActivity(),song);
+                        createNotification(getActivity(), song, pos);
 
                         for (int i = 0; i < mListSong.size(); i++) {
                             mListSong.get(i).setmIsPlay(false);

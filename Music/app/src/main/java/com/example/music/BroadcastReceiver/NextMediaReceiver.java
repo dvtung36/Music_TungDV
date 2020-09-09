@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 public class NextMediaReceiver extends BroadcastReceiver {
 
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
