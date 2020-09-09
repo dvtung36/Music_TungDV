@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="67dp"
+    >
+
+    <TextView
+
+        android:paddingLeft="10dp"
+        android:id="@+id/tv_songID"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text=""
+        android:textColor="#EB0C0C0C"
+        android:textSize="12sp"
+        />
+
+    <es.claucookie.miniequalizerlibrary.EqualizerView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:paddingLeft="10dp"
+        android:id="@+id/tv_imageID"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:padding="25dp"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:layout_toRightOf="@+id/tv_imageID"
+        android:layout_width="170dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_toEndOf="@+id/tv_imageID">
+
+        <TextView
+            android:id="@+id/tv_songName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#EB0C0C0C"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_songTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#EB0C0C0C"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+        <ImageButton
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/ib_option"
+            android:layout_marginRight="7dp"
+            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_tuy_chon"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="7dp">
+        </ImageButton>
+
+
+
+</RelativeLayout>
