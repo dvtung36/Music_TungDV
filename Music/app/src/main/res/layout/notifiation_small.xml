@@ -15,9 +15,8 @@
 
         <ImageView
             android:id="@+id/image_music_notification"
-            android:layout_width="50dp"
+            android:layout_width="42dp"
             android:layout_height="50dp"
-            android:layout_margin="2dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,16 +31,15 @@
         android:layout_marginRight="10dp"
         android:src="@drawable/ic_pre"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/icon_play__notification"
+        app:layout_constraintEnd_toStartOf="@id/icon_play__notification_small"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/icon_play__notification"
+        android:id="@+id/icon_play__notification_small"
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:src="@drawable/ic_pause_media"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/icon_next_notification"
         app:layout_constraintTop_toTopOf="parent" />

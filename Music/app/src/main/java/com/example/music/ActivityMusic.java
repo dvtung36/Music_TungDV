@@ -1,9 +1,13 @@
 package com.example.music;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +38,8 @@ import com.example.music.adapter.SongAdapter;
 import com.example.music.fragment.AllSongsFragment;
 import com.example.music.fragment.MediaPlaybackFragment;
 import com.example.music.model.Song;
+import com.example.music.service.MediaPlaybackService;
+import com.example.music.service.SongManager;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -42,8 +48,10 @@ import java.util.List;
 public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
-    private Toolbar mToolbar;
     public boolean isVertical;
+    public MediaPlaybackService mMusicService;
+
+    private List<Song> mListSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +68,44 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
 
-        } else {
-            getFragment();
         }
     }
+
+    @Override
+    protected void onStart() {
+        setService();
+        super.onStart();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mMusicService != null) {
+           unbindService(serviceConnection);
+        }
+    }
+
+    private void setService() {
+        Intent intent = new Intent(this, MediaPlaybackService.class);
+        startService(intent);
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("AllSongFragment", "ServiceConnection");
+            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
+            mMusicService = binder.getMusicService();
+            mMusicService.setListSong(mListSong);
+            getFragment();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mMusicService = null;
+        }
+    };
 
     public void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -84,6 +126,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
         }
+        mListSong= new ArrayList<>();
+        SongManager.getSong(this,mListSong);   //set List song cho activity
+
     }
 
 
@@ -144,16 +189,21 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         if (isVertical) {
             AllSongsFragment allSongsFragment = new AllSongsFragment();
+            allSongsFragment.setMusicService(mMusicService);
             allSongsFragment.setVertical(isVertical);
+            allSongsFragment.setListSong(mListSong);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
+
         } else {
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, new AllSongsFragment());
             fragmentTransaction.commit();
             MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
             mediaPlaybackFragment.setVertical(isVertical);
+            mediaPlaybackFragment.setMusicService(mMusicService);
+            mediaPlaybackFragment.setSongList(mListSong);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
             mPlayFragment.replace(R.id.fragment_media, new MediaPlaybackFragment());
             mPlayFragment.commit();

@@ -73,15 +73,14 @@
                 android:layout_marginEnd="25dp"
                 android:src="@drawable/ic_pre"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/icon_play_notification"
+                app:layout_constraintEnd_toStartOf="@id/icon_play_notification_big"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginRight="25dp" />
 
             <ImageView
-                android:id="@+id/icon_play_notification"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_pause_media"
+                android:id="@+id/icon_play_notification_big"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/icon_next_notification"
                 app:layout_constraintTop_toTopOf="parent" />

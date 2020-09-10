@@ -62,7 +62,7 @@ import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class AllSongsFragment extends Fragment implements View.OnClickListener, SongManager.IUpdateUI {
+public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI {
 
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
@@ -75,6 +75,15 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private boolean isVertical;
 
 
+    public void setListSong(List<Song> mListSong) {
+        this.mListSong = mListSong;
+    }
+
+
+    public void setMusicService(MediaPlaybackService mMusicService) {
+        this.mMusicService = mMusicService;
+    }
+
     public MediaPlaybackService mMusicService;
 
 
@@ -85,67 +94,66 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
-        Log.d("AllSongFragment", "oncreateView");
         initView(view);
+
+        getDataBottom();
+        mSongAdapter.notifyDataSetChanged();
         return view;
     }
 
     @Override
     public void onStart() {
-        setService();
+       // setService();
         super.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mMusicService != null) {
-            getActivity().unbindService(serviceConnection);
-        }
     }
+//
+//    private void setService() {
+//        Intent intent = new Intent(getActivity(), MediaPlaybackService.class);
+//        getActivity().startService(intent);
+//        getActivity().bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+//
+//
+//    }
 
-    private void setService() {
-        Intent intent = new Intent(getActivity(), MediaPlaybackService.class);
-        getActivity().startService(intent);
-        getActivity().bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-
-
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("AllSongFragment", "ServiceConnection");
-            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
-            mMusicService = binder.getMusicService();
-
-            mMusicService.getMediaManager().setmListSong(mListSong); //put mListSong -> MediaPlaybackService
-
-            getDataBottom();
-            mSongAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mMusicService = null;
-        }
-    };
+//    private ServiceConnection serviceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            Log.d("AllSongFragment", "ServiceConnection");
+//            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
+//            mMusicService = binder.getMusicService();
+//
+//            mMusicService.getMediaManager().setmListSong(mListSong); //put mListSong -> MediaPlaybackService
+//
+//            getDataBottom();
+//            mSongAdapter.notifyDataSetChanged();
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            mMusicService = null;
+//        }
+//    };
 
     private void getDataBottom() {
-        if (mMusicService != null && mMusicService.getMediaManager().getmCurrentPlay() >= 0) {     //khi chạy nhạc
+        if (mMusicService != null && mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
             if (isVertical)
                 mLlBottom.setVisibility(View.VISIBLE);
             else mLlBottom.setVisibility(View.GONE);
 
-            mSongName.setText(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
-            mSongAuthor.setText(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongAuthor());
-            byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongArt());
+            mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
+            mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
+            byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
             Glide.with(getContext()).asBitmap()
                     .error(R.drawable.ic_nct)
                     .load(songArt)
                     .into(mSongArt);
 
-            if (mMusicService.getMediaManager().isStatusPlay()) {
+            if (mMusicService.isStatusPlay()) {
                 mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
             } else {
                 mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
@@ -155,16 +163,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
             for (int i = 0; i < mListSong.size(); i++) {
                 mListSong.get(i).setmIsPlay(false);
             }
-            mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).setmIsPlay(true);
+            mListSong.get(mMusicService.getmCurrentPlay()).setmIsPlay(true);
 
         }
     }
 
-
     private void initView(final View view) {
-
-        mListSong = new ArrayList<>();
-        getSong();
 
 
         mSongArt = view.findViewById(R.id.img_bottomArt);
@@ -187,16 +191,16 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         mSongAdapter.notifyDataSetChanged();
 
 
-        if (mMusicService != null) { //khi chạy nhạc
+        if (mMusicService != null&& mMusicService.isStatusPlay()) { //khi chạy nhạc
             mLlBottom.setVisibility(View.VISIBLE);
-            mSongName.setText(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
-            mSongAuthor.setText(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongAuthor());
-            byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getMediaManager().getmCurrentPlay()).getmSongArt());
+            mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
+            mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
+            byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
             Glide.with(view.getContext()).asBitmap()
                     .error(R.drawable.ic_nct)
                     .load(songArt)
                     .into(mSongArt);
-            if (!mMusicService.getMediaManager().isStatusPlay()) {
+            if (!mMusicService.isStatusPlay()) {
                 mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
             }
         }
@@ -206,8 +210,11 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     @Override
                     public void onItemClick(Song song, int pos) {
 
-                        mMusicService.createChannel();
-                        mMusicService.createNotification(getActivity(), song, pos);
+                        if(mMusicService!=null){
+                            mMusicService.createChannel();
+                            mMusicService.createNotification(getActivity(), song,true);
+
+                        }
 
                         for (int i = 0; i < mListSong.size(); i++) {
                             mListSong.get(i).setmIsPlay(false);
@@ -216,8 +223,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
                         if (isVertical) {   //khi doc
                             if (mMusicService != null) {
-                                mMusicService.getMediaManager().playSong(song.getmSongArt());        //play nhac
-                                mMusicService.getMediaManager().setmCurrentPlay(pos);
+                                mMusicService.playSong(song.getmSongArt());        //play nhac
+                                mMusicService.setmCurrentPlay(pos);
                             }
                             mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
@@ -239,7 +246,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
                             mSongAdapter.notifyDataSetChanged();
                             if (mMusicService != null) {
-                                mMusicService.getMediaManager().playSong(song.getmSongArt());       //play nhac
+                                mMusicService.playSong(song.getmSongArt());       //play nhac
                             }
                             mLlBottom.setVisibility(View.GONE);
 
@@ -288,65 +295,69 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         return albumArt;
     }
 
-    public void getSong() {
-        ContentResolver musicResolver = getActivity().getContentResolver();
-        Uri songUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor songCursor = musicResolver.query(songUri, null, null, null, null);
-
-        if (songCursor != null && songCursor.moveToFirst()) {
-            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int songName = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songTime = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);           //Lấy Nhạc trong Local
-            int songAuthor = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songArt = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-            do {
-                long currentId = songCursor.getLong(songID);
-                String currentName = songCursor.getString(songName);
-                String currentTime = songCursor.getString(songTime);
-                String currentAuthor = songCursor.getString(songAuthor);
-                String currentArt = songCursor.getString(songArt);
-                mListSong.add(new Song(currentId, currentName, currentTime, currentAuthor, currentArt, false));
-            } while (songCursor.moveToNext());
-            songSort(mListSong);
-        }
-    }
-
-    public void songSort(List<Song> list) {
-        for (int i = 0; i < list.size(); i++) {
-            for (int j = i + 1; j < list.size(); j++) {
-                if (list.get(i).getmSongName().compareTo(list.get(j).getmSongName()) > 0) {
-                    Collections.swap(list, i, j);
-                }
-
-            }
-        }
-
-    }
+//    public void getSong() {
+//        ContentResolver musicResolver = getActivity().getContentResolver();
+//        Uri songUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+//        Cursor songCursor = musicResolver.query(songUri, null, null, null, null);
+//
+//        if (songCursor != null && songCursor.moveToFirst()) {
+//            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+//            int songName = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+//            int songTime = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);           //Lấy Nhạc trong Local
+//            int songAuthor = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+//            int songArt = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+//            do {
+//                long currentId = songCursor.getLong(songID);
+//                String currentName = songCursor.getString(songName);
+//                String currentTime = songCursor.getString(songTime);
+//                String currentAuthor = songCursor.getString(songAuthor);
+//                String currentArt = songCursor.getString(songArt);
+//                mListSong.add(new Song(currentId, currentName, currentTime, currentAuthor, currentArt, false));
+//            } while (songCursor.moveToNext());
+//            songSort(mListSong);
+//        }
+//    }
+//
+//    public void songSort(List<Song> list) {
+//        for (int i = 0; i < list.size(); i++) {
+//            for (int j = i + 1; j < list.size(); j++) {
+//                if (list.get(i).getmSongName().compareTo(list.get(j).getmSongName()) > 0) {
+//                    Collections.swap(list, i, j);
+//                }
+//
+//            }
+//        }
+//
+//    }
 
     @Override
 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_play: {
-                if (mMusicService.getMediaManager().isStatusPlay()) {
-                    mMusicService.getMediaManager().pauseSong();
+                if (mMusicService.isStatusPlay()) {
+                    mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                    Toast.makeText(getActivity(), "pause", Toast.LENGTH_SHORT).show();
+                    mMusicService.createChannel();
+                    mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getmCurrentPlay()), false);
                 } else {
-                    mMusicService.getMediaManager().reSumSong();
+                    mMusicService.reSumSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
-                    Toast.makeText(getActivity(), "play", Toast.LENGTH_SHORT).show();
+                    mMusicService.createChannel();
+                    mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getmCurrentPlay()),true);
                 }
 
                 break;
             }
             case R.id.bottom: {
-                mCurrentPosition = mMusicService.getMediaManager().getmCurrentPlay();
+                mCurrentPosition = mMusicService.getmCurrentPlay();
                 Song song = mListSong.get(mCurrentPosition);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(          //
                         song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
+                mediaPlaybackFragment.setMusicService(mMusicService);
+                mediaPlaybackFragment.setSongList(mListSong);
                 mediaPlaybackFragment.setVertical(isVertical);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();  // hide action bar
                 fragmentTransaction.replace(R.id.content, mediaPlaybackFragment);    // get fragment MediaPlayBackFragment vào activity main
