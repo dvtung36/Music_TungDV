@@ -19,7 +19,7 @@ import java.util.List;
 
 public class SongManager {
 
-    /* Lấy nhạc trong local*/
+    /* Lấy nhạc trong db*/
 
     public static void getSong(Context context, List<Song> mListSong) {
         ContentResolver musicResolver = context.getContentResolver();
@@ -49,7 +49,6 @@ public class SongManager {
                 }
             }
         }
-
 
 
     }

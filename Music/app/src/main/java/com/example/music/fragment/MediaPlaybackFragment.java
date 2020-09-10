@@ -78,7 +78,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
 
-
     public MediaPlaybackFragment() {
         // Required empty public constructor
     }
@@ -186,7 +185,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
         }
 
-        if(mMusicService!=null){
+        if (mMusicService != null) {
 
             mUpdateSeekBarThread = new UpdateSeekBarThread();
             mUpdateSeekBarThread.start();
@@ -196,14 +195,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 //            updateUI();
 
 
-
         }
 
     }
 
     @Override
     public void onStart() {
-       // setService();
+        // setService();
         super.onStart();
     }
 
@@ -221,7 +219,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        if (mMusicService != null&& mMusicService.isStatusPlay()) {
+        if (mMusicService != null && mMusicService.isStatusPlay()) {
             int current = mMusicService.getmCurrentPlay();
             mSongName.setText(mSongList.get(current).getmSongName());
             mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -270,14 +268,14 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(),mSongList.get(mMusicService.getmCurrentPlay()),false);
+                    mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getmCurrentPlay()), false);
 
                 } else {
                     mMusicService.reSumSong();
                     mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
 
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(),mSongList.get(mMusicService.getmCurrentPlay()),true);
+                    mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getmCurrentPlay()), true);
                 }
                 break;
 
@@ -291,7 +289,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mSongArtMedia = song.getmSongArt();
                 update();
                 mMusicService.createChannel();
-                mMusicService.createNotification(getActivity(),song,true);
+                mMusicService.createNotification(getActivity(), song, true);
                 break;
 
             case R.id.btn_pre_media:
@@ -303,7 +301,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mSongArtMedia = song1.getmSongArt();
                 update();
                 mMusicService.createChannel();
-                mMusicService.createNotification(getActivity(),song1,true);
+                mMusicService.createNotification(getActivity(), song1, true);
                 break;
 
             case R.id.btn_show_list:

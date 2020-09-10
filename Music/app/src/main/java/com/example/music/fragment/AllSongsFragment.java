@@ -103,7 +103,6 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onStart() {
-       // setService();
         super.onStart();
     }
 
@@ -111,33 +110,6 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     public void onStop() {
         super.onStop();
     }
-//
-//    private void setService() {
-//        Intent intent = new Intent(getActivity(), MediaPlaybackService.class);
-//        getActivity().startService(intent);
-//        getActivity().bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-//
-//
-//    }
-
-//    private ServiceConnection serviceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service) {
-//            Log.d("AllSongFragment", "ServiceConnection");
-//            MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
-//            mMusicService = binder.getMusicService();
-//
-//            mMusicService.getMediaManager().setmListSong(mListSong); //put mListSong -> MediaPlaybackService
-//
-//            getDataBottom();
-//            mSongAdapter.notifyDataSetChanged();
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName name) {
-//            mMusicService = null;
-//        }
-//    };
 
     private void getDataBottom() {
         if (mMusicService != null && mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
@@ -191,7 +163,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         mSongAdapter.notifyDataSetChanged();
 
 
-        if (mMusicService != null&& mMusicService.isStatusPlay()) { //khi chạy nhạc
+        if (mMusicService != null && mMusicService.isStatusPlay()) { //khi chạy nhạc
             mLlBottom.setVisibility(View.VISIBLE);
             mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
             mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
@@ -210,9 +182,9 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     @Override
                     public void onItemClick(Song song, int pos) {
 
-                        if(mMusicService!=null){
+                        if (mMusicService != null) {
                             mMusicService.createChannel();
-                            mMusicService.createNotification(getActivity(), song,true);
+                            mMusicService.createNotification(getActivity(), song, true);
 
                         }
 
@@ -344,7 +316,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     mMusicService.reSumSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getmCurrentPlay()),true);
+                    mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getmCurrentPlay()), true);
                 }
 
                 break;

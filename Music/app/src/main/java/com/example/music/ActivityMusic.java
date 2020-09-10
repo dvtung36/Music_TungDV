@@ -76,11 +76,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         setService();
         super.onStart();
     }
+
     @Override
     public void onStop() {
         super.onStop();
         if (mMusicService != null) {
-           unbindService(serviceConnection);
+            unbindService(serviceConnection);
         }
     }
 
@@ -126,8 +127,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
         }
-        mListSong= new ArrayList<>();
-        SongManager.getSong(this,mListSong);   //set List song cho activity
+        mListSong = new ArrayList<>();
+        SongManager.getSong(this, mListSong);   //set List song cho activity
 
     }
 

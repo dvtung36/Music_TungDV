@@ -272,19 +272,19 @@ public class MediaPlaybackService extends Service {
             }
         });
 
-//        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                Log.d("media", "complete");
-//                int current = getmCurrentPlay() + 1;
-//                mPlayer.reset();
-//                setmCurrentPlay(current);
-//                String pathNext = mListSong.get(current).getmSongArt();
-//                setmCurrentPlay(current);
-//                playSong(pathNext);
-//                mIUpdateUI.updateUI(current);
-//            }
-//        });
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                Log.d("media", "complete");
+                int current = getmCurrentPlay() + 1;
+                mPlayer.reset();
+                setmCurrentPlay(current);
+                String pathNext = mListSong.get(current).getmSongArt();
+                setmCurrentPlay(current);
+                playSong(pathNext);
+                mIUpdateUI.updateUI(current);
+            }
+        });
     }
 
 
@@ -352,11 +352,10 @@ public class MediaPlaybackService extends Service {
 
         return 0;
     }
+
     public void seekTo(int position) {
         mPlayer.seekTo(position);
     }
-
-
 
 
 }
