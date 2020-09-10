@@ -63,8 +63,7 @@ import java.util.List;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class AllSongsFragment extends Fragment implements View.OnClickListener, SongManager.IUpdateUI {
-    public static final String ID_CHANNEL = "999";
-    private static final CharSequence NANME_CHANNEL = "App_Music";
+
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
     private SongAdapter mSongAdapter;
@@ -160,7 +159,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
         }
     }
-
+/*
     public void createChannel() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -208,6 +207,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+ */
+
     private void initView(final View view) {
 
         mListSong = new ArrayList<>();
@@ -253,8 +254,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                     @Override
                     public void onItemClick(Song song, int pos) {
 
-                        createChannel();
-                        createNotification(getActivity(), song, pos);
+                        mMusicService.createChannel();
+                        mMusicService.createNotification(getActivity(), song, pos);
 
                         for (int i = 0; i < mListSong.size(); i++) {
                             mListSong.get(i).setmIsPlay(false);

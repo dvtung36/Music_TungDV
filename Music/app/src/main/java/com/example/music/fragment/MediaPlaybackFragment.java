@@ -44,8 +44,6 @@ import java.util.List;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class MediaPlaybackFragment extends Fragment implements View.OnClickListener, SongManager.IUpdateUI {
-    public static final String ID_CHANNEL = "999";
-    private static final CharSequence NANME_CHANNEL = "App_Music";
 
     private TextView mSongName, mSongAuthor;
     public boolean isVertical;
@@ -249,7 +247,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
 
     }
-
+/*
     public void createChannel() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -297,6 +295,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         }
     }
 
+ */
+
 
     private void updateUI() {
         if (mMusicService != null) {
@@ -339,8 +339,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mSongAuthorMedia = song.getmSongAuthor();
                 mSongArtMedia = song.getmSongArt();
                 update();
-                createChannel();
-                createNotification(getActivity(),song,mCurrentPosition+1);
+                mMusicService.createChannel();
+                mMusicService.createNotification(getActivity(),song,mCurrentPosition+1);
                 break;
 
             case R.id.btn_pre_media:
@@ -351,8 +351,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mSongAuthorMedia = song1.getmSongAuthor();
                 mSongArtMedia = song1.getmSongArt();
                 update();
-                createChannel();
-                createNotification(getActivity(),song1,mCurrentPosition-1);
+                mMusicService.createChannel();
+                mMusicService.createNotification(getActivity(),song1,mCurrentPosition-1);
                 break;
 
             case R.id.btn_show_list:
