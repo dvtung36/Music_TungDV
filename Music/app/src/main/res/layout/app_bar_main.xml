@@ -25,8 +25,9 @@
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="65dp"
                     android:background="#FF5722"
+                    app:buttonGravity="center_vertical"
                     app:title="@string/app_name"
                     app:titleTextAppearance="@style/MyTitleTextStyle"
                     app:titleTextColor="#ffffff" />
