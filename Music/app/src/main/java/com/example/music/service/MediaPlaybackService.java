@@ -65,30 +65,30 @@ public class MediaPlaybackService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("MediaService",)
-        switch (intent.getAction()) {
-
-            case MUSIC_SERVICE_ACTION_NEXT:
-                getMediaManager().nextSong(getMediaManager().getmCurrentPlay());
-
-                int pos= getMediaManager().getmCurrentPlay()+1;
-                Song song= getMediaManager().getmListSong().get(pos);
-                createChannel();
-                createNotification(getApplicationContext(),song,pos);
-                break;
-            case MUSIC_SERVICE_ACTION_PREV:
-                getMediaManager().previousSong(getMediaManager().getmCurrentPlay());
-
-                int pos1= getMediaManager().getmCurrentPlay()-1;
-                Song song1= getMediaManager().getmListSong().get(pos1);
-                createChannel();
-                createNotification(getApplicationContext(),song1,pos1);
-                break;
-
-            default:
-                Log.d("XXXX", "onStartCommand: default");
-                break;
-        }
+//        Log.d("MediaService",)
+//        switch (intent.getAction()) {
+//
+//            case MUSIC_SERVICE_ACTION_NEXT:
+//                getMediaManager().nextSong(getMediaManager().getmCurrentPlay());
+//
+//                int pos= getMediaManager().getmCurrentPlay()+1;
+//                Song song= getMediaManager().getmListSong().get(pos);
+//                createChannel();
+//                createNotification(getApplicationContext(),song,pos);
+//                break;
+//            case MUSIC_SERVICE_ACTION_PREV:
+//                getMediaManager().previousSong(getMediaManager().getmCurrentPlay());
+//
+//                int pos1= getMediaManager().getmCurrentPlay()-1;
+//                Song song1= getMediaManager().getmListSong().get(pos1);
+//                createChannel();
+//                createNotification(getApplicationContext(),song1,pos1);
+//                break;
+//
+//            default:
+//                Log.d("XXXX", "onStartCommand: default");
+//                break;
+//        }
 
         return START_STICKY;
     }
