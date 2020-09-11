@@ -40,11 +40,13 @@ public class MediaPlaybackService extends Service {
     private static final String MUSIC_SERVICE_ACTION_NEXT = "music_service_action_next";
     private static final String MUSIC_SERVICE_ACTION_PREV = "music_service_action_prev";
     private static final String MUSIC_SERVICE_ACTION_STOP = "music_service_action_stop";
+    private static final int NOTIFICATION_ID = 10;
 
     private SongManager mSongManager;
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
     private boolean isStatusPlay = false;
+    private   NotificationManagerCompat notificationManagerCompat;
 
     public void setmCurrentPlay(int mCurrentPlay) {
         this.mCurrentPlay = mCurrentPlay;
@@ -161,8 +163,9 @@ public class MediaPlaybackService extends Service {
     public void createNotification(Context context, Song song, boolean isPlaying) {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat = NotificationManagerCompat.from(context);
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
+
 
             Intent intentNextMedia = new Intent("Next_Media");
             PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(context, 0, intentNextMedia, 0); //getBroadcast
@@ -236,10 +239,14 @@ public class MediaPlaybackService extends Service {
                     .setCustomContentView(notification_small)
                     .setContentIntent(contentIntent)
                     .setCustomBigContentView(notification_big);
-            notificationManagerCompat.notify(10, builder.build());
+            notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
 
 
         }
+    }
+
+    public void cancelNotification() {
+        notificationManagerCompat.cancel(NOTIFICATION_ID);
     }
 
     public static Bitmap getAlbumArt(String path) {

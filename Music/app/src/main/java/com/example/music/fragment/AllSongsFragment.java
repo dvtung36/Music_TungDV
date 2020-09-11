@@ -72,7 +72,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private int mCurrentPosition;
     private Button mBtnPay;
     private TextView mSongName, mSongAuthor;
-    private boolean isVertical;
+    private boolean isVertical =false;
+    public MediaPlaybackService mMusicService;
 
 
     public void setListSong(List<Song> mListSong) {
@@ -84,7 +85,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         this.mMusicService = mMusicService;
     }
 
-    public MediaPlaybackService mMusicService;
+
 
 
     public AllSongsFragment() {
@@ -95,10 +96,15 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
         initView(view);
-
         getDataBottom();
         mSongAdapter.notifyDataSetChanged();
         return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
     }
 
     @Override
@@ -112,11 +118,11 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void getDataBottom() {
+
         if (mMusicService != null && mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
             if (isVertical)
                 mLlBottom.setVisibility(View.VISIBLE);
             else mLlBottom.setVisibility(View.GONE);
-
             mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
             mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
             byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
@@ -267,40 +273,6 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         return albumArt;
     }
 
-//    public void getSong() {
-//        ContentResolver musicResolver = getActivity().getContentResolver();
-//        Uri songUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-//        Cursor songCursor = musicResolver.query(songUri, null, null, null, null);
-//
-//        if (songCursor != null && songCursor.moveToFirst()) {
-//            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-//            int songName = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-//            int songTime = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);           //Lấy Nhạc trong Local
-//            int songAuthor = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-//            int songArt = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-//            do {
-//                long currentId = songCursor.getLong(songID);
-//                String currentName = songCursor.getString(songName);
-//                String currentTime = songCursor.getString(songTime);
-//                String currentAuthor = songCursor.getString(songAuthor);
-//                String currentArt = songCursor.getString(songArt);
-//                mListSong.add(new Song(currentId, currentName, currentTime, currentAuthor, currentArt, false));
-//            } while (songCursor.moveToNext());
-//            songSort(mListSong);
-//        }
-//    }
-//
-//    public void songSort(List<Song> list) {
-//        for (int i = 0; i < list.size(); i++) {
-//            for (int j = i + 1; j < list.size(); j++) {
-//                if (list.get(i).getmSongName().compareTo(list.get(j).getmSongName()) > 0) {
-//                    Collections.swap(list, i, j);
-//                }
-//
-//            }
-//        }
-//
-//    }
 
     @Override
 
@@ -329,8 +301,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                 MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(          //
                         song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
                 mediaPlaybackFragment.setMusicService(mMusicService);
+
+
                 mediaPlaybackFragment.setSongList(mListSong);
                 mediaPlaybackFragment.setVertical(isVertical);
+
+
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();  // hide action bar
                 fragmentTransaction.replace(R.id.content, mediaPlaybackFragment);    // get fragment MediaPlayBackFragment vào activity main
                 fragmentTransaction.addToBackStack(null);

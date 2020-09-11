@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -51,6 +52,14 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
 
+    public MediaPlaybackService getMusicService() {
+        return mMusicService;
+    }
+
+    public List<Song> getListSong() {
+        return mListSong;
+    }
+
     private List<Song> mListSong;
 
     @Override
@@ -84,6 +93,14 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             unbindService(serviceConnection);
         }
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mMusicService!=null) {
+            mMusicService.cancelNotification();
+          //  unbindService(serviceConnection);
+        }
+    }
 
     private void setService() {
         Intent intent = new Intent(this, MediaPlaybackService.class);
@@ -95,7 +112,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("AllSongFragment", "ServiceConnection");
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
             mMusicService.setListSong(mListSong);
@@ -137,7 +153,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_MEDIA) {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getFragment();                       //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
+                getFragment();                        //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
                 Toast.makeText(this, "Permission Granted !", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
@@ -179,10 +195,16 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
 
     public void getFragment() {
+//        if (findViewById(R.id.contentAllSongs) != null)
+//            isVertical = true;
+//        else
+//            isVertical = false;
 
+        int mOrientation=getResources().getConfiguration().orientation;
 
-        if (findViewById(R.id.contentAllSongs) != null)
+        if(mOrientation== Configuration.ORIENTATION_PORTRAIT){
             isVertical = true;
+        }
         else
             isVertical = false;
 
@@ -198,11 +220,15 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.commit();
 
         } else {
+            AllSongsFragment allSongsFragment= new AllSongsFragment();
+            allSongsFragment.setMusicService(mMusicService);
+            allSongsFragment.setVertical(!isVertical);
+            allSongsFragment.setListSong(mListSong);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.replace(R.id.content, new AllSongsFragment());
+            fragmentTransaction.replace(R.id.content,allSongsFragment);
             fragmentTransaction.commit();
             MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
-            mediaPlaybackFragment.setVertical(isVertical);
+            mediaPlaybackFragment.setVertical(!isVertical);
             mediaPlaybackFragment.setMusicService(mMusicService);
             mediaPlaybackFragment.setSongList(mListSong);
             FragmentTransaction mPlayFragment = manager.beginTransaction();

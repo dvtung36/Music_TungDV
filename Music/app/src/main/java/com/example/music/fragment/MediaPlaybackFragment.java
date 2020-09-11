@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,29 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public MediaPlaybackFragment() {
         // Required empty public constructor
     }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d("Media", mSongList.size()+"ServiceConnection"+ mMusicService);
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mSongNameMedia = getArguments().getString(SONG_NAME);
+            mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
+            mSongArtMedia = getArguments().getString(SONG_ART);
+            mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
+        }
+
+        if (mMusicService != null) {
+
+            mUpdateSeekBarThread = new UpdateSeekBarThread();
+            mUpdateSeekBarThread.start();
+
+//            mMusicService.getMediaManager().setIUpdateUI(MediaPlaybackFragment.this);
+//            setDataTop();
+//            updateUI();
+
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,9 +112,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         initView();
 
-        mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
-        setDataTop();
-        updateUI();
+      //  Log.d("Media","onCreateView"+ mMusicService);
+        if(mMusicService!=null){
+            mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
+            setDataTop();
+            updateUI();
+        }
+
         return view;
 
     }
@@ -175,29 +203,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mSongNameMedia = getArguments().getString(SONG_NAME);
-            mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
-            mSongArtMedia = getArguments().getString(SONG_ART);
-            mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
-        }
 
-        if (mMusicService != null) {
-
-            mUpdateSeekBarThread = new UpdateSeekBarThread();
-            mUpdateSeekBarThread.start();
-
-//            mMusicService.getMediaManager().setIUpdateUI(MediaPlaybackFragment.this);
-//            setDataTop();
-//            updateUI();
-
-
-        }
-
-    }
 
     @Override
     public void onStart() {
