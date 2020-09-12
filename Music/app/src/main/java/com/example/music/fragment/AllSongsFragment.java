@@ -85,6 +85,11 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         this.mMusicService = mMusicService;
     }
 
+    public void setSongAdapter(SongAdapter mSongAdapter) {
+        this.mSongAdapter = mSongAdapter;
+    }
+
+
 
 
 
@@ -103,8 +108,9 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+   //     Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
         super.onCreate(savedInstanceState);
-        Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
+
     }
 
     @Override
@@ -163,10 +169,13 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
         mRcvSong.setLayoutManager(manager);
-        mSongAdapter = new SongAdapter(getActivity(), mListSong);
+      //  mSongAdapter = new SongAdapter(getActivity(), mListSong);
         mRcvSong.setAdapter(mSongAdapter);
         getDataBottom();
-        mSongAdapter.notifyDataSetChanged();
+        if(mSongAdapter!=null){
+            mSongAdapter.notifyDataSetChanged();
+        }
+
 
 
         if (mMusicService != null && mMusicService.isStatusPlay()) { //khi chạy nhạc

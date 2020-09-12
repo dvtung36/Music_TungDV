@@ -62,6 +62,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     private List<Song> mListSong;
 
+    public SongAdapter getSongAdapter() {
+        return mSongAdapter;
+    }
+
+    private SongAdapter mSongAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +103,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onDestroy() {
         super.onDestroy();
         if (mMusicService!=null) {
-            mMusicService.cancelNotification();
+           // mMusicService.cancelNotification();
           //  unbindService(serviceConnection);
         }
     }
@@ -115,6 +121,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
             mMusicService.setListSong(mListSong);
+
             getFragment();
         }
 
@@ -145,6 +152,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         }
         mListSong = new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
+
+        mSongAdapter = new SongAdapter(this, mListSong);
 
     }
 
@@ -215,6 +224,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             allSongsFragment.setMusicService(mMusicService);
             allSongsFragment.setVertical(isVertical);
             allSongsFragment.setListSong(mListSong);
+            allSongsFragment.setSongAdapter(mSongAdapter);
+
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
@@ -224,15 +235,17 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             allSongsFragment.setMusicService(mMusicService);
             allSongsFragment.setVertical(!isVertical);
             allSongsFragment.setListSong(mListSong);
+            allSongsFragment.setSongAdapter(mSongAdapter);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content,allSongsFragment);
             fragmentTransaction.commit();
-            MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
-            mediaPlaybackFragment.setVertical(!isVertical);
-            mediaPlaybackFragment.setMusicService(mMusicService);
-            mediaPlaybackFragment.setSongList(mListSong);
+
+            MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
+            mMediaPlaybackFragment.setSongList(mListSong);
+            mMediaPlaybackFragment.setMusicService(mMusicService);
+            mMediaPlaybackFragment.setVertical(!isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
-            mPlayFragment.replace(R.id.fragment_media, new MediaPlaybackFragment());
+            mPlayFragment.replace(R.id.fragment_media, mMediaPlaybackFragment);
             mPlayFragment.commit();
 
         }

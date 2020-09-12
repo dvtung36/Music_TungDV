@@ -48,6 +48,7 @@ public class MediaPlaybackService extends Service {
     private boolean isStatusPlay = false;
     private   NotificationManagerCompat notificationManagerCompat;
 
+
     public void setmCurrentPlay(int mCurrentPlay) {
         this.mCurrentPlay = mCurrentPlay;
     }
@@ -68,11 +69,12 @@ public class MediaPlaybackService extends Service {
         this.mListSong = mListSong;
     }
 
+    public List<Song> getListSong() {
+        return mListSong;
+    }
+
     private List<Song> mListSong;
 
-    public SongManager getMediaManager() {
-        return mSongManager;
-    }
 
     @Nullable
     @Override
@@ -91,6 +93,7 @@ public class MediaPlaybackService extends Service {
     public void onCreate() {
         super.onCreate();
         initMediaPlayer();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

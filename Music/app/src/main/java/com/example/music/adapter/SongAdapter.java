@@ -2,6 +2,7 @@ package com.example.music.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final SongAdapter.ViewHolder holder, final int position) {
+
         holder.binData(mListSong.get(position), position);
 
 
@@ -57,6 +59,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mListSong.size();
+
     }
 
     private String getDuration(String time) {

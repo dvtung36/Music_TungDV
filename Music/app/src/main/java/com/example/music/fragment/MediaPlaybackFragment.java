@@ -84,7 +84,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("Media", mSongList.size()+"ServiceConnection"+ mMusicService);
+        Log.d("Media", mSongList.size()+"    onCreateMedia   "+ mMusicService);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
@@ -112,13 +112,11 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         initView();
 
-      //  Log.d("Media","onCreateView"+ mMusicService);
         if(mMusicService!=null){
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             setDataTop();
             updateUI();
         }
-
         return view;
 
     }
@@ -149,7 +147,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
-            update();
+            if(mMusicService!=null&&mSongList.size()>0){
+                update();
+            }
+
         } else {
             //set khi xoay màn hình
             mBackground.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -225,7 +226,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        if (mMusicService != null && mMusicService.isStatusPlay()) {
+        if (mMusicService != null  &&  mSongList.size()>0) {
             int current = mMusicService.getmCurrentPlay();
             mSongName.setText(mSongList.get(current).getmSongName());
             mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -256,7 +257,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public static byte[] getAlbumArt(String uri) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(uri);
-        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();     // chuyển đổi đường dẫn file media thành đường dẫn file Ảnh
+        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();     //chuyển đổi đường dẫn file media thành đường dẫn file Ảnh
         mediaMetadataRetriever.release();
         return albumArt;
     }
@@ -269,7 +270,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_play_media:
-                if (mMusicService.isStatusPlay()) {
+                if ( mMusicService.isStatusPlay()) {
                     mMusicService.pauseSong();
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
@@ -365,7 +366,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                                     } catch (IllegalStateException e) {
 //                                    e.printStackTrace();
                                     }
-                                    if (getActivity() != null) {
+                                    if (getActivity() != null && mSongList.size()>0) {
                                         final long finalCurrent = current;
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
