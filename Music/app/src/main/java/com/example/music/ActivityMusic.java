@@ -56,6 +56,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         return mMusicService;
     }
 
+
+
     public List<Song> getListSong() {
         return mListSong;
     }
@@ -70,9 +72,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("Activitycheck","onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
+        getFragment();
 
         if (savedInstanceState != null) {
 //            savedInstanceState.getChar(sahd)
@@ -88,6 +92,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onStart() {
+        Log.d("Activitycheck","onStart");
         setService();
         super.onStart();
     }
@@ -214,36 +219,44 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if(mOrientation== Configuration.ORIENTATION_PORTRAIT){
             isVertical = true;
         }
-        else
+        if(mOrientation== Configuration.ORIENTATION_LANDSCAPE){
             isVertical = false;
+        }
+
 
         FragmentManager manager = getSupportFragmentManager();
 
         if (isVertical) {
+            Log.d("Activitycheck","doc");
             AllSongsFragment allSongsFragment = new AllSongsFragment();
-            allSongsFragment.setMusicService(mMusicService);
             allSongsFragment.setVertical(isVertical);
-            allSongsFragment.setListSong(mListSong);
-            allSongsFragment.setSongAdapter(mSongAdapter);
+
+       //     allSongsFragment.setMusicService(mMusicService);
+//            allSongsFragment.setListSong(mListSong);
+//            allSongsFragment.setSongAdapter(mSongAdapter);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
-        } else {
-            AllSongsFragment allSongsFragment= new AllSongsFragment();
-            allSongsFragment.setMusicService(mMusicService);
-            allSongsFragment.setVertical(!isVertical);
-            allSongsFragment.setListSong(mListSong);
-            allSongsFragment.setSongAdapter(mSongAdapter);
+        }
+        else {
+            Log.d("Activitycheck","ngang");
+            AllSongsFragment allSongsFragment = new AllSongsFragment();
+            allSongsFragment.setVertical(isVertical);
+
+//            allSongsFragment.setMusicService(mMusicService);
+//            allSongsFragment.setListSong(mListSong);
+//            allSongsFragment.setSongAdapter(mSongAdapter);
+
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.replace(R.id.content,allSongsFragment);
+            fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
             MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
-            mMediaPlaybackFragment.setSongList(mListSong);
-            mMediaPlaybackFragment.setMusicService(mMusicService);
-            mMediaPlaybackFragment.setVertical(!isVertical);
+//            mMediaPlaybackFragment.setSongList(mListSong);
+//            mMediaPlaybackFragment.setMusicService(mMusicService);
+            mMediaPlaybackFragment.setVertical(isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
             mPlayFragment.replace(R.id.fragment_media, mMediaPlaybackFragment);
             mPlayFragment.commit();

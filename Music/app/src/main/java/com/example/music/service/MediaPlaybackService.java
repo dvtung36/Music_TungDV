@@ -256,7 +256,7 @@ public class MediaPlaybackService extends Service {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte[] data = mediaMetadataRetriever.getEmbeddedPicture();
-        if (data != null) {
+        if (data != null ) {
             return BitmapFactory.decodeByteArray(data, 0, data.length);
         }
         return null;

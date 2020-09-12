@@ -88,18 +88,40 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     public void setSongAdapter(SongAdapter mSongAdapter) {
         this.mSongAdapter = mSongAdapter;
     }
+    private MediaPlaybackService getMusicService(){
+        return getActivityMusic().getMusicService();
+    }
+    private List<Song> getListSong(){
+        return getActivityMusic().getListSong();
+    }
+    private SongAdapter getSongAdapter(){
+        return getActivityMusic().getSongAdapter();
+    }
 
+    //get activity
+    private ActivityMusic getActivityMusic() {
+        if (getActivity() instanceof ActivityMusic) {
+            return (ActivityMusic) getActivity();
+        }
+        return null;
+    }
 
 
 
 
     public AllSongsFragment() {
     }
+    public void setData(){
+        mMusicService= getMusicService();
+        mListSong=getListSong();
+        mSongAdapter=getSongAdapter();
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
+        setData();
         initView(view);
         getDataBottom();
         mSongAdapter.notifyDataSetChanged();
@@ -311,10 +333,8 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                         song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
                 mediaPlaybackFragment.setMusicService(mMusicService);
 
-
                 mediaPlaybackFragment.setSongList(mListSong);
                 mediaPlaybackFragment.setVertical(isVertical);
-
 
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();  // hide action bar
                 fragmentTransaction.replace(R.id.content, mediaPlaybackFragment);    // get fragment MediaPlayBackFragment vào activity main

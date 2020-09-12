@@ -77,6 +77,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void setMusicService(MediaPlaybackService mMusicService) {
         this.mMusicService = mMusicService;
     }
+    private MediaPlaybackService getMusicService(){
+        return getActivityMusic().getMusicService();
+    }
+    private List<Song> getListSong(){
+        return getActivityMusic().getListSong();
+    }
+    private SongAdapter getSongAdapter(){
+        return getActivityMusic().getSongAdapter();
+    }
 
 
     public MediaPlaybackFragment() {
@@ -98,18 +107,24 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mUpdateSeekBarThread = new UpdateSeekBarThread();
             mUpdateSeekBarThread.start();
 
-//            mMusicService.getMediaManager().setIUpdateUI(MediaPlaybackFragment.this);
+
+//            mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
 //            setDataTop();
 //            updateUI();
 
         }
 
     }
+    public void setData(){
+        mMusicService= getMusicService();
+        mSongList=getListSong();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
+
         initView();
 
         if(mMusicService!=null){
@@ -220,9 +235,17 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onDestroy() {
-        mUpdateSeekBarThread.exit();
+        if(mMusicService!=null) mUpdateSeekBarThread.exit();
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
         super.onDestroy();
+    }
+
+    //get activity
+    private ActivityMusic getActivityMusic() {
+        if (getActivity() instanceof ActivityMusic) {
+            return (ActivityMusic) getActivity();
+        }
+        return null;
     }
 
     private void setDataTop() {
