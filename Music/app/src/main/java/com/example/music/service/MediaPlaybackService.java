@@ -149,6 +149,7 @@ public class MediaPlaybackService extends Service {
 
     @Override
     public void onDestroy() {
+        cancelNotification();
         super.onDestroy();
     }
 
@@ -294,6 +295,7 @@ public class MediaPlaybackService extends Service {
                 setmCurrentPlay(current);
                 playSong(pathNext);
                 mIUpdateUI.updateUI(current);
+
             }
         });
     }

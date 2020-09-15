@@ -96,6 +96,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         Log.d("Media", mSongList.size()+"    onCreateMedia   "+ mMusicService);
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
             mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
@@ -107,10 +108,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mUpdateSeekBarThread.start();
 
 
-    }
-    public void setData(){
-        mMusicService= getMusicService();
-        mSongList=getListSong();
+
     }
 
     @Override
@@ -124,14 +122,18 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             mMusicService.setINextAndPreNotification(MediaPlaybackFragment.this);
             mMusicService.setIPauseNotification(MediaPlaybackFragment.this);
-
             setDataTop();
-
         }
+        setDataTop();
 
         return view;
 
     }
+    public void setData(){
+        mMusicService= getMusicService();
+        mSongList=getListSong();
+    }
+
 
     public void initView() {
         mSongName = view.findViewById(R.id.tv_song_name_media);
@@ -166,6 +168,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         } else {
             //set khi xoay màn hình
             mBackground.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
         }
         mSeeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

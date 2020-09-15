@@ -3,6 +3,7 @@ package com.example.music.fragment;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -103,9 +104,10 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         setData();
         initView(view);
         setDataBottom();
-        if (mMusicService!=null&&mSongAdapter != null) {
+        if (mMusicService!=null && mSongAdapter!=null) {
             mMusicService.setINextAndPreNotification(AllSongsFragment.this);
             mMusicService.setIPauseNotification(AllSongsFragment.this);
+            mMusicService.setIUpdateUI(AllSongsFragment.this);
             mSongAdapter.notifyDataSetChanged();
 
         }
@@ -136,7 +138,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
             if (isVertical)
                 mLlBottom.setVisibility(View.VISIBLE);
             else mLlBottom.setVisibility(View.GONE);
-            mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                                  //Click item RecycleView
+            mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                         //Click item RecycleView
             mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
             byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
             Glide.with(getContext()).asBitmap()
@@ -340,7 +342,16 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void updateUI(int pos) {
-        //update
+
+        Log.d("AllSongNext","ok ok");
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+        }
+        mListSong.get(pos).setmIsPlay(true);                             //update  khi auto next
+
+        mSongAdapter.notifyDataSetChanged();
+        setDataBottom();
+
     }
 
     @Override
@@ -351,6 +362,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         mListSong.get(pos).setmIsPlay(true);                            //update khi media next
 
         mSongAdapter.notifyDataSetChanged();
+        setDataBottom();
 
     }
 

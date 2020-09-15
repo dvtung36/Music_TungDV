@@ -233,12 +233,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (isVertical) {
             Log.d("Activitycheck","doc");
             AllSongsFragment allSongsFragment = new AllSongsFragment();
+
             allSongsFragment.setVertical(isVertical);
-
-       //     allSongsFragment.setMusicService(mMusicService);
-//            allSongsFragment.setListSong(mListSong);
-//            allSongsFragment.setSongAdapter(mSongAdapter);
-
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
@@ -248,18 +244,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             Log.d("Activitycheck","ngang");
             AllSongsFragment allSongsFragment = new AllSongsFragment();
             allSongsFragment.setVertical(isVertical);
-
-//            allSongsFragment.setMusicService(mMusicService);
-//            allSongsFragment.setListSong(mListSong);
-//            allSongsFragment.setSongAdapter(mSongAdapter);
+           // mMusicService.setIUpdateUI(allSongsFragment);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
             MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
-//            mMediaPlaybackFragment.setSongList(mListSong);
-//            mMediaPlaybackFragment.setMusicService(mMusicService);
             mMediaPlaybackFragment.setIUpdateAllSong(allSongsFragment);
             mMediaPlaybackFragment.setVertical(isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
