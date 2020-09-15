@@ -62,7 +62,7 @@ import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI {
+public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI,MediaPlaybackFragment.IUpdateAllSong {
 
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
@@ -72,7 +72,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private int mCurrentPosition;
     private Button mBtnPay;
     private TextView mSongName, mSongAuthor;
-    private boolean isVertical =false;
+    private boolean isVertical = false;
     public MediaPlaybackService mMusicService;
 
 
@@ -88,13 +88,16 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     public void setSongAdapter(SongAdapter mSongAdapter) {
         this.mSongAdapter = mSongAdapter;
     }
-    private MediaPlaybackService getMusicService(){
+
+    private MediaPlaybackService getMusicService() {
         return getActivityMusic().getMusicService();
     }
-    private List<Song> getListSong(){
+
+    private List<Song> getListSong() {
         return getActivityMusic().getListSong();
     }
-    private SongAdapter getSongAdapter(){
+
+    private SongAdapter getSongAdapter() {
         return getActivityMusic().getSongAdapter();
     }
 
@@ -107,14 +110,13 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     }
 
 
-
-
     public AllSongsFragment() {
     }
-    public void setData(){
-        mMusicService= getMusicService();
-        mListSong=getListSong();
-        mSongAdapter=getSongAdapter();
+
+    public void setData() {
+        mMusicService = getMusicService();
+        mListSong = getListSong();
+        mSongAdapter = getSongAdapter();
     }
 
     @Nullable
@@ -124,13 +126,16 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         setData();
         initView(view);
         getDataBottom();
-        mSongAdapter.notifyDataSetChanged();
+        if (mSongAdapter != null) {
+            mSongAdapter.notifyDataSetChanged();
+        }
+
         return view;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-   //     Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
+        //     Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
         super.onCreate(savedInstanceState);
 
     }
@@ -191,13 +196,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
         mRcvSong.setLayoutManager(manager);
-      //  mSongAdapter = new SongAdapter(getActivity(), mListSong);
+        //  mSongAdapter = new SongAdapter(getActivity(), mListSong);
         mRcvSong.setAdapter(mSongAdapter);
         getDataBottom();
-        if(mSongAdapter!=null){
+        if (mSongAdapter != null) {
             mSongAdapter.notifyDataSetChanged();
         }
-
 
 
         if (mMusicService != null && mMusicService.isStatusPlay()) { //khi chạy nhạc
@@ -213,85 +217,88 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                 mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
             }
         }
+        if (mSongAdapter != null) {
+            mSongAdapter.setSongAdapter(
+                    new SongAdapter.IIClick() {
+                        @Override
+                        public void onItemClick(Song song, int pos) {
 
-        mSongAdapter.setSongAdapter(
-                new SongAdapter.IIClick() {
-                    @Override
-                    public void onItemClick(Song song, int pos) {
-
-                        if (mMusicService != null) {
-                            mMusicService.createChannel();
-                            mMusicService.createNotification(getActivity(), song, true);
-
-                        }
-
-                        for (int i = 0; i < mListSong.size(); i++) {
-                            mListSong.get(i).setmIsPlay(false);
-                        }
-                        mListSong.get(pos).setmIsPlay(true);
-
-                        if (isVertical) {   //khi doc
                             if (mMusicService != null) {
-                                mMusicService.playSong(song.getmSongArt());        //play nhac
-                                mMusicService.setmCurrentPlay(pos);
+                                mMusicService.createChannel();
+                                mMusicService.createNotification(getActivity(), song, true);
+
                             }
-                            mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
-
-                            mLlBottom.setVisibility(View.VISIBLE);
-                            mSongName.setText(song.getmSongName());                                  //Click item RecycleView
-                            mSongAuthor.setText(song.getmSongAuthor());
-                            byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());
-                            Glide.with(view.getContext()).asBitmap()
-                                    .error(R.drawable.ic_nct)
-                                    .load(songArt)
-                                    .into(mSongArt);
-
-                        } else {         //khi ngang
-
-                            TextView mSongNameMedia = getActivity().findViewById(R.id.tv_song_name_media);
-                            TextView mSongAuthorMedia = getActivity().findViewById(R.id.tv_songauthormedia); //ánh xạ bên media
-                            ImageView mArtMedia = getActivity().findViewById(R.id.tv_ArtMedia);
-
-                            mSongAdapter.notifyDataSetChanged();
-                            if (mMusicService != null) {
-                                mMusicService.playSong(song.getmSongArt());       //play nhac
+                            for (int i = 0; i < mListSong.size(); i++) {
+                                mListSong.get(i).setmIsPlay(false);
                             }
-                            mLlBottom.setVisibility(View.GONE);
+                            mListSong.get(pos).setmIsPlay(true);
+
+                            if (isVertical) {   //khi doc
+                                if (mMusicService != null) {
+                                    mMusicService.playSong(song.getmSongArt());        //play nhac
+                                    mMusicService.setmCurrentPlay(pos);
+                                }
+                                mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
 
-                            mSongNameMedia.setText(song.getmSongName());
-                            mSongAuthorMedia.setText(song.getmSongAuthor());
-                            byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());         //gán dữ liệu khi xoay màn hình
-                            Glide.with(view.getContext()).asBitmap()
-                                    .error(R.drawable.ic_nct)
-                                    .load(songArt)
-                                    .into(mArtMedia);
+                                mLlBottom.setVisibility(View.VISIBLE);
+                                mSongName.setText(song.getmSongName());                                  //Click item RecycleView
+                                mSongAuthor.setText(song.getmSongAuthor());
+                                byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());
+                                Glide.with(view.getContext()).asBitmap()
+                                        .error(R.drawable.ic_nct)
+                                        .load(songArt)
+                                        .into(mSongArt);
+
+                            } else {         //khi ngang
+
+                                TextView mSongNameMedia = getActivity().findViewById(R.id.tv_song_name_media);
+                                TextView mSongAuthorMedia = getActivity().findViewById(R.id.tv_songauthormedia); //ánh xạ bên media
+                                ImageView mArtMedia = getActivity().findViewById(R.id.tv_ArtMedia);
+
+                                mSongAdapter.notifyDataSetChanged();
+                                if (mMusicService != null) {
+                                    mMusicService.playSong(song.getmSongArt());       //play nhac
+                                }
+                                mLlBottom.setVisibility(View.GONE);
+
+
+                                mSongNameMedia.setText(song.getmSongName());
+                                mSongAuthorMedia.setText(song.getmSongAuthor());
+                                byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());         //gán dữ liệu khi xoay màn hình
+                                Glide.with(view.getContext()).asBitmap()
+                                        .error(R.drawable.ic_nct)
+                                        .load(songArt)
+                                        .into(mArtMedia);
+                            }
+                            mCurrentPosition = pos;
+
                         }
-                        mCurrentPosition = pos;
 
-                    }
+                        @Override
+                        public void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos) {
 
-                    @Override
-                    public void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos) {
+                            PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
+                            // Inflate the Popup using XML file.
+                            popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
+                            popup.show();
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                                                 @Override
+                                                                 public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
+                                                                     Toast.makeText(getActivity(),
+                                                                             "item Click", Toast.LENGTH_SHORT).show();
+                                                                     return false;
 
-                        PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-                        // Inflate the Popup using XML file.
-                        popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-                        popup.show();
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                             @Override
-                                                             public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
-                                                                 Toast.makeText(getActivity(),
-                                                                         "item Click", Toast.LENGTH_SHORT).show();
-                                                                 return false;
-
+                                                                 }
                                                              }
-                                                         }
-                        );
+                            );
+                        }
                     }
-                }
-        );
+            );
+
+        }
+
 
     }
 
@@ -354,5 +361,16 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void updateUI(int pos) {
         //update
+    }
+
+    @Override
+    public void updateAllSong(int pos) {
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+        }
+        mListSong.get(pos).setmIsPlay(true);                            //update khi media next
+
+        mSongAdapter.notifyDataSetChanged();
+
     }
 }

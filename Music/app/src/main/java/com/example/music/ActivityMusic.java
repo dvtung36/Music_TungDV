@@ -76,7 +76,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
-        getFragment();
+
 
         if (savedInstanceState != null) {
 //            savedInstanceState.getChar(sahd)
@@ -84,9 +84,32 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         /* check permission*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
 
+        }
+        getData();
+
+
+
+
+    }
+    public void getData(){
+        mListSong = new ArrayList<>();
+        SongManager.getSong(this, mListSong);   //set List song cho activity
+        mSongAdapter = new SongAdapter(this, mListSong);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_MEDIA) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                getFragment();                        //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
+                getData();
+                Toast.makeText(this, "Permission Granted !", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -155,26 +178,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
         }
-        mListSong = new ArrayList<>();
-        SongManager.getSong(this, mListSong);   //set List song cho activity
-
-        mSongAdapter = new SongAdapter(this, mListSong);
 
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_MEDIA) {
-            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getFragment();                        //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
-                Toast.makeText(this, "Permission Granted !", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -209,10 +216,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
 
     public void getFragment() {
-//        if (findViewById(R.id.contentAllSongs) != null)
-//            isVertical = true;
-//        else
-//            isVertical = false;
+
 
         int mOrientation=getResources().getConfiguration().orientation;
 
@@ -256,6 +260,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
 //            mMediaPlaybackFragment.setSongList(mListSong);
 //            mMediaPlaybackFragment.setMusicService(mMusicService);
+            mMediaPlaybackFragment.setIUpdateAllSong(allSongsFragment);
             mMediaPlaybackFragment.setVertical(isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
             mPlayFragment.replace(R.id.fragment_media, mMediaPlaybackFragment);

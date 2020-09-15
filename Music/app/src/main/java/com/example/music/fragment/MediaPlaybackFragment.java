@@ -102,17 +102,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
         }
 
-        if (mMusicService != null) {
+        mUpdateSeekBarThread = new UpdateSeekBarThread();
+        mUpdateSeekBarThread.start();
 
-            mUpdateSeekBarThread = new UpdateSeekBarThread();
-            mUpdateSeekBarThread.start();
-
-
-//            mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
-//            setDataTop();
-//            updateUI();
-
-        }
 
     }
     public void setData(){
@@ -124,14 +116,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
-
+        setData();
         initView();
 
         if(mMusicService!=null){
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             setDataTop();
-            updateUI();
+
         }
+
         return view;
 
     }
@@ -219,11 +212,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     }
 
-
-
     @Override
     public void onStart() {
-        // setService();
         super.onStart();
     }
 
@@ -249,7 +239,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        if (mMusicService != null  &&  mSongList.size()>0) {
+        if (mMusicService != null  &&  mSongList.size()>0 &&mMusicService.isStatusPlay()) {
             int current = mMusicService.getmCurrentPlay();
             mSongName.setText(mSongList.get(current).getmSongName());
             mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -268,6 +258,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
             } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
         }
+        updateUI();
 
     }
 
@@ -320,6 +311,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 update();
                 mMusicService.createChannel();
                 mMusicService.createNotification(getActivity(), song, true);
+                iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
                 break;
 
             case R.id.btn_pre_media:
@@ -332,6 +324,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 update();
                 mMusicService.createChannel();
                 mMusicService.createNotification(getActivity(), song1, true);
+                iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
                 break;
 
             case R.id.btn_show_list:
@@ -427,6 +420,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         }
         return minutes + ":" + seconds;
     }
+    public interface IUpdateAllSong {
+        void updateAllSong(int pos);
+    }
+
+    public void setIUpdateAllSong(IUpdateAllSong iUpdateAllSong) {
+        this.iUpdateAllSong = iUpdateAllSong;
+    }
+
+    private IUpdateAllSong iUpdateAllSong;
 
 
 }
