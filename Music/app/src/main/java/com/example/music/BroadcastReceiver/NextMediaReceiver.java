@@ -11,7 +11,7 @@ public class NextMediaReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Toast.makeText(context, "Receive", Toast.LENGTH_SHORT).show();                  // Receive click next media notification
+        Toast.makeText(context, "Receive", Toast.LENGTH_SHORT).show();             // Receive click next media notification
 
     }
 }

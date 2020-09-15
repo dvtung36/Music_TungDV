@@ -44,7 +44,8 @@ import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class MediaPlaybackFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI {
+public class MediaPlaybackFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI ,
+        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification{
 
     private TextView mSongName, mSongAuthor;
     public boolean isVertical;
@@ -121,6 +122,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
         if(mMusicService!=null){
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
+            mMusicService.setINextAndPreNotification(MediaPlaybackFragment.this);
+            mMusicService.setIPauseNotification(MediaPlaybackFragment.this);
+
             setDataTop();
 
         }
@@ -311,7 +315,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 update();
                 mMusicService.createChannel();
                 mMusicService.createNotification(getActivity(), song, true);
-                iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
+                if(!isVertical){
+                    iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
+                }
                 break;
 
             case R.id.btn_pre_media:
@@ -355,6 +361,32 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void updateUI(int pos) {
         setDataTop();                                //override , update UI mediaFragment khi next bài
         updateUI();
+    }
+
+    @Override
+    public void updateNotificationWhenNextAndPre(int pos) {
+
+        if(mMusicService!=null){
+
+            setDataTop(); //update khi Notification next Pre
+
+        }
+    }
+
+    @Override
+    public void updateNotificationWhenPause(int pos) {
+                                           //update khi Notification when pause
+
+        if ( !mMusicService.isStatusPlay()) {
+
+            mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+
+        } else {
+            mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
+        }
+
+
+
     }
 
     public class UpdateSeekBarThread extends Thread {

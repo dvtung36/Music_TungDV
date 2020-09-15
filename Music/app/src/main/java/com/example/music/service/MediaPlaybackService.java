@@ -1,6 +1,5 @@
 package com.example.music.service;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,7 +25,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.music.ActivityMusic;
 import com.example.music.R;
-import com.example.music.fragment.MediaPlaybackFragment;
 import com.example.music.model.Song;
 
 import java.io.IOException;
@@ -106,7 +104,7 @@ public class MediaPlaybackService extends Service {
             Song song = mListSong.get(pos);
             createChannel();
             createNotification(getApplicationContext(), song, true);
-
+            iNextAndPreNotification.updateNotificationWhenNextAndPre(pos);
         }
         if (intent.getAction() == MUSIC_SERVICE_ACTION_PREV) {
 
@@ -116,6 +114,7 @@ public class MediaPlaybackService extends Service {
             Song song1 = mListSong.get(pos1);
             createChannel();
             createNotification(getApplicationContext(), song1, true);
+            iNextAndPreNotification.updateNotificationWhenNextAndPre(pos1);
 
         }
         if (intent.getAction() == MUSIC_SERVICE_ACTION_PAUSE) {
@@ -128,6 +127,7 @@ public class MediaPlaybackService extends Service {
 
             createChannel();
             createNotification(getApplicationContext(), song, false);
+            iPauseNotification.updateNotificationWhenPause(pos);
 
         }
         if (intent.getAction() == MUSIC_SERVICE_ACTION_PLAY) {
@@ -139,6 +139,7 @@ public class MediaPlaybackService extends Service {
             Song song = mListSong.get(pos);
             createChannel();
             createNotification(getApplicationContext(), song, true);
+            iPauseNotification.updateNotificationWhenPause(pos);
         }
 
 
@@ -366,6 +367,29 @@ public class MediaPlaybackService extends Service {
     public void seekTo(int position) {
         mPlayer.seekTo(position);
     }
+
+    public interface INextAndPreNotification{
+         void updateNotificationWhenNextAndPre(int pos);
+    }
+
+    public void setINextAndPreNotification(INextAndPreNotification iNextAndPreNotification) {
+        this.iNextAndPreNotification = iNextAndPreNotification;
+    }
+
+    private  INextAndPreNotification iNextAndPreNotification;
+
+
+    public interface IPauseNotification{
+        void  updateNotificationWhenPause(int pos);
+    }
+
+    public void setIPauseNotification(IPauseNotification iPauseNotification) {
+        this.iPauseNotification = iPauseNotification;
+    }
+
+    private IPauseNotification iPauseNotification;
+
+
 
 
 }

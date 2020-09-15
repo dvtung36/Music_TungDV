@@ -1,24 +1,8 @@
 package com.example.music.fragment;
 
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,28 +23,23 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
-import com.example.music.Notifications.Notification;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
-import com.example.music.service.SongManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI,MediaPlaybackFragment.IUpdateAllSong,
+        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification
 
-import static android.content.Context.BIND_AUTO_CREATE;
-
-public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI,MediaPlaybackFragment.IUpdateAllSong {
+{
 
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
@@ -125,9 +102,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
         setData();
         initView(view);
-        getDataBottom();
-        if (mSongAdapter != null) {
+        setDataBottom();
+        if (mMusicService!=null&&mSongAdapter != null) {
+            mMusicService.setINextAndPreNotification(AllSongsFragment.this);
+            mMusicService.setIPauseNotification(AllSongsFragment.this);
             mSongAdapter.notifyDataSetChanged();
+
         }
 
         return view;
@@ -150,7 +130,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         super.onStop();
     }
 
-    private void getDataBottom() {
+    private void setDataBottom() {
 
         if (mMusicService != null && mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
             if (isVertical)
@@ -198,7 +178,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         mRcvSong.setLayoutManager(manager);
         //  mSongAdapter = new SongAdapter(getActivity(), mListSong);
         mRcvSong.setAdapter(mSongAdapter);
-        getDataBottom();
+        setDataBottom();
         if (mSongAdapter != null) {
             mSongAdapter.notifyDataSetChanged();
         }
@@ -372,5 +352,25 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
         mSongAdapter.notifyDataSetChanged();
 
+    }
+
+    @Override
+    public void updateNotificationWhenNextAndPre(int pos) {
+
+        //update Notification next  and pre
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+        }
+        mListSong.get(pos).setmIsPlay(true);
+
+        mSongAdapter.notifyDataSetChanged();
+        setDataBottom();
+    }
+
+    @Override
+    public void updateNotificationWhenPause(int pos) {
+                                                                           //update Notification when pause
+        setDataBottom();                                                 //update Notification next  and pre
+        mSongAdapter.notifyDataSetChanged();
     }
 }
