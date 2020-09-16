@@ -251,7 +251,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.commit();
 
             MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
+
             mMediaPlaybackFragment.setIUpdateAllSong(allSongsFragment);
+            mMediaPlaybackFragment.setIUpdateAllSongWhenPauseMedia(allSongsFragment);
+            mMediaPlaybackFragment.setIUpdateAllSongWhenPlayMedia(allSongsFragment);
+
             mMediaPlaybackFragment.setVertical(isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
             mPlayFragment.replace(R.id.fragment_media, mMediaPlaybackFragment);

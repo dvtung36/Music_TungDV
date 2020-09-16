@@ -45,7 +45,8 @@ import java.util.List;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class MediaPlaybackFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI ,
-        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification{
+        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification /*,AllSongsFragment.IUpdateMediaWhenAllSongClickItem*/
+{
 
     private TextView mSongName, mSongAuthor;
     public boolean isVertical;
@@ -292,14 +293,19 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btn_play_media:
                 if ( mMusicService.isStatusPlay()) {
+
+
                     mMusicService.pauseSong();
+                    iUpdateAllSongWhenPauseMedia.updateAllSongWhenPauseMedia(mMusicService.getmCurrentPlay());
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getmCurrentPlay()), false);
 
                 } else {
+
                     mMusicService.reSumSong();
+                    iUpdateAllSongWhenPlayMedia.updateAllSongWhenPlayMedia(mMusicService.getmCurrentPlay());
                     mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
 
                     mMusicService.createChannel();
@@ -391,6 +397,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
 
     }
+/*
+
+    @Override
+    public void UpdateMediaWhenAllSongClickItem(int pos) {
+
+    }
+*/
 
     public class UpdateSeekBarThread extends Thread {
         private Handler handler;
@@ -464,6 +477,27 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private IUpdateAllSong iUpdateAllSong;
+
+    public interface IUpdateAllSongWhenPauseMedia{
+        void updateAllSongWhenPauseMedia(int pos);
+    }
+
+    public void setIUpdateAllSongWhenPauseMedia(IUpdateAllSongWhenPauseMedia iUpdateAllSongWhenPauseMedia) {
+        this.iUpdateAllSongWhenPauseMedia = iUpdateAllSongWhenPauseMedia;
+    }
+    private IUpdateAllSongWhenPauseMedia iUpdateAllSongWhenPauseMedia;
+
+
+    public interface IUpdateAllSongWhenPlayMedia{
+        void updateAllSongWhenPlayMedia(int pos);
+    }
+
+    public void setIUpdateAllSongWhenPlayMedia(IUpdateAllSongWhenPlayMedia iUpdateAllSongWhenPlayMedia) {
+        this.iUpdateAllSongWhenPlayMedia = iUpdateAllSongWhenPlayMedia;
+    }
+
+    private IUpdateAllSongWhenPlayMedia iUpdateAllSongWhenPlayMedia;
+
 
 
 }

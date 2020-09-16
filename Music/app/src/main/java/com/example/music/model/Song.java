@@ -6,17 +6,32 @@ public class Song {
     private String mSongTime;
     private String mSongAuthor;
     private String mSongArt;
+    private boolean mIsPlay;
 
-    public Song(long mSongID, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay) {
+
+
+    private boolean mIsPause;
+
+    public Song(long mSongID, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay,boolean mIsPause) {
         this.mSongID = mSongID;
         this.mSongName = mSongName;
         this.mSongTime = mSongTime;
         this.mSongAuthor = mSongAuthor;
         this.mSongArt = mSongArt;
         this.mIsPlay = mIsPlay;
+        this.mIsPause=mIsPause;
     }
 
-    private boolean mIsPlay;
+
+    public void setIsPause(boolean mIsPause) {
+        this.mIsPause = mIsPause;
+    }
+
+    public boolean ismIsPause() {
+        return mIsPause;
+    }
+
+
 
     public boolean ismIsPlay() {
         return mIsPlay;

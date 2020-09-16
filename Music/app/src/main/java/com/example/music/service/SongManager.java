@@ -38,7 +38,7 @@ public class SongManager {
                 String currentTime = songCursor.getString(songTime);
                 String currentAuthor = songCursor.getString(songAuthor);
                 String currentArt = songCursor.getString(songArt);
-                mListSong.add(new Song(currentId, currentName, currentTime, currentAuthor, currentArt, false));
+                mListSong.add(new Song(currentId, currentName, currentTime, currentAuthor, currentArt, false,false));
             } while (songCursor.moveToNext());
             for (int i = 0; i < mListSong.size(); i++) {
                 for (int j = i + 1; j < mListSong.size(); j++) {

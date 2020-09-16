@@ -78,7 +78,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mSongName;
         private TextView mSongTime;
-        private  TextView mSongID;
+        private  TextView mSongID ,mImageItemPause;
         private ImageView mImageID;
         private ImageButton mOption;
         private EqualizerView equalizer;
@@ -91,6 +91,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             mOption = itemView.findViewById(R.id.ib_option);
          //   mImageID= itemView.findViewById(R.id.tv_imageID);
             equalizer = (EqualizerView) itemView.findViewById(R.id.tv_imageID);
+            mImageItemPause=itemView.findViewById(R.id.tv_imageItem_pause);
 
 
         }
@@ -103,11 +104,25 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             if(song.ismIsPlay())
             {
                 equalizer.animateBars();
+                mImageItemPause.setVisibility(View.INVISIBLE);
                 mSongID.setVisibility(View.INVISIBLE);
                 equalizer.setVisibility(View.VISIBLE);
                 mSongName.setTypeface(null, Typeface.BOLD);
             }
-            else   equalizer.stopBars();
+            else if(song.ismIsPause()){
+                equalizer.stopBars();
+                mSongID.setVisibility(View.INVISIBLE);
+                equalizer.setVisibility(View.INVISIBLE);
+                mImageItemPause.setVisibility(View.VISIBLE);
+                mSongName.setTypeface(null, Typeface.BOLD);
+            }
+            else {
+                mSongID.setVisibility(View.VISIBLE);
+                equalizer.setVisibility(View.INVISIBLE);
+                mImageItemPause.setVisibility(View.INVISIBLE);
+                mSongName.setTypeface(null, Typeface.NORMAL);
+                equalizer.stopBars();
+            }
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

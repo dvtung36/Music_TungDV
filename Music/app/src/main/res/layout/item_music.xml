@@ -5,6 +5,20 @@
     android:layout_height="67dp"
     >
 
+
+    <TextView
+
+        android:id="@+id/tv_imageItem_pause"
+        android:layout_width="32dp"
+        android:layout_height="22dp"
+        android:visibility="visible"
+        android:background="@drawable/ic_play_music"
+        android:layout_margin="24dp"
+        android:gravity="center_horizontal"
+
+
+        />
+
     <TextView
 
         android:paddingLeft="10dp"
@@ -28,6 +42,7 @@
         android:gravity="center"
         android:padding="25dp"
         android:visibility="invisible" />
+
 
     <LinearLayout
         android:layout_toRightOf="@+id/tv_imageID"

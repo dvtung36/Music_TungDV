@@ -1,6 +1,7 @@
 package com.example.music.fragment;
 
 
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +39,8 @@ import com.example.music.service.MediaPlaybackService;
 import java.util.List;
 
 public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI,MediaPlaybackFragment.IUpdateAllSong,
-        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification
+        MediaPlaybackService.INextAndPreNotification,MediaPlaybackService.IPauseNotification,MediaPlaybackFragment.IUpdateAllSongWhenPlayMedia,
+        MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia
 
 {
 
@@ -49,23 +51,11 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     private ImageView mSongArt;
     private int mCurrentPosition;
     private Button mBtnPay;
-    private TextView mSongName, mSongAuthor;
+    private TextView mSongName, mSongAuthor,mImageID;
     private boolean isVertical = false;
     public MediaPlaybackService mMusicService;
 
 
-    public void setListSong(List<Song> mListSong) {
-        this.mListSong = mListSong;
-    }
-
-
-    public void setMusicService(MediaPlaybackService mMusicService) {
-        this.mMusicService = mMusicService;
-    }
-
-    public void setSongAdapter(SongAdapter mSongAdapter) {
-        this.mSongAdapter = mSongAdapter;
-    }
 
     private MediaPlaybackService getMusicService() {
         return getActivityMusic().getMusicService();
@@ -148,15 +138,14 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
             if (mMusicService.isStatusPlay()) {
                 mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
+                setItemWhenPlay(mMusicService.getmCurrentPlay());
             } else {
                 mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
+                setItemWhenPause(mMusicService.getmCurrentPlay());
 
             }
 
-            for (int i = 0; i < mListSong.size(); i++) {
-                mListSong.get(i).setmIsPlay(false);
-            }
-            mListSong.get(mMusicService.getmCurrentPlay()).setmIsPlay(true);
+
 
         }
     }
@@ -170,6 +159,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         mSongAuthor = view.findViewById(R.id.tv_bottom_song_author);                    //Ánh Xạ
         mLlBottom = view.findViewById(R.id.bottom);
         mBtnPay = view.findViewById(R.id.btn_play);
+        mImageID= view.findViewById(R.id.tv_imageItem_pause);
 
         mBtnPay.setOnClickListener(this);
         mLlBottom.setOnClickListener(this);
@@ -210,11 +200,7 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                                 mMusicService.createNotification(getActivity(), song, true);
 
                             }
-
-                            for (int i = 0; i < mListSong.size(); i++) {
-                                mListSong.get(i).setmIsPlay(false);
-                            }
-                            mListSong.get(pos).setmIsPlay(true);
+                            setItemWhenPlay( pos);
 
                             if (isVertical) {   //khi doc
                                 if (mMusicService != null) {
@@ -238,13 +224,13 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                                 TextView mSongNameMedia = getActivity().findViewById(R.id.tv_song_name_media);
                                 TextView mSongAuthorMedia = getActivity().findViewById(R.id.tv_songauthormedia); //ánh xạ bên media
                                 ImageView mArtMedia = getActivity().findViewById(R.id.tv_ArtMedia);
+                                ImageView mImageBackground= getActivity().findViewById(R.id.img_background);
 
                                 mSongAdapter.notifyDataSetChanged();
                                 if (mMusicService != null) {
                                     mMusicService.playSong(song.getmSongArt());       //play nhac
                                 }
                                 mLlBottom.setVisibility(View.GONE);
-
 
                                 mSongNameMedia.setText(song.getmSongName());
                                 mSongAuthorMedia.setText(song.getmSongAuthor());
@@ -253,9 +239,12 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
                                         .error(R.drawable.ic_nct)
                                         .load(songArt)
                                         .into(mArtMedia);
+                                Glide.with(view.getContext()).asBitmap()
+                                        .error(R.drawable.ic_nct)
+                                        .load(songArt)
+                                        .into(mImageBackground);
                             }
                             mCurrentPosition = pos;
-
                         }
 
                         @Override
@@ -284,13 +273,30 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
     }
 
-
     public static byte[] getAlbumArt(String uri) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(uri);
         byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();   // chuyển đổi đường dẫn file media thành đường dẫn file Ảnh
         mediaMetadataRetriever.release();
         return albumArt;
+    }
+
+    public void setItemWhenPause(int pos){
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+            mListSong.get(i).setIsPause(false);
+        }
+        mListSong.get(pos).setIsPause(true);
+        mSongAdapter.notifyDataSetChanged();
+    }
+
+    public void setItemWhenPlay(int pos){
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+            mListSong.get(i).setIsPause(false);
+        }
+        mListSong.get(pos).setmIsPlay(true);
+        mSongAdapter.notifyDataSetChanged();
     }
 
 
@@ -300,11 +306,13 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         switch (view.getId()) {
             case R.id.btn_play: {
                 if (mMusicService.isStatusPlay()) {
+                    setItemWhenPause(mMusicService.getmCurrentPlay());
                     mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getmCurrentPlay()), false);
                 } else {
+                    setItemWhenPlay(mMusicService.getmCurrentPlay());
                     mMusicService.reSumSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();
@@ -385,4 +393,29 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         setDataBottom();                                                 //update Notification next  and pre
         mSongAdapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void updateAllSongWhenPlayMedia(int pos) {
+        setItemWhenPlay(pos);
+
+    }
+
+    @Override
+    public void updateAllSongWhenPauseMedia(int pos) {
+        setItemWhenPause(pos);
+    }
+
+
+
+    public interface IUpdateMediaWhenAllSongClickItem{
+
+        void UpdateMediaWhenAllSongClickItem(int pos);
+    }
+
+    public void setIUpdateMediaWhenAllSongClickItem(IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem) {
+        this.iUpdateMediaWhenAllSongClickItem = iUpdateMediaWhenAllSongClickItem;
+    }
+
+    private IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem;
+
 }
