@@ -208,8 +208,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
         } else  mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
-        mPlayTime.setText(formattedTime(String.valueOf(mSeeBar.getProgress())));
+        mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
         mEndTime.setText(formattedTime(mSongList.get(mMusicService.getmCurrentPlay()).getmSongTime()));
+
 
 
     }

@@ -172,6 +172,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             drawer.addDrawerListener(toggle);
 
         }
+        toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -184,39 +185,18 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);      // create button search in action bar
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:                                          //set click for button search in action bar
-
-                Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show();
-                return true;
-        }
-
-
-        return super.onOptionsItemSelected(item);
-
-    }
-
-
-    @Override
     public void onBackPressed() {
         getSupportActionBar().show();                //setActionBar
         super.onBackPressed();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
-        if (drawer != null) {
-            if (drawer.isDrawerOpen(GravityCompat.START)) {
-                drawer.closeDrawer(GravityCompat.START);
-            } else {
-                super.onBackPressed();
-            }
-        }
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
+//        if (drawer != null) {
+//            if (drawer.isDrawerOpen(GravityCompat.START)) {
+//                drawer.closeDrawer(GravityCompat.START);
+//            } else {
+//                super.onBackPressed();
+//            }
+//        }
     }
 
 

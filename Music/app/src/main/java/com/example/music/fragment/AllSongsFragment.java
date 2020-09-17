@@ -5,6 +5,8 @@ import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +40,7 @@ import com.example.music.service.MediaPlaybackService;
 
 import java.util.List;
 
-public class AllSongsFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
+public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener , View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
         MediaPlaybackService.INextAndPreNotification, MediaPlaybackService.IPauseNotification, MediaPlaybackFragment.IUpdateAllSongWhenPlayMedia,
         MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia {
 
@@ -104,7 +107,9 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //     Log.d("AllSongFragment", mListSong.size()+"ServiceConnection"+ mMusicService);
+
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
     }
 
@@ -145,9 +150,19 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        Log.d("AllSongHIHI","onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener((SearchView.OnQueryTextListener) this);
+    }
+
     private void initView(final View view) {
-
-
         mSongArt = view.findViewById(R.id.img_bottomArt);
         mRcvSong = view.findViewById(R.id.rcv_Song);
         mSongName = view.findViewById(R.id.tv_bottom_songName);
@@ -403,6 +418,30 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
     public void updateAllSongWhenPauseMedia(int pos) {
         setItemWhenPause(pos);
     }
+
+   /* button search*/
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+        return false;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {                                   //button Search
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mSongAdapter.getFilter().filter(newText);
+        return false;
+    }
+
+
 
 
     public interface IUpdateMediaWhenAllSongClickItem {
