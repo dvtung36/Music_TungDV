@@ -386,8 +386,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void updateUI(int pos) {
-        setDataTop();                                //override , update UI mediaFragment khi next bài
+        setDataTop();                                //override , update UI mediaFragment auto khi next bài
         updateUI();
+        mMusicService.createChannel();
+        mMusicService.createNotification(getActivity(),mSongList.get(pos),true);
     }
 
     @Override

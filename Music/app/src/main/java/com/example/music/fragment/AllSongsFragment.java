@@ -355,6 +355,9 @@ public class AllSongsFragment extends Fragment implements View.OnClickListener, 
 
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
+        mMusicService.createChannel();
+        mMusicService.createNotification(getActivity(),mListSong.get(pos),true);
+
 
     }
 

@@ -301,8 +301,6 @@ public class MediaPlaybackService extends Service {
                 playSong(pathNext);
                 mIUpdateUI.updateUI(pos);
 
-                createChannel();
-                createNotification(getApplicationContext(),mListSong.get(pos),true);
 
             }
         });
