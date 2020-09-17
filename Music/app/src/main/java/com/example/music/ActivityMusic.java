@@ -192,12 +192,17 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:                                  //set click for button search in action bar
+            case R.id.action_search:                                          //set click for button search in action bar
+
                 Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show();
                 return true;
         }
+
+
         return super.onOptionsItemSelected(item);
+
     }
+
 
     @Override
     public void onBackPressed() {

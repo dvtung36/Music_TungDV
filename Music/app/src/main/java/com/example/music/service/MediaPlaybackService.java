@@ -32,7 +32,7 @@ import java.util.List;
 
 public class MediaPlaybackService extends Service {
     public static final String ID_CHANNEL = "999";
-    private static final CharSequence NANME_CHANNEL = "App_Music";
+    private static final CharSequence NAME_CHANNEL = "App_Music";
     private static final String MUSIC_SERVICE_ACTION_PAUSE = "music_service_action_pause";
     private static final String MUSIC_SERVICE_ACTION_PLAY = "music_service_action_play";
     private static final String MUSIC_SERVICE_ACTION_NEXT = "music_service_action_next";
@@ -40,7 +40,6 @@ public class MediaPlaybackService extends Service {
     private static final String MUSIC_SERVICE_ACTION_STOP = "music_service_action_stop";
     private static final int NOTIFICATION_ID = 10;
 
-    private SongManager mSongManager;
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
     private boolean isStatusPlay = false;
@@ -149,14 +148,17 @@ public class MediaPlaybackService extends Service {
 
     @Override
     public void onDestroy() {
-        cancelNotification();
+        if(notificationManagerCompat!=null){
+            cancelNotification();
+        }
+
         super.onDestroy();
     }
 
     public void createChannel() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(ID_CHANNEL, NANME_CHANNEL, NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel(ID_CHANNEL, NAME_CHANNEL, NotificationManager.IMPORTANCE_LOW);
             channel.enableLights(true);
             channel.setLightColor(Color.RED);
             channel.enableVibration(true);
@@ -288,13 +290,19 @@ public class MediaPlaybackService extends Service {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Log.d("media", "complete");
-                int current = getmCurrentPlay() + 1;
-                mPlayer.reset();
-                setmCurrentPlay(current);
-                String pathNext = mListSong.get(current).getmSongArt();
-                setmCurrentPlay(current);
+                int pos = getmCurrentPlay();
+                pos++;
+                if (pos > mListSong.size() - 1) {
+                    pos = 0;                           //next media
+                }
+                setmCurrentPlay(pos);
+                String pathNext = mListSong.get(pos).getmSongArt();
+                mCurrentPlay = pos;
                 playSong(pathNext);
-                mIUpdateUI.updateUI(current);
+                mIUpdateUI.updateUI(pos);
+
+                createChannel();
+                createNotification(getApplicationContext(),mListSong.get(pos),true);
 
             }
         });
