@@ -46,11 +46,13 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AllSongsFragment.IUpdateMediaWhenAllSongClickItem {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
+    private AllSongsFragment allSongsFragment;
+    MediaPlaybackFragment  mMediaPlaybackFragment;
 
     public MediaPlaybackService getMusicService() {
         return mMusicService;
@@ -217,7 +219,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         if (isVertical) {
             Log.d("Activitycheck","doc");
-            AllSongsFragment allSongsFragment = new AllSongsFragment();
+            allSongsFragment = new AllSongsFragment();
 
             allSongsFragment.setVertical(isVertical);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
@@ -227,7 +229,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         }
         else {
             Log.d("Activitycheck","ngang");
-            AllSongsFragment allSongsFragment = new AllSongsFragment();
+            allSongsFragment = new AllSongsFragment();
             allSongsFragment.setVertical(isVertical);
            // mMusicService.setIUpdateUI(allSongsFragment);
 
@@ -235,7 +237,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
-            MediaPlaybackFragment  mMediaPlaybackFragment = new MediaPlaybackFragment();
+            mMediaPlaybackFragment = new MediaPlaybackFragment();
 
             mMediaPlaybackFragment.setIUpdateAllSong(allSongsFragment);
             mMediaPlaybackFragment.setIUpdateAllSongWhenPauseMedia(allSongsFragment);
@@ -284,5 +286,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             default:
                 return false;
         }
+    }
+ //call back media
+    @Override
+    public void UpdateMediaWhenAllSongClickItem(int pos) {
+        if(!isVertical){
+            mMediaPlaybackFragment.updateMediaWhenClickItem(pos);
+        }
+
     }
 }

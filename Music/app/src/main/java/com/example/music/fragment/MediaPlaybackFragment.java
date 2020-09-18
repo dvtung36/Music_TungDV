@@ -117,6 +117,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
+
         setData();
         initView();
 
@@ -299,6 +300,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_play_media:
+                int time =mMusicService.getCurrentStreamPosition();
+
                 if(mMusicService.getmCurrentPlay()>0){
                     if ( mMusicService.isStatusPlay()) {
 
@@ -314,7 +317,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         }
 
                     } else {
-
 
                         mMusicService.reSumSong();
                         if(!isVertical){
@@ -524,6 +526,18 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private IUpdateAllSongWhenPlayMedia iUpdateAllSongWhenPlayMedia;
+
+    /*update media when click item in allSongFragment when ngang */
+    public void updateMediaWhenClickItem(int pos){
+
+        Log.d("xxx","updateMediaWhenClickItem"+pos);
+        setDataTop();
+        mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
+
+
+
+
+    }
 
 
 

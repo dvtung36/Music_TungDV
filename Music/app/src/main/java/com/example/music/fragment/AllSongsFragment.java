@@ -1,6 +1,7 @@
 package com.example.music.fragment;
 
 
+import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.util.Log;
@@ -152,7 +153,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        Log.d("AllSongHIHI","onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_search, menu);
 
@@ -230,6 +230,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                                         .into(mSongArt);
 
                             } else {         //khi ngang
+
+                                iUpdateMediaWhenAllSongClickItem.UpdateMediaWhenAllSongClickItem(pos);
 
                                 TextView mSongNameMedia = getActivity().findViewById(R.id.tv_song_name_media);
                                 TextView mSongAuthorMedia = getActivity().findViewById(R.id.tv_songauthormedia); //ánh xạ bên media
@@ -454,5 +456,24 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     }
 
     private IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem;
+
+
+ /* method này để đảm bảo activity sẽ giao tiếp với allSongFragment thông qua interface IUpdateMediaWhenAllSongClickItem*/
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof IUpdateMediaWhenAllSongClickItem) {
+            iUpdateMediaWhenAllSongClickItem = (IUpdateMediaWhenAllSongClickItem) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement IUpdateMediaWhenAllSongClickItem");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        iUpdateMediaWhenAllSongClickItem = null;
+    }
 
 }
