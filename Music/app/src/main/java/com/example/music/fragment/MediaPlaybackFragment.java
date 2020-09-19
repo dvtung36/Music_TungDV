@@ -1,32 +1,19 @@
 package com.example.music.fragment;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,12 +24,11 @@ import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
-import com.example.music.service.SongManager;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Context.BIND_AUTO_CREATE;
 
 public class MediaPlaybackFragment extends Fragment implements View.OnClickListener, MediaPlaybackService.IUpdateUI,
         MediaPlaybackService.INextAndPreNotification, MediaPlaybackService.IPauseNotification /*,AllSongsFragment.IUpdateMediaWhenAllSongClickItem*/ {
