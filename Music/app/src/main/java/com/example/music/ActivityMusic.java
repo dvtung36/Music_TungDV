@@ -46,18 +46,17 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AllSongsFragment.IUpdateMediaWhenAllSongClickItem {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AllSongsFragment.IUpdateMediaWhenAllSongClickItem {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
     private AllSongsFragment allSongsFragment;
-    MediaPlaybackFragment  mMediaPlaybackFragment;
+    MediaPlaybackFragment mMediaPlaybackFragment;
 
     public MediaPlaybackService getMusicService() {
         return mMusicService;
     }
-
 
 
     public List<Song> getListSong() {
@@ -74,7 +73,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("Activitycheck","onCreate");
+        Log.d("Activitycheck", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
@@ -92,10 +91,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         getData();
 
 
-
-
     }
-    public void getData(){
+
+    public void getData() {
         mListSong = new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
         mSongAdapter = new SongAdapter(this, mListSong);
@@ -117,7 +115,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onStart() {
-        Log.d("Activitycheck","onStart");
+        Log.d("Activitycheck", "onStart");
         setService();
         super.onStart();
     }
@@ -129,12 +127,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             unbindService(serviceConnection);
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mMusicService!=null) {
-           // mMusicService.cancelNotification();
-          //  unbindService(serviceConnection);
+        if (mMusicService != null) {
+            // mMusicService.cancelNotification();
+            //  unbindService(serviceConnection);
         }
     }
 
@@ -185,7 +184,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     }
 
 
-
     @Override
     public void onBackPressed() {
         getSupportActionBar().show();                //setActionBar
@@ -204,13 +202,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public void getFragment() {
 
+        int mOrientation = getResources().getConfiguration().orientation;
 
-        int mOrientation=getResources().getConfiguration().orientation;
-
-        if(mOrientation== Configuration.ORIENTATION_PORTRAIT){
+        if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
             isVertical = true;
         }
-        if(mOrientation== Configuration.ORIENTATION_LANDSCAPE){
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             isVertical = false;
         }
 
@@ -218,7 +215,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         FragmentManager manager = getSupportFragmentManager();
 
         if (isVertical) {
-            Log.d("Activitycheck","doc");
+            Log.d("Activitycheck", "doc");
             allSongsFragment = new AllSongsFragment();
 
             allSongsFragment.setVertical(isVertical);
@@ -226,12 +223,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
-        }
-        else {
-            Log.d("Activitycheck","ngang");
+        } else {
+            Log.d("Activitycheck", "ngang");
             allSongsFragment = new AllSongsFragment();
             allSongsFragment.setVertical(isVertical);
-           // mMusicService.setIUpdateUI(allSongsFragment);
+            // mMusicService.setIUpdateUI(allSongsFragment);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
@@ -287,10 +283,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 return false;
         }
     }
- //call back media
+
+    //call back media
     @Override
     public void UpdateMediaWhenAllSongClickItem(int pos) {
-        if(!isVertical){
+        if (!isVertical) {
             mMediaPlaybackFragment.updateMediaWhenClickItem(pos);
         }
 

@@ -43,7 +43,7 @@ public class MediaPlaybackService extends Service {
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
     private boolean isStatusPlay = false;
-    private   NotificationManagerCompat notificationManagerCompat;
+    private NotificationManagerCompat notificationManagerCompat;
 
 
     public void setmCurrentPlay(int mCurrentPlay) {
@@ -148,7 +148,7 @@ public class MediaPlaybackService extends Service {
 
     @Override
     public void onDestroy() {
-        if(notificationManagerCompat!=null){
+        if (notificationManagerCompat != null) {
             cancelNotification();
         }
 
@@ -260,7 +260,7 @@ public class MediaPlaybackService extends Service {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte[] data = mediaMetadataRetriever.getEmbeddedPicture();
-        if (data != null ) {
+        if (data != null) {
             return BitmapFactory.decodeByteArray(data, 0, data.length);
         }
         return null;
@@ -376,19 +376,19 @@ public class MediaPlaybackService extends Service {
         mPlayer.seekTo(position);
     }
 
-    public interface INextAndPreNotification{
-         void updateNotificationWhenNextAndPre(int pos);
+    public interface INextAndPreNotification {
+        void updateNotificationWhenNextAndPre(int pos);
     }
 
     public void setINextAndPreNotification(INextAndPreNotification iNextAndPreNotification) {
         this.iNextAndPreNotification = iNextAndPreNotification;
     }
 
-    private  INextAndPreNotification iNextAndPreNotification;
+    private INextAndPreNotification iNextAndPreNotification;
 
 
-    public interface IPauseNotification{
-        void  updateNotificationWhenPause(int pos);
+    public interface IPauseNotification {
+        void updateNotificationWhenPause(int pos);
     }
 
     public void setIPauseNotification(IPauseNotification iPauseNotification) {
@@ -396,8 +396,6 @@ public class MediaPlaybackService extends Service {
     }
 
     private IPauseNotification iPauseNotification;
-
-
 
 
 }

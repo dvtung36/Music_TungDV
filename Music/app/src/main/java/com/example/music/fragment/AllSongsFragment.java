@@ -41,7 +41,7 @@ import com.example.music.service.MediaPlaybackService;
 
 import java.util.List;
 
-public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener , View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
+public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
         MediaPlaybackService.INextAndPreNotification, MediaPlaybackService.IPauseNotification, MediaPlaybackFragment.IUpdateAllSongWhenPlayMedia,
         MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia {
 
@@ -214,8 +214,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
                             if (isVertical) {   //khi doc
                                 if (mMusicService != null) {
-                                    mMusicService.playSong(song.getmSongArt());        //play nhac
                                     mMusicService.setmCurrentPlay(pos);
+                                    mMusicService.playSong(song.getmSongArt());        //play nhac
+
                                 }
                                 mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
@@ -240,6 +241,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
                                 mSongAdapter.notifyDataSetChanged();
                                 if (mMusicService != null) {
+                                    mMusicService.setmCurrentPlay(pos);
                                     mMusicService.playSong(song.getmSongArt());       //play nhac
                                 }
                                 mLlBottom.setVisibility(View.GONE);
@@ -373,7 +375,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
         mMusicService.createChannel();
-        mMusicService.createNotification(getActivity(),mListSong.get(pos),true);
+        mMusicService.createNotification(getActivity(), mListSong.get(pos), true);
 
 
     }
@@ -421,7 +423,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         setItemWhenPause(pos);
     }
 
-   /* button search*/
+    /* button search*/
     @Override
     public boolean onMenuItemActionExpand(MenuItem menuItem) {
         return false;
@@ -444,8 +446,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     }
 
 
-
-
     public interface IUpdateMediaWhenAllSongClickItem {
 
         void UpdateMediaWhenAllSongClickItem(int pos);
@@ -458,7 +458,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem;
 
 
- /* method này để đảm bảo activity sẽ giao tiếp với allSongFragment thông qua interface IUpdateMediaWhenAllSongClickItem*/
+    /* method này để đảm bảo activity sẽ giao tiếp với allSongFragment thông qua interface IUpdateMediaWhenAllSongClickItem*/
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
