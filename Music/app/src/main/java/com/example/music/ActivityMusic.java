@@ -88,7 +88,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
 
         }
-        getData();
+        else{
+            getData();
+        }
+
+
+
+
 
 
     }
