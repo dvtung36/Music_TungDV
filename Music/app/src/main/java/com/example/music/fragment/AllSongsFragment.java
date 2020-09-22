@@ -43,7 +43,7 @@ import java.util.List;
 
 public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
         MediaPlaybackService.INextAndPreNotification, MediaPlaybackService.IPauseNotification, MediaPlaybackFragment.IUpdateAllSongWhenPlayMedia,
-        MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia {
+        MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia,MediaPlaybackService.IUpdateAllSongWhenAutoNext {
 
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
@@ -98,11 +98,17 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mMusicService.setINextAndPreNotification(AllSongsFragment.this);
             mMusicService.setIPauseNotification(AllSongsFragment.this);
             mMusicService.setIUpdateUI(AllSongsFragment.this);
+            mMusicService.setIUpdateAllSongWhenAutoNext(AllSongsFragment.this);
             mSongAdapter.notifyDataSetChanged();
 
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -365,14 +371,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public void updateUI(int pos) {
 
-
         Log.d("AllSongNext", "ok ok");
         for (int i = 0; i < mListSong.size(); i++) {
             mListSong.get(i).setmIsPlay(false);
+            mListSong.get(i).setIsPause(false);
         }
-        mListSong.get(pos).setmIsPlay(true);                             //update  khi auto next
+        mListSong.get(pos).setIsPause(true);
+        mSongAdapter.notifyDataSetChanged();                         //update  khi auto next
 
-        mSongAdapter.notifyDataSetChanged();
         setDataBottom();
         mMusicService.createChannel();
         mMusicService.createNotification(getActivity(), mListSong.get(pos), true);
@@ -398,6 +404,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         //update Notification next  and pre
         for (int i = 0; i < mListSong.size(); i++) {
             mListSong.get(i).setmIsPlay(false);
+            mListSong.get(i).setIsPause(false);
         }
         mListSong.get(pos).setmIsPlay(true);
 
@@ -443,6 +450,22 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public boolean onQueryTextChange(String newText) {
         mSongAdapter.getFilter().filter(newText);
         return false;
+    }
+
+    @Override
+    public void updateAllSongWhenAutoNext(int pos) {
+        Log.d("AllSongFag","okokokok");
+        for (int i = 0; i < mListSong.size(); i++) {
+            mListSong.get(i).setmIsPlay(false);
+            mListSong.get(i).setIsPause(false);
+        }
+        mListSong.get(pos).setmIsPlay(true);
+
+        mSongAdapter.notifyDataSetChanged();
+        setDataBottom();
+
+
+
     }
 
 

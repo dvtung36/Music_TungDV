@@ -574,8 +574,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         setDataTop();
         mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
 
-
     }
+
+
+
 
 
 }

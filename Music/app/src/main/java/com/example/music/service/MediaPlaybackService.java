@@ -288,17 +288,6 @@ public class MediaPlaybackService extends Service {
         return null;
     }
 
-    public interface IUpdateUI {
-        void updateUI(int pos);
-    }
-
-    private MediaPlaybackService.IUpdateUI mIUpdateUI;
-
-    public void setIUpdateUI(MediaPlaybackService.IUpdateUI mIUpdateUI) {
-        this.mIUpdateUI = mIUpdateUI;
-    }
-
-
     private void initMediaPlayer() {
         mPlayer = new MediaPlayer();
         mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -311,6 +300,7 @@ public class MediaPlaybackService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+
 
                 Log.d("media", "complete");
                 if(isShuffle==NORMAL){
@@ -327,6 +317,7 @@ public class MediaPlaybackService extends Service {
                             mCurrentPlay = pos;
                             playSong(pathNext);
                             mIUpdateUI.updateUI(pos);
+                            iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                         }
                     }
                     if(isRepeat==REPEAT_ALL){
@@ -340,6 +331,7 @@ public class MediaPlaybackService extends Service {
                         mCurrentPlay = pos;
                         playSong(pathNext);
                         mIUpdateUI.updateUI(pos);
+                        iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                     }else {
                         int pos = getmCurrentPlay();
                         setmCurrentPlay(pos);
@@ -347,6 +339,7 @@ public class MediaPlaybackService extends Service {
                         mCurrentPlay = pos;
                         playSong(pat);
                         mIUpdateUI.updateUI(pos);
+                        iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                     }
 
                 }
@@ -358,14 +351,8 @@ public class MediaPlaybackService extends Service {
                     mCurrentPlay = pos;
                     playSong(pat);
                     mIUpdateUI.updateUI(pos);
+                    iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                 }
-
-
-
-
-
-
-
 
             }
         });
@@ -465,6 +452,28 @@ public class MediaPlaybackService extends Service {
     }
 
     private IPauseNotification iPauseNotification;
+
+
+    public interface IUpdateUI {
+        void updateUI(int pos);
+    }
+
+    private MediaPlaybackService.IUpdateUI mIUpdateUI;
+
+    public void setIUpdateUI(MediaPlaybackService.IUpdateUI mIUpdateUI) {
+        this.mIUpdateUI = mIUpdateUI;
+    }
+
+
+    public interface IUpdateAllSongWhenAutoNext{
+        void updateAllSongWhenAutoNext(int pos);
+    }
+
+    public void setIUpdateAllSongWhenAutoNext(IUpdateAllSongWhenAutoNext iUpdateAllSongWhenAutoNext) {
+        this.iUpdateAllSongWhenAutoNext = iUpdateAllSongWhenAutoNext;
+    }
+
+    private IUpdateAllSongWhenAutoNext iUpdateAllSongWhenAutoNext;
 
 
 }

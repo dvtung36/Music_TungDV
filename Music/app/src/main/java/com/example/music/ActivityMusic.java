@@ -226,6 +226,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         FragmentManager manager = getSupportFragmentManager();
 
+          mMusicService.setIUpdateUI(allSongsFragment);
+          mMusicService.setIUpdateAllSongWhenAutoNext(allSongsFragment);
+
         if (isVertical) {
             Log.d("Activitycheck", "doc");
             allSongsFragment = new AllSongsFragment();
@@ -239,7 +242,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             Log.d("Activitycheck", "ngang");
             allSongsFragment = new AllSongsFragment();
             allSongsFragment.setVertical(isVertical);
-            // mMusicService.setIUpdateUI(allSongsFragment);
+             mMusicService.setIUpdateUI(allSongsFragment);
+            mMusicService.setIUpdateUI(allSongsFragment);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
