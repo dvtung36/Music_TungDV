@@ -29,6 +29,7 @@ import com.example.music.model.Song;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class MediaPlaybackService extends Service {
     public static final String ID_CHANNEL = "999";
@@ -39,6 +40,10 @@ public class MediaPlaybackService extends Service {
     private static final String MUSIC_SERVICE_ACTION_PREV = "music_service_action_prev";
     private static final String MUSIC_SERVICE_ACTION_STOP = "music_service_action_stop";
     private static final int NOTIFICATION_ID = 10;
+    public static final int REPEAT = 10;
+    public static final int REPEAT_ALL = 11;
+    public static final int NORMAL = 12;
+    public static final int SHUFFLE = 13;
 
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
@@ -51,6 +56,23 @@ public class MediaPlaybackService extends Service {
     }
 
     private int mCurrentPlay = -1;
+    private int isRepeat;
+    private int isShuffle;
+
+    public int isShuffle() {
+        return isShuffle;
+    }
+    public void setShuffle(int shuffle) {
+        isShuffle = shuffle;
+    }
+
+
+    public int isRepeat() {
+        return isRepeat;
+    }
+    public void setRepeat(int repeat) {
+        isRepeat = repeat;
+    }
 
 
     public boolean isStatusPlay() {
@@ -289,17 +311,60 @@ public class MediaPlaybackService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+
                 Log.d("media", "complete");
-                int pos = getmCurrentPlay();
-                pos++;
-                if (pos > mListSong.size() - 1) {
-                    pos = 0;                           //next media
+                if(isShuffle==NORMAL){
+                    if(isRepeat==NORMAL){
+                        int pos = getmCurrentPlay();
+                        if(pos!=mListSong.size()-1){
+
+                            pos++;
+                            if (pos > mListSong.size() - 1) {
+                                pos = 0;                           //next media
+                            }
+                            setmCurrentPlay(pos);
+                            String pathNext = mListSong.get(pos).getmSongArt();
+                            mCurrentPlay = pos;
+                            playSong(pathNext);
+                            mIUpdateUI.updateUI(pos);
+                        }
+                    }
+                    if(isRepeat==REPEAT_ALL){
+                        int pos = getmCurrentPlay();
+                        pos++;
+                        if (pos > mListSong.size() - 1) {
+                            pos = 0;                           //next media
+                        }
+                        setmCurrentPlay(pos);
+                        String pathNext = mListSong.get(pos).getmSongArt();
+                        mCurrentPlay = pos;
+                        playSong(pathNext);
+                        mIUpdateUI.updateUI(pos);
+                    }else {
+                        int pos = getmCurrentPlay();
+                        setmCurrentPlay(pos);
+                        String pat = mListSong.get(pos).getmSongArt();
+                        mCurrentPlay = pos;
+                        playSong(pat);
+                        mIUpdateUI.updateUI(pos);
+                    }
+
                 }
-                setmCurrentPlay(pos);
-                String pathNext = mListSong.get(pos).getmSongArt();
-                mCurrentPlay = pos;
-                playSong(pathNext);
-                mIUpdateUI.updateUI(pos);
+                else{
+                    Random random= new Random();
+                    int pos= random.nextInt(mListSong.size());
+                    setmCurrentPlay(pos);
+                    String pat = mListSong.get(pos).getmSongArt();
+                    mCurrentPlay = pos;
+                    playSong(pat);
+                    mIUpdateUI.updateUI(pos);
+                }
+
+
+
+
+
+
 
 
             }
@@ -319,6 +384,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void nextSong(int pos) {
+
         pos++;
         if (pos > mListSong.size() - 1) {
             pos = 0;                           //next media
@@ -347,9 +413,12 @@ public class MediaPlaybackService extends Service {
 
 
     public void previousSong(int pos) {
-        pos--;
-        if (pos < 0) {
-            pos = mListSong.size() - 1;
+        int seconds = getCurrentStreamPosition() / 1000 % 60;
+        if (seconds <= 3) {
+            pos--;
+            if (pos < 0) {
+                pos = mListSong.size() - 1;
+            }
         }
         mCurrentPlay = pos;
         playSong(mListSong.get(pos).getmSongArt());

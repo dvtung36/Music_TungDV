@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
@@ -52,7 +53,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
     private AllSongsFragment allSongsFragment;
+    private int Repeat=11 ,Shuffle=12;
     MediaPlaybackFragment mMediaPlaybackFragment;
+
+    public static final int REPEAT = 10;
+    public static final int REPEAT_ALL = 11;
+    public static final int NORMAL = 12;
 
     public MediaPlaybackService getMusicService() {
         return mMusicService;
@@ -78,9 +84,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         setContentView(R.layout.activity_music);
         initView();
 
-
         if (savedInstanceState != null) {
-//            savedInstanceState.getChar(sahd)
+          Repeat= savedInstanceState.getInt("REPEAT");
+          Shuffle=savedInstanceState.getInt("SHUFFLE");
         }
         /* check permission*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -91,11 +97,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         else{
             getData();
         }
-
-
-
-
-
 
     }
 
@@ -156,6 +157,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
             mMusicService.setListSong(mListSong);
+          /*  mMusicService.setRepeat(REPEAT_ALL);
+            mMusicService.setShuffle(NORMAL);
+*/
+            mMusicService.setRepeat(Repeat);
+            mMusicService.setShuffle(Shuffle);
 
             getFragment();
         }
@@ -257,7 +263,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // truoc xoay luu du lieu
-//        outState.putInt();
+          outState.putInt("REPEAT",mMusicService.isRepeat());
+          outState.putInt("SHUFFLE",mMusicService.isShuffle());
+
     }
 
     @Override

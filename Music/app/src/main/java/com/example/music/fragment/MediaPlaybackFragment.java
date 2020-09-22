@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -50,6 +51,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private ImageView mBackground;
     private TextView mPlayTime, mEndTime;
     private ImageButton mPlayMedia, mPreMedia, mNextMedia, mLikeMedia, mDisLikeMedia, mMenu;
+    private Button mMediaRepeatButton, mMediaShuffleButton;
 
     private MediaPlaybackService mMusicService;
     private SeekBar mSeeBar;
@@ -142,6 +144,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mLikeMedia = view.findViewById(R.id.btn_like_media);
         mDisLikeMedia = view.findViewById(R.id.btn_dislike_media);
         mMenu = view.findViewById(R.id.btn_menu_media);
+        mMediaRepeatButton = view.findViewById(R.id.btn_media_repeat);
+        mMediaShuffleButton = view.findViewById(R.id.btn_media_shuffle);
 
         mPlayMedia.setOnClickListener(this);
         mNextMedia.setOnClickListener(this);
@@ -150,6 +154,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mLikeMedia.setOnClickListener(this);
         mDisLikeMedia.setOnClickListener(this);
         mMenu.setOnClickListener(this);
+        mMediaRepeatButton.setOnClickListener(this);
+        mMediaShuffleButton.setOnClickListener(this);
+
 
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -261,8 +268,28 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             if (mMusicService.isStatusPlay()) {
                 mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
             } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+
+            int repeat = mMusicService.isRepeat();
+            if (repeat == MediaPlaybackService.REPEAT) {
+                mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_one_24);
+            } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
+                mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_all);
+            } else {
+                mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_24);
+            }
+
+            int shuffle = mMusicService.isShuffle();
+            if (shuffle != MediaPlaybackService.SHUFFLE) {
+                mMediaShuffleButton.setBackgroundResource(R.drawable.ic_shuffle);
+            } else {
+                mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
+            }
+
         }
         updateUI();
+
+
+
 
     }
 
@@ -289,7 +316,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btn_play_media:
 
-                if (mMusicService.getmCurrentPlay() > 0) {
+                if (mMusicService.getmCurrentPlay() >= 0) {
                     if (mMusicService.isStatusPlay()) {
 
 
@@ -373,6 +400,31 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
             case R.id.btn_menu_media:
                 Toast.makeText(mMusicService, "Menu chưa làm", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_media_repeat:
+                int repeat = mMusicService.isRepeat();
+                if (repeat == MediaPlaybackService.REPEAT) {
+                    mMusicService.setRepeat(MediaPlaybackService.NORMAL);
+                    mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_24);
+                } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
+                    mMusicService.setRepeat(MediaPlaybackService.REPEAT);
+                    mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_one_24);
+                } else {
+                    mMusicService.setRepeat(MediaPlaybackService.REPEAT_ALL);
+                    mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_all);
+                }
+                break;
+
+            case R.id.btn_media_shuffle:
+                int shuffle = mMusicService.isShuffle();
+                if (shuffle == MediaPlaybackService.SHUFFLE) {
+                    mMusicService.setShuffle(MediaPlaybackService.NORMAL);
+                    mMediaShuffleButton.setBackgroundResource(R.drawable.ic_shuffle);
+                } else {
+                    mMusicService.setShuffle(MediaPlaybackService.SHUFFLE);
+                    mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
+                }
+                break;
 
             default:
                 break;
