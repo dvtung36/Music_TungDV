@@ -429,7 +429,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             default:
                 break;
 
-
         }
     }
 

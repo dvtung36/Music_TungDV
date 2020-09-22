@@ -185,13 +185,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             drawer.addDrawerListener(toggle);
 
         }
-        toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
-        }
+//        toggle.setDrawerIndicatorEnabled(true);
+//        toggle.syncState();
+//
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
+//        if (navigationView != null) {
+//            navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
+//        }
 
     }
 
@@ -201,14 +201,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         getSupportActionBar().show();                //setActionBar
         super.onBackPressed();
 
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
-//        if (drawer != null) {
-//            if (drawer.isDrawerOpen(GravityCompat.START)) {
-//                drawer.closeDrawer(GravityCompat.START);
-//            } else {
-//                super.onBackPressed();
-//            }
-//        }
     }
 
 
