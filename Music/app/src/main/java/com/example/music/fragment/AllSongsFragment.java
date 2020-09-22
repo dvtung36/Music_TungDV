@@ -2,6 +2,7 @@ package com.example.music.fragment;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +56,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private TextView mSongName, mSongAuthor, mImageID;
     private boolean isVertical = false;
     public MediaPlaybackService mMusicService;
+
 
 
     private MediaPlaybackService getMusicService() {

@@ -1,5 +1,6 @@
 package com.example.music.fragment;
 
+import android.content.SharedPreferences;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 
@@ -41,6 +42,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private static final String SONG_ARTIST = "author";
     private static final String SONG_ART = "art";
     private static final String CURRENT_POSITION = "currentPosition";
+    private static final String DATA_PLAY_MEDIA="data play music";
     // TODO: Rename and change types of parameters
     private ImageButton mButtonReturnAllSong;
     private String mSongNameMedia;
@@ -58,6 +60,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private List<Song> mSongList = new ArrayList<>();
     private View view;
     private UpdateSeekBarThread mUpdateSeekBarThread;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     public void setSongList(List<Song> mSongList) {
         this.mSongList = mSongList;
@@ -88,6 +92,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         Log.d("Media", mSongList.size() + "    onCreateMedia   " + mMusicService);
         super.onCreate(savedInstanceState);
+        sharedPreferences= getActivity().getSharedPreferences("DATA_PLAY_MEDIA",getActivity().MODE_PRIVATE);
+        editor= sharedPreferences.edit();
 
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
@@ -118,7 +124,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             setDataTop();
         }
         setDataTop();
-
         return view;
 
     }
@@ -168,6 +173,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             //set khi xoay màn hình
             mBackground.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
+
         }
         mSeeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -207,6 +213,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
         mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
         mEndTime.setText(formattedTime(mSongList.get(mMusicService.getmCurrentPlay()).getmSongTime()));
+
+
 
 
     }
@@ -287,8 +295,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
         }
         updateUI();
-
-
 
 
     }
@@ -405,13 +411,22 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 int repeat = mMusicService.isRepeat();
                 if (repeat == MediaPlaybackService.REPEAT) {
                     mMusicService.setRepeat(MediaPlaybackService.NORMAL);
+                    editor.remove("DATA_REPEAT");
+                    editor.putInt("DATA_REPEAT",MediaPlaybackService.NORMAL);
+                    editor.commit();
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_24);
                 } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
                     mMusicService.setRepeat(MediaPlaybackService.REPEAT);
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_one_24);
+                    editor.remove("DATA_REPEAT");
+                    editor.putInt("DATA_REPEAT",MediaPlaybackService.REPEAT);
+                    editor.commit();
                 } else {
                     mMusicService.setRepeat(MediaPlaybackService.REPEAT_ALL);
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_all);
+                    editor.remove("DATA_REPEAT");
+                    editor.putInt("DATA_REPEAT",MediaPlaybackService.REPEAT_ALL);
+                    editor.commit();
                 }
                 break;
 
@@ -420,9 +435,16 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 if (shuffle == MediaPlaybackService.SHUFFLE) {
                     mMusicService.setShuffle(MediaPlaybackService.NORMAL);
                     mMediaShuffleButton.setBackgroundResource(R.drawable.ic_shuffle);
+                    editor.remove("DATA_SHUFFLE");
+                    editor.putInt("DATA_SHUFFLE",MediaPlaybackService.NORMAL);
+                    editor.commit();
                 } else {
                     mMusicService.setShuffle(MediaPlaybackService.SHUFFLE);
                     mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
+                    editor.remove("DATA_SHUFFLE");
+                    editor.putInt("DATA_SHUFFLE",MediaPlaybackService.SHUFFLE);
+                    editor.commit();
+
                 }
                 break;
 

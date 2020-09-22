@@ -77,17 +77,27 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     private SongAdapter mSongAdapter;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("Activitycheck", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
+        sharedPreferences= getSharedPreferences("DATA_PLAY_MEDIA",MODE_PRIVATE);
+
+        Repeat=sharedPreferences.getInt("DATA_REPEAT",REPEAT_ALL);
+        Shuffle=sharedPreferences.getInt("DATA_SHUFFLE",NORMAL);
+
 
         if (savedInstanceState != null) {
           Repeat= savedInstanceState.getInt("REPEAT");
           Shuffle=savedInstanceState.getInt("SHUFFLE");
         }
+
+
+
         /* check permission*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -97,6 +107,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         else{
             getData();
         }
+
+    }
+    public  void readData(){
+
+
 
     }
 
@@ -124,6 +139,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onStart() {
         Log.d("Activitycheck", "onStart");
         setService();
+
         super.onStart();
     }
 
