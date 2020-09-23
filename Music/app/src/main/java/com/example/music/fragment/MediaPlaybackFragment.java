@@ -42,7 +42,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private static final String SONG_ARTIST = "author";
     private static final String SONG_ART = "art";
     private static final String CURRENT_POSITION = "currentPosition";
-    private static final String DATA_PLAY_MEDIA="data play music";
+
     // TODO: Rename and change types of parameters
     private ImageButton mButtonReturnAllSong;
     private String mSongNameMedia;
@@ -63,6 +63,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    SharedPreferences sharedPreferencesCurrent;
+    SharedPreferences.Editor editorCurrent;
+
+
     public void setSongList(List<Song> mSongList) {
         this.mSongList = mSongList;
     }
@@ -79,10 +83,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         return getActivityMusic().getListSong();
     }
 
-    private SongAdapter getSongAdapter() {
-        return getActivityMusic().getSongAdapter();
-    }
-
 
     public MediaPlaybackFragment() {
         // Required empty public constructor
@@ -92,8 +92,11 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         Log.d("Media", mSongList.size() + "    onCreateMedia   " + mMusicService);
         super.onCreate(savedInstanceState);
-        sharedPreferences= getActivity().getSharedPreferences("DATA_PLAY_MEDIA",getActivity().MODE_PRIVATE);
-        editor= sharedPreferences.edit();
+        sharedPreferences = getActivity().getSharedPreferences("DATA_PLAY_MEDIA", getActivity().MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        sharedPreferencesCurrent = getActivity().getSharedPreferences("DATA_CURRENT_PLAY", getActivity().MODE_PRIVATE);
+        editorCurrent = sharedPreferences.edit();
 
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
@@ -123,7 +126,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mMusicService.setIPauseNotification(MediaPlaybackFragment.this);
             setDataTop();
         }
-        setDataTop();
         return view;
 
     }
@@ -212,9 +214,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
         mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
-        mEndTime.setText(formattedTime(mSongList.get(mMusicService.getmCurrentPlay()).getmSongTime()));
-
-
+        mEndTime.setText(formattedTime(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
 
 
     }
@@ -258,25 +258,50 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        if (mMusicService != null && mSongList.size() > 0 && mMusicService.getmCurrentPlay() >= 0) {
-            int current = mMusicService.getmCurrentPlay();
-            mSongName.setText(mSongList.get(current).getmSongName());
-            mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
-            mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
-            byte[] Art = getAlbumArt(mSongList.get(current).getmSongArt());
-            Glide.with(view.getContext()).asBitmap()                                 //set dữ liệu hiển thị đồng bộ khi play đang chạy
-                    .load(Art)
-                    .error(R.drawable.ic_nct)
-                    .into(mArtMedia);
-            Glide.with(view.getContext()).asBitmap()
-                    .load(Art)
-                    .error(R.drawable.ic_nct)
-                    .into(mBackground);
+        //set dữ liệu hiển thị đồng bộ khi play đang chạy
+        if(mMusicService != null){
+            if ( mMusicService.getCurrentPlay() < 0) {
+                int current = sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
+                if (current > -1) {
+                    mSongName.setText(mSongList.get(current).getmSongName());
+                    mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
+                    mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
+                    byte[] Art = getAlbumArt(mSongList.get(current).getmSongArt());
+                    Glide.with(view.getContext()).asBitmap()
+                            .load(Art)
+                            .error(R.drawable.ic_nct)
+                            .into(mArtMedia);
+                    Glide.with(view.getContext()).asBitmap()
+                            .load(Art)
+                            .error(R.drawable.ic_nct)
+                            .into(mBackground);
 
-            if (mMusicService.isStatusPlay()) {
-                mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
-            } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+                    mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+                    mMusicService.setCurrentPlay(current);
 
+                }
+            }
+
+            if ( mMusicService.getCurrentPlay() >= 0) {
+                int current = mMusicService.getCurrentPlay();
+                mSongName.setText(mSongList.get(current).getmSongName());
+                mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
+                mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
+                byte[] Art = getAlbumArt(mSongList.get(current).getmSongArt());
+                Glide.with(view.getContext()).asBitmap()                                 //set dữ liệu hiển thị đồng bộ khi play đang chạy
+                        .load(Art)
+                        .error(R.drawable.ic_nct)
+                        .into(mArtMedia);
+                Glide.with(view.getContext()).asBitmap()
+                        .load(Art)
+                        .error(R.drawable.ic_nct)
+                        .into(mBackground);
+
+                if (mMusicService.isStatusPlay()) {
+                    mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
+                } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+
+            }
             int repeat = mMusicService.isRepeat();
             if (repeat == MediaPlaybackService.REPEAT) {
                 mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_one_24);
@@ -292,9 +317,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             } else {
                 mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
             }
-
+            updateUI();
         }
-        updateUI();
+
+
 
 
     }
@@ -322,7 +348,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btn_play_media:
 
-                if (mMusicService.getmCurrentPlay() >= 0) {
+                if (mMusicService.getCurrentPlay() >= 0) {
                     if (mMusicService.isStatusPlay()) {
 
 
@@ -330,21 +356,21 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
 
                         mMusicService.createChannel();
-                        mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getmCurrentPlay()), false);
+                        mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getCurrentPlay()), false);
 
                         if (!isVertical) {
-                            iUpdateAllSongWhenPauseMedia.updateAllSongWhenPauseMedia(mMusicService.getmCurrentPlay());
+                            iUpdateAllSongWhenPauseMedia.updateAllSongWhenPauseMedia(mMusicService.getCurrentPlay());
                         }
 
                     } else {
                         mMusicService.reSumSong();
                         if (!isVertical) {
-                            iUpdateAllSongWhenPlayMedia.updateAllSongWhenPlayMedia(mMusicService.getmCurrentPlay());
+                            iUpdateAllSongWhenPlayMedia.updateAllSongWhenPlayMedia(mMusicService.getCurrentPlay());
                         }
                         mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
 
                         mMusicService.createChannel();
-                        mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getmCurrentPlay()), true);
+                        mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getCurrentPlay()), true);
                     }
                 }
 
@@ -352,12 +378,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
 
             case R.id.btn_next_media:                            //buton điều hướng bên media
-                if (mMusicService.getmCurrentPlay() >= 0) {
+                if (mMusicService.getCurrentPlay() >= 0) {
 
-                    int pos = mMusicService.getmCurrentPlay();
+                    int pos = mMusicService.getCurrentPlay();
                     Log.d("MediaNext", "" + pos);
                     mMusicService.nextSong(pos);
-                    mCurrentPosition = mMusicService.getmCurrentPlay();
+                    mCurrentPosition = mMusicService.getCurrentPlay();
                     Song song = mSongList.get(mCurrentPosition);
                     mSongNameMedia = song.getmSongName();
                     mSongAuthorMedia = song.getmSongAuthor();
@@ -366,16 +392,16 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), song, true);
                     if (!isVertical) {
-                        iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
+                        iUpdateAllSong.updateAllSong(mMusicService.getCurrentPlay());
                     }
                 }
 
                 break;
 
             case R.id.btn_pre_media:
-                if (mMusicService.getmCurrentPlay() >= 0) {
-                    mMusicService.previousSong(mMusicService.getmCurrentPlay());
-                    mCurrentPosition = mMusicService.getmCurrentPlay();
+                if (mMusicService.getCurrentPlay() >= 0) {
+                    mMusicService.previousSong(mMusicService.getCurrentPlay());
+                    mCurrentPosition = mMusicService.getCurrentPlay();
                     Song song1 = mSongList.get(mCurrentPosition);
                     mSongNameMedia = song1.getmSongName();
                     mSongAuthorMedia = song1.getmSongAuthor();
@@ -384,7 +410,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), song1, true);
                     if (!isVertical) {
-                        iUpdateAllSong.updateAllSong(mMusicService.getmCurrentPlay());
+                        iUpdateAllSong.updateAllSong(mMusicService.getCurrentPlay());
                     }
                 }
 
@@ -412,20 +438,20 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 if (repeat == MediaPlaybackService.REPEAT) {
                     mMusicService.setRepeat(MediaPlaybackService.NORMAL);
                     editor.remove("DATA_REPEAT");
-                    editor.putInt("DATA_REPEAT",MediaPlaybackService.NORMAL);
+                    editor.putInt("DATA_REPEAT", MediaPlaybackService.NORMAL);
                     editor.commit();
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_24);
                 } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
                     mMusicService.setRepeat(MediaPlaybackService.REPEAT);
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_one_24);
                     editor.remove("DATA_REPEAT");
-                    editor.putInt("DATA_REPEAT",MediaPlaybackService.REPEAT);
+                    editor.putInt("DATA_REPEAT", MediaPlaybackService.REPEAT);
                     editor.commit();
                 } else {
                     mMusicService.setRepeat(MediaPlaybackService.REPEAT_ALL);
                     mMediaRepeatButton.setBackgroundResource(R.drawable.ic_baseline_repeat_all);
                     editor.remove("DATA_REPEAT");
-                    editor.putInt("DATA_REPEAT",MediaPlaybackService.REPEAT_ALL);
+                    editor.putInt("DATA_REPEAT", MediaPlaybackService.REPEAT_ALL);
                     editor.commit();
                 }
                 break;
@@ -436,13 +462,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mMusicService.setShuffle(MediaPlaybackService.NORMAL);
                     mMediaShuffleButton.setBackgroundResource(R.drawable.ic_shuffle);
                     editor.remove("DATA_SHUFFLE");
-                    editor.putInt("DATA_SHUFFLE",MediaPlaybackService.NORMAL);
+                    editor.putInt("DATA_SHUFFLE", MediaPlaybackService.NORMAL);
                     editor.commit();
                 } else {
                     mMusicService.setShuffle(MediaPlaybackService.SHUFFLE);
                     mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
                     editor.remove("DATA_SHUFFLE");
-                    editor.putInt("DATA_SHUFFLE",MediaPlaybackService.SHUFFLE);
+                    editor.putInt("DATA_SHUFFLE", MediaPlaybackService.SHUFFLE);
                     editor.commit();
 
                 }
@@ -509,7 +535,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (mMusicService.getmCurrentPlay() >= 0) {
+                        if (mMusicService.getCurrentPlay() >= 0) {
                             while (mMusicService.getPlayer() != null) {
                                 try {
                                     long current = -1;
@@ -526,7 +552,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                                                 mSeeBar.setMax((int) (mMusicService.getDuration()));
                                                 mSeeBar.setProgress((int) (finalCurrent));
                                                 mPlayTime.setText(formattedTime(String.valueOf(finalCurrent)));
-                                                mEndTime.setText(formattedTime(mSongList.get(mMusicService.getmCurrentPlay()).getmSongTime()));
+                                                mEndTime.setText(formattedTime(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
                                             }
                                         });
                                     }
@@ -596,9 +622,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
 
     }
-
-
-
 
 
 }

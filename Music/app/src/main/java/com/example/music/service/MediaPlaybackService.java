@@ -51,7 +51,7 @@ public class MediaPlaybackService extends Service {
     private NotificationManagerCompat notificationManagerCompat;
 
 
-    public void setmCurrentPlay(int mCurrentPlay) {
+    public void setCurrentPlay(int mCurrentPlay) {
         this.mCurrentPlay = mCurrentPlay;
     }
 
@@ -79,17 +79,13 @@ public class MediaPlaybackService extends Service {
         return isStatusPlay;
     }
 
-    public int getmCurrentPlay() {
+    public int getCurrentPlay() {
         return mCurrentPlay;
     }
 
 
     public void setListSong(List<Song> mListSong) {
         this.mListSong = mListSong;
-    }
-
-    public List<Song> getListSong() {
-        return mListSong;
     }
 
     private List<Song> mListSong;
@@ -120,8 +116,8 @@ public class MediaPlaybackService extends Service {
 
 
         if (intent.getAction() == MUSIC_SERVICE_ACTION_NEXT) {
-            nextSong(getmCurrentPlay());
-            int pos = getmCurrentPlay();
+            nextSong(getCurrentPlay());
+            int pos = getCurrentPlay();
             Song song = mListSong.get(pos);
             createChannel();
             createNotification(getApplicationContext(), song, true);
@@ -129,9 +125,9 @@ public class MediaPlaybackService extends Service {
         }
         if (intent.getAction() == MUSIC_SERVICE_ACTION_PREV) {
 
-            previousSong(getmCurrentPlay());
+            previousSong(getCurrentPlay());
 
-            int pos1 = getmCurrentPlay();
+            int pos1 = getCurrentPlay();
             Song song1 = mListSong.get(pos1);
             createChannel();
             createNotification(getApplicationContext(), song1, true);
@@ -143,7 +139,7 @@ public class MediaPlaybackService extends Service {
 
             pauseSong();
 
-            int pos = getmCurrentPlay();
+            int pos = getCurrentPlay();
             Song song = mListSong.get(pos);
 
             createChannel();
@@ -156,7 +152,7 @@ public class MediaPlaybackService extends Service {
 
             reSumSong();
 
-            int pos = getmCurrentPlay();
+            int pos = getCurrentPlay();
             Song song = mListSong.get(pos);
             createChannel();
             createNotification(getApplicationContext(), song, true);
@@ -275,6 +271,7 @@ public class MediaPlaybackService extends Service {
     }
 
     public void cancelNotification() {
+        if(notificationManagerCompat!=null)
         notificationManagerCompat.cancel(NOTIFICATION_ID);
     }
 
@@ -305,14 +302,14 @@ public class MediaPlaybackService extends Service {
                 Log.d("media", "complete");
                 if(isShuffle==NORMAL){
                     if(isRepeat==NORMAL){
-                        int pos = getmCurrentPlay();
+                        int pos = getCurrentPlay();
                         if(pos!=mListSong.size()-1){
 
                             pos++;
                             if (pos > mListSong.size() - 1) {
                                 pos = 0;                           //next media
                             }
-                            setmCurrentPlay(pos);
+                            setCurrentPlay(pos);
                             String pathNext = mListSong.get(pos).getmSongArt();
                             mCurrentPlay = pos;
                             playSong(pathNext);
@@ -321,20 +318,20 @@ public class MediaPlaybackService extends Service {
                         }
                     }
                     if(isRepeat==REPEAT_ALL){
-                        int pos = getmCurrentPlay();
+                        int pos = getCurrentPlay();
                         pos++;
                         if (pos > mListSong.size() - 1) {
                             pos = 0;                           //next media
                         }
-                        setmCurrentPlay(pos);
+                        setCurrentPlay(pos);
                         String pathNext = mListSong.get(pos).getmSongArt();
                         mCurrentPlay = pos;
                         playSong(pathNext);
                         mIUpdateUI.updateUI(pos);
                         iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                     }else {
-                        int pos = getmCurrentPlay();
-                        setmCurrentPlay(pos);
+                        int pos = getCurrentPlay();
+                        setCurrentPlay(pos);
                         String pat = mListSong.get(pos).getmSongArt();
                         mCurrentPlay = pos;
                         playSong(pat);
@@ -346,7 +343,7 @@ public class MediaPlaybackService extends Service {
                 else{
                     Random random= new Random();
                     int pos= random.nextInt(mListSong.size());
-                    setmCurrentPlay(pos);
+                    setCurrentPlay(pos);
                     String pat = mListSong.get(pos).getmSongArt();
                     mCurrentPlay = pos;
                     playSong(pat);

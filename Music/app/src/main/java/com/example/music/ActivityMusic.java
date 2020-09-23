@@ -53,7 +53,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
     private AllSongsFragment allSongsFragment;
-    private int Repeat=11 ,Shuffle=12;
+    private int Repeat = 11, Shuffle = 12;
     MediaPlaybackFragment mMediaPlaybackFragment;
 
     public static final int REPEAT = 10;
@@ -85,15 +85,15 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
-        sharedPreferences= getSharedPreferences("DATA_PLAY_MEDIA",MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("DATA_PLAY_MEDIA", MODE_PRIVATE);
 
-        Repeat=sharedPreferences.getInt("DATA_REPEAT",REPEAT_ALL);
-        Shuffle=sharedPreferences.getInt("DATA_SHUFFLE",NORMAL);
+        Repeat = sharedPreferences.getInt("DATA_REPEAT", REPEAT_ALL);
+        Shuffle = sharedPreferences.getInt("DATA_SHUFFLE", NORMAL);
 
 
         if (savedInstanceState != null) {
-          Repeat= savedInstanceState.getInt("REPEAT");
-          Shuffle=savedInstanceState.getInt("SHUFFLE");
+            Repeat = savedInstanceState.getInt("REPEAT");
+            Shuffle = savedInstanceState.getInt("SHUFFLE");
         }
 
 
@@ -103,8 +103,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
 
-        }
-        else{
+        } else {
             getData();
         }
 
@@ -143,15 +142,17 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onStop();
         if (mMusicService != null) {
             unbindService(serviceConnection);
-            mMusicService.cancelNotification();
         }
         allSongsFragment.saveData();
-        Log.d("ActivityOnDestroy","onDestroy");
+        Log.d("ActivityOnDestroy", "onDestroy");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mMusicService != null) {
+            mMusicService.cancelNotification();
+        }
 
     }
 
@@ -236,8 +237,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         FragmentManager manager = getSupportFragmentManager();
 
-          mMusicService.setIUpdateUI(allSongsFragment);
-          mMusicService.setIUpdateAllSongWhenAutoNext(allSongsFragment);
+        mMusicService.setIUpdateUI(allSongsFragment);
+        mMusicService.setIUpdateAllSongWhenAutoNext(allSongsFragment);
 
         if (isVertical) {
             Log.d("Activitycheck", "doc");
@@ -252,7 +253,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             Log.d("Activitycheck", "ngang");
             allSongsFragment = new AllSongsFragment();
             allSongsFragment.setVertical(isVertical);
-             mMusicService.setIUpdateUI(allSongsFragment);
+            mMusicService.setIUpdateUI(allSongsFragment);
             mMusicService.setIUpdateUI(allSongsFragment);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
@@ -277,8 +278,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // truoc xoay luu du lieu
-          outState.putInt("REPEAT",mMusicService.isRepeat());
-          outState.putInt("SHUFFLE",mMusicService.isShuffle());
+        outState.putInt("REPEAT", mMusicService.isRepeat());
+        outState.putInt("SHUFFLE", mMusicService.isShuffle());
 
     }
 
