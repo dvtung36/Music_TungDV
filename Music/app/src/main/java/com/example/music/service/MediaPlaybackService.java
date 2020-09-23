@@ -45,8 +45,19 @@ public class MediaPlaybackService extends Service {
     public static final int NORMAL = 12;
     public static final int SHUFFLE = 13;
 
+    public boolean isResume() {
+        return isResume;
+    }
+
+    private boolean isResume=false;
+
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
+
+    public void setStatusPlay(boolean statusPlay) {
+        isStatusPlay = statusPlay;
+    }
+
     private boolean isStatusPlay = false;
     private NotificationManagerCompat notificationManagerCompat;
 
@@ -381,6 +392,7 @@ public class MediaPlaybackService extends Service {
     public void pauseSong() {
         mPlayer.pause();                           //pause media
         isStatusPlay = false;
+        isResume=true;
 
     }
 

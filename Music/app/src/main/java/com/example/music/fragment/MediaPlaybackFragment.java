@@ -258,10 +258,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        //set dữ liệu hiển thị đồng bộ khi play đang chạy
-        if(mMusicService != null){
-            if ( mMusicService.getCurrentPlay() < 0) {
+        /*set dữ liệu hiển thị đồng bộ khi play đang chạy*/
+
+
+        if (mMusicService != null) {
+            if (mMusicService.getCurrentPlay() < 0) {
                 int current = sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
+                Log.d("SetDataTop", "null" + current);
                 if (current > -1) {
                     mSongName.setText(mSongList.get(current).getmSongName());
                     mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -278,12 +281,11 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                     mMusicService.setCurrentPlay(current);
-
                 }
-            }
 
-            if ( mMusicService.getCurrentPlay() >= 0) {
+            } else {
                 int current = mMusicService.getCurrentPlay();
+                Log.d("SetDataTop", "" + current);
                 mSongName.setText(mSongList.get(current).getmSongName());
                 mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
                 mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
@@ -319,8 +321,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             }
             updateUI();
         }
-
-
 
 
     }

@@ -140,7 +140,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         if (mMusicService != null) {
             if (mMusicService.getCurrentPlay() < 0) {
                 int current = sharedPreferences.getInt("DATA_CURRENT", -1);
-                Log.d("SetDataBottom", "" + current);
+                Log.d("ClickPlay", "" + current);
                 if (current > -1) {
                     if(isVertical){
                         mLlBottom.setVisibility(View.VISIBLE);
@@ -354,15 +354,22 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_play: {
+
+                Log.d("ClickPlay",""+mMusicService.getCurrentPlay());
                 if (mMusicService.isStatusPlay()) {
                     setItemWhenPause(mMusicService.getCurrentPlay());
                     mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getCurrentPlay()), false);
-                } else {
+                }
+                else {
                     setItemWhenPlay(mMusicService.getCurrentPlay());
-                    mMusicService.reSumSong();
+
+                    if(mMusicService.isResume())
+                      mMusicService.reSumSong();
+                    else  mMusicService.playSong(mListSong.get(mMusicService.getCurrentPlay()).getmSongArt());
+
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getCurrentPlay()), true);
