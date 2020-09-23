@@ -143,6 +143,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onStop();
         if (mMusicService != null) {
             unbindService(serviceConnection);
+            mMusicService.cancelNotification();
         }
         allSongsFragment.saveData();
         Log.d("ActivityOnDestroy","onDestroy");
@@ -151,12 +152,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onDestroy() {
         super.onDestroy();
-/*
-        if (mMusicService != null) {
-            mMusicService.cancelNotification();
-            unbindService(serviceConnection);
-        }*/
-
 
     }
 
