@@ -144,6 +144,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             unbindService(serviceConnection);
         }
+        allSongsFragment.saveData();
+        Log.d("ActivityOnDestroy","onDestroy");
     }
 
     @Override
@@ -161,8 +163,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onPause() {
 
-        allSongsFragment.saveData();
-        Log.d("ActivityOnDestroy","onDestroy");
+
         super.onPause();
     }
 
