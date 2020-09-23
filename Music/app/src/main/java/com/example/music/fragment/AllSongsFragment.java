@@ -44,7 +44,7 @@ import java.util.List;
 
 public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener, MediaPlaybackService.IUpdateUI, MediaPlaybackFragment.IUpdateAllSong,
         MediaPlaybackService.INextAndPreNotification, MediaPlaybackService.IPauseNotification, MediaPlaybackFragment.IUpdateAllSongWhenPlayMedia,
-        MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia,MediaPlaybackService.IUpdateAllSongWhenAutoNext {
+        MediaPlaybackFragment.IUpdateAllSongWhenPauseMedia, MediaPlaybackService.IUpdateAllSongWhenAutoNext {
 
     private RecyclerView mRcvSong;
     private List<Song> mListSong;
@@ -56,7 +56,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private TextView mSongName, mSongAuthor, mImageID;
     private boolean isVertical = false;
     public MediaPlaybackService mMusicService;
-
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
 
     private MediaPlaybackService getMusicService() {
@@ -120,6 +121,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        sharedPreferences = getActivity().getSharedPreferences("DATA_CURRENT_PLAY", getActivity().MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
     }
 
     @Override
@@ -133,30 +137,53 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     }
 
     private void setDataBottom() {
+        if (mMusicService != null) {
+            if (mMusicService.getmCurrentPlay() < 0) {
+                int current = sharedPreferences.getInt("DATA_CURRENT", -1);
+                Log.d("SetDataBottom", "" + current);
+                if (current > -1) {
+                    if(isVertical){
+                        mLlBottom.setVisibility(View.VISIBLE);
+                        mMusicService.setmCurrentPlay(current);
+                    }
+                    mSongName.setText(mListSong.get(current).getmSongName());                         //Click item RecycleView
+                    mSongAuthor.setText(mListSong.get(current).getmSongAuthor());
+                    byte[] songArt = getAlbumArt(mListSong.get(current).getmSongArt());
+                    Glide.with(getContext()).asBitmap()
+                            .error(R.drawable.ic_nct)
+                            .load(songArt)
+                            .into(mSongArt);
+                    mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
+                    setItemWhenPause(current);
 
-        if (mMusicService != null && mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
-            if (isVertical)
-                mLlBottom.setVisibility(View.VISIBLE);
-            else mLlBottom.setVisibility(View.GONE);
-            mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                         //Click item RecycleView
-            mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
-            byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
-            Glide.with(getContext()).asBitmap()
-                    .error(R.drawable.ic_nct)
-                    .load(songArt)
-                    .into(mSongArt);
-
-            if (mMusicService.isStatusPlay()) {
-                mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
-                setItemWhenPlay(mMusicService.getmCurrentPlay());
-            } else {
-                mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                setItemWhenPause(mMusicService.getmCurrentPlay());
-
+                }
             }
 
+            if (mMusicService.getmCurrentPlay() >= 0) {     //khi chạy nhạc
+                if (isVertical)
+                    mLlBottom.setVisibility(View.VISIBLE);
+                else mLlBottom.setVisibility(View.GONE);
+                mSongName.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongName());                         //Click item RecycleView
+                mSongAuthor.setText(mListSong.get(mMusicService.getmCurrentPlay()).getmSongAuthor());
+                byte[] songArt = getAlbumArt(mListSong.get(mMusicService.getmCurrentPlay()).getmSongArt());
+                Glide.with(getContext()).asBitmap()
+                        .error(R.drawable.ic_nct)
+                        .load(songArt)
+                        .into(mSongArt);
 
+                if (mMusicService.isStatusPlay()) {
+                    mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
+                    setItemWhenPlay(mMusicService.getmCurrentPlay());
+                } else {
+                    mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
+                    setItemWhenPause(mMusicService.getmCurrentPlay());
+
+                }
+
+            }
         }
+
+
     }
 
     @Override
@@ -456,7 +483,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public void updateAllSongWhenAutoNext(int pos) {
-        Log.d("AllSongFag","okokokok");
+        Log.d("AllSongFag", "okokokok");
         for (int i = 0; i < mListSong.size(); i++) {
             mListSong.get(i).setmIsPlay(false);
             mListSong.get(i).setIsPause(false);
@@ -466,6 +493,15 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
 
+    }
+
+    public void saveData() {
+
+        Log.d("AllSongOk", "saveData");
+
+        editor.remove("DATA_CURRENT");
+        editor.putInt("DATA_CURRENT", mMusicService.getmCurrentPlay());
+        editor.commit();
 
 
     }

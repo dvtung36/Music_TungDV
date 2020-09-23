@@ -109,11 +109,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         }
 
     }
-    public  void readData(){
-
-
-
-    }
 
     public void getData() {
         mListSong = new ArrayList<>();
@@ -154,10 +149,21 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onDestroy() {
         super.onDestroy();
+/*
         if (mMusicService != null) {
-            // mMusicService.cancelNotification();
-            //  unbindService(serviceConnection);
-        }
+            mMusicService.cancelNotification();
+            unbindService(serviceConnection);
+        }*/
+
+
+    }
+
+    @Override
+    protected void onPause() {
+
+        allSongsFragment.saveData();
+        Log.d("ActivityOnDestroy","onDestroy");
+        super.onPause();
     }
 
     private void setService() {
