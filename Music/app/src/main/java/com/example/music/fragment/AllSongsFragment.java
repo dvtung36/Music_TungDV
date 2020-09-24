@@ -365,10 +365,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 }
                 else {
                     setItemWhenPlay(mMusicService.getCurrentPlay());
-
                     if(mMusicService.isResume())
                       mMusicService.reSumSong();
-                    else  mMusicService.playSong(mListSong.get(mMusicService.getCurrentPlay()).getmSongArt());
+                    else  {
+                        mMusicService.playSong(mListSong.get(mMusicService.getCurrentPlay()).getmSongArt());
+
+                    }
 
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();

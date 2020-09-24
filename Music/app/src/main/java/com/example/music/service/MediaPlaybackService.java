@@ -44,6 +44,7 @@ public class MediaPlaybackService extends Service {
     public static final int REPEAT_ALL = 11;
     public static final int NORMAL = 12;
     public static final int SHUFFLE = 13;
+    private boolean isFist = true;
 
     public boolean isResume() {
         return isResume;
@@ -310,12 +311,27 @@ public class MediaPlaybackService extends Service {
             public void onCompletion(MediaPlayer mediaPlayer) {
 
 
-                Log.d("media", "complete");
-                if(isShuffle==NORMAL){
-                    if(isRepeat==NORMAL){
-                        int pos = getCurrentPlay();
-                        if(pos!=mListSong.size()-1){
+                Log.d("media", "complete"+ mPlayer.getCurrentPosition()+" "+ mPlayer.getDuration());
+                if (!isFist){
+                    if(isShuffle==NORMAL){
+                        if(isRepeat==NORMAL){
+                            int pos = getCurrentPlay();
+                            if(pos!=mListSong.size()-1){
 
+                                pos++;
+                                if (pos > mListSong.size() - 1) {
+                                    pos = 0;                           //next media
+                                }
+                                setCurrentPlay(pos);
+                                String pathNext = mListSong.get(pos).getmSongArt();
+                                mCurrentPlay = pos;
+                                playSong(pathNext);
+                                mIUpdateUI.updateUI(pos);
+                                iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
+                            }
+                        }
+                        if(isRepeat==REPEAT_ALL){
+                            int pos = getCurrentPlay();
                             pos++;
                             if (pos > mListSong.size() - 1) {
                                 pos = 0;                           //next media
@@ -326,22 +342,20 @@ public class MediaPlaybackService extends Service {
                             playSong(pathNext);
                             mIUpdateUI.updateUI(pos);
                             iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
+                        }else {
+                            int pos = getCurrentPlay();
+                            setCurrentPlay(pos);
+                            String pat = mListSong.get(pos).getmSongArt();
+                            mCurrentPlay = pos;
+                            playSong(pat);
+                            mIUpdateUI.updateUI(pos);
+                            iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                         }
+
                     }
-                    if(isRepeat==REPEAT_ALL){
-                        int pos = getCurrentPlay();
-                        pos++;
-                        if (pos > mListSong.size() - 1) {
-                            pos = 0;                           //next media
-                        }
-                        setCurrentPlay(pos);
-                        String pathNext = mListSong.get(pos).getmSongArt();
-                        mCurrentPlay = pos;
-                        playSong(pathNext);
-                        mIUpdateUI.updateUI(pos);
-                        iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
-                    }else {
-                        int pos = getCurrentPlay();
+                    else{
+                        Random random= new Random();
+                        int pos= random.nextInt(mListSong.size());
                         setCurrentPlay(pos);
                         String pat = mListSong.get(pos).getmSongArt();
                         mCurrentPlay = pos;
@@ -349,19 +363,7 @@ public class MediaPlaybackService extends Service {
                         mIUpdateUI.updateUI(pos);
                         iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
                     }
-
                 }
-                else{
-                    Random random= new Random();
-                    int pos= random.nextInt(mListSong.size());
-                    setCurrentPlay(pos);
-                    String pat = mListSong.get(pos).getmSongArt();
-                    mCurrentPlay = pos;
-                    playSong(pat);
-                    mIUpdateUI.updateUI(pos);
-                    iUpdateAllSongWhenAutoNext.updateAllSongWhenAutoNext(pos);
-                }
-
             }
         });
     }
@@ -373,6 +375,7 @@ public class MediaPlaybackService extends Service {
             mPlayer.setDataSource(path);            //run media
             mPlayer.prepare();
             isStatusPlay = true;
+            isFist = false;
         } catch (IOException e) {
             e.printStackTrace();
         }

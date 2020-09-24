@@ -98,18 +98,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         sharedPreferencesCurrent = getActivity().getSharedPreferences("DATA_CURRENT_PLAY", getActivity().MODE_PRIVATE);
         editorCurrent = sharedPreferences.edit();
 
-        int temp= sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
-
 
 
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
             mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
             mSongArtMedia = getArguments().getString(SONG_ART);
-            if(temp>-1){
-                mCurrentPosition=0;
-            }
-            else mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
 
         }
 
@@ -205,6 +199,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     public void update() {                          //update khi all song click ll_bottom  ==>media
+
         mSongName.setText(mSongNameMedia);
         mSongAuthor.setText(mSongAuthorMedia);
         byte[] Art = getAlbumArt(mSongArtMedia);
@@ -306,7 +301,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
                 if (mMusicService.isStatusPlay()) {
                     mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
-                } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+                } else{
+                    mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
+                }
 
             }
             int repeat = mMusicService.isRepeat();
@@ -368,7 +365,11 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         }
 
                     } else {
-                        mMusicService.reSumSong();
+                        if(mMusicService.isResume())
+                            mMusicService.reSumSong();
+                        else {
+                            mMusicService.playSong(mSongList.get(mMusicService.getCurrentPlay()).getmSongArt());
+                        }
                         if (!isVertical) {
                             iUpdateAllSongWhenPlayMedia.updateAllSongWhenPlayMedia(mMusicService.getCurrentPlay());
                         }
