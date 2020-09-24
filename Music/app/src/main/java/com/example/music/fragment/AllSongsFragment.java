@@ -379,10 +379,11 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             }
             case R.id.bottom: {
                 mCurrentPosition = mMusicService.getCurrentPlay();
+                Log.d("Bottom",""+mCurrentPosition);
                 Song song = mListSong.get(mCurrentPosition);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(          //
+                MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(
                         song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
                 mediaPlaybackFragment.setMusicService(mMusicService);
 
@@ -390,7 +391,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 mediaPlaybackFragment.setVertical(isVertical);
 
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();  // hide action bar
-                fragmentTransaction.replace(R.id.content, mediaPlaybackFragment);    // get fragment MediaPlayBackFragment vào activity main
+                fragmentTransaction.replace(R.id.content, mediaPlaybackFragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;

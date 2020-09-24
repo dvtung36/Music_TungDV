@@ -98,11 +98,18 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         sharedPreferencesCurrent = getActivity().getSharedPreferences("DATA_CURRENT_PLAY", getActivity().MODE_PRIVATE);
         editorCurrent = sharedPreferences.edit();
 
+        int temp= sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
+
+
+
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
             mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
             mSongArtMedia = getArguments().getString(SONG_ART);
-            mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
+            if(temp>-1){
+                mCurrentPosition=0;
+            }
+            else mCurrentPosition = getArguments().getInt(CURRENT_POSITION);
 
         }
 
@@ -258,8 +265,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     private void setDataTop() {
-        /*set dữ liệu hiển thị đồng bộ khi play đang chạy*/
-
 
         if (mMusicService != null) {
             if (mMusicService.getCurrentPlay() < 0) {
