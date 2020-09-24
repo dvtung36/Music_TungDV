@@ -99,7 +99,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         editorCurrent = sharedPreferences.edit();
 
 
-
         if (getArguments() != null) {
             mSongNameMedia = getArguments().getString(SONG_NAME);
             mSongAuthorMedia = getArguments().getString(SONG_ARTIST); // khởi tạo fragment
@@ -127,6 +126,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mMusicService.setIPauseNotification(MediaPlaybackFragment.this);
             setDataTop();
         }
+//
+//        if(mMusicService.isFist()){
+//            int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
+//            Log.d("isFirst2",""+position);
+//            mSeeBar.setProgress(position);
+//        }
         return view;
 
     }
@@ -301,7 +306,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
                 if (mMusicService.isStatusPlay()) {
                     mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
-                } else{
+                } else {
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                 }
 
@@ -365,10 +370,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         }
 
                     } else {
-                        if(mMusicService.isResume())
+                        if (mMusicService.isResume())
                             mMusicService.reSumSong();
                         else {
                             mMusicService.playSong(mSongList.get(mMusicService.getCurrentPlay()).getmSongArt());
+                            int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
+                            mMusicService.seekTo(position);
                         }
                         if (!isVertical) {
                             iUpdateAllSongWhenPlayMedia.updateAllSongWhenPlayMedia(mMusicService.getCurrentPlay());
@@ -568,6 +575,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                                 }
                             }
                         }
+
                     }
                 });
             }

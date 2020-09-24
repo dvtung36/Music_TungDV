@@ -26,7 +26,7 @@ import java.util.List;
 
 import es.claucookie.miniequalizerlibrary.EqualizerView;
 
-public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  implements Filterable {
+public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> implements Filterable {
     private Context mContext;
     private List<Song> mListSong;
     private List<Song> mListSongFull;
@@ -97,7 +97,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
             } else {
                 for (Song songName : mListSongFull) {
                     if (songName.getmSongName().toLowerCase().contains(constraint.toString().toLowerCase().trim())) {
-                        Log.d("XXX",""+songName.getmSongName());
+                        Log.d("XXX", "" + songName.getmSongName());
                         filteredList.addLast(songName);
                     }
                 }
@@ -117,11 +117,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
     };
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mSongName;
         private TextView mSongTime;
-        private  TextView mSongID ,mImageItemPause;
+        private TextView mSongID, mImageItemPause;
         private ImageView mImageID;
         private ImageButton mOption;
         private EqualizerView equalizer;
@@ -132,9 +131,9 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
             mSongTime = itemView.findViewById(R.id.tv_songTime);
             mSongID = itemView.findViewById(R.id.tv_songID);
             mOption = itemView.findViewById(R.id.ib_option);
-         //   mImageID= itemView.findViewById(R.id.tv_imageID);
+            //   mImageID= itemView.findViewById(R.id.tv_imageID);
             equalizer = (EqualizerView) itemView.findViewById(R.id.tv_imageID);
-            mImageItemPause=itemView.findViewById(R.id.tv_imageItem_pause);
+            mImageItemPause = itemView.findViewById(R.id.tv_imageItem_pause);
 
 
         }
@@ -144,22 +143,19 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
             mSongID.setText(String.valueOf(pos + 1));        //set dữ liệu cho từng item
             mSongName.setText(song.getmSongName() + "");
             mSongTime.setText(getDuration(song.getmSongTime()));
-            if(song.ismIsPlay())
-            {
+            if (song.ismIsPlay()) {
                 equalizer.animateBars();
                 mImageItemPause.setVisibility(View.INVISIBLE);
                 mSongID.setVisibility(View.INVISIBLE);
                 equalizer.setVisibility(View.VISIBLE);
                 mSongName.setTypeface(null, Typeface.BOLD);
-            }
-            else if(song.ismIsPause()){
+            } else if (song.ismIsPause()) {
                 equalizer.stopBars();
                 mSongID.setVisibility(View.INVISIBLE);
                 equalizer.setVisibility(View.INVISIBLE);
                 mImageItemPause.setVisibility(View.VISIBLE);
                 mSongName.setTypeface(null, Typeface.BOLD);
-            }
-            else {
+            } else {
                 mSongID.setVisibility(View.VISIBLE);
                 equalizer.setVisibility(View.INVISIBLE);
                 mImageItemPause.setVisibility(View.INVISIBLE);
@@ -178,7 +174,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
                 @Override
                 public void onClick(View view) {
                     if (mListener != null) {
-                        mListener.onSongBtnClickListener(mOption, view, song , pos);
+                        mListener.onSongBtnClickListener(mOption, view, song, pos);
                     }
                 }
             });
@@ -187,6 +183,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder>  i
 
     public interface IIClick {
         void onItemClick(Song song, int pos);
+
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);
     }
 

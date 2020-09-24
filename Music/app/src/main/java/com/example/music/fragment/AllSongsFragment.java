@@ -142,7 +142,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 int current = sharedPreferences.getInt("DATA_CURRENT", -1);
                 Log.d("ClickPlay", "" + current);
                 if (current > -1) {
-                    if(isVertical){
+                    if (isVertical) {
                         mLlBottom.setVisibility(View.VISIBLE);
                         mMusicService.setCurrentPlay(current);
                     }
@@ -355,20 +355,22 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         switch (view.getId()) {
             case R.id.btn_play: {
 
-                Log.d("ClickPlay",""+mMusicService.getCurrentPlay());
+                Log.d("ClickPlay", "" + mMusicService.getCurrentPlay());
                 if (mMusicService.isStatusPlay()) {
                     setItemWhenPause(mMusicService.getCurrentPlay());
                     mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), mListSong.get(mMusicService.getCurrentPlay()), false);
-                }
-                else {
+                } else {
                     setItemWhenPlay(mMusicService.getCurrentPlay());
-                    if(mMusicService.isResume())
-                      mMusicService.reSumSong();
-                    else  {
+                    if (mMusicService.isResume())
+                        mMusicService.reSumSong();
+                    else {
                         mMusicService.playSong(mListSong.get(mMusicService.getCurrentPlay()).getmSongArt());
+                        int position = sharedPreferences.getInt("DATA_CURRENT_STREAM_POSITION", 0);
+                        Log.d("DATA_CURRENT", "" + position);
+                        mMusicService.seekTo(position);
 
                     }
 
@@ -381,7 +383,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             }
             case R.id.bottom: {
                 mCurrentPosition = mMusicService.getCurrentPlay();
-                Log.d("Bottom",""+mCurrentPosition);
+                Log.d("Bottom", "" + mCurrentPosition);
                 Song song = mListSong.get(mCurrentPosition);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -507,12 +509,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void saveData() {
 
-        Log.d("AllSongOk", "saveData");
-
-        editor.remove("DATA_CURRENT");
+        Log.d("AllSongOk", "" + mMusicService.getCurrentStreamPosition());
+        editor.remove("DATA_CURRENT");           //luu vitri dang phat
         editor.putInt("DATA_CURRENT", mMusicService.getCurrentPlay());
+        editor.remove("DATA_CURRENT_STREAM_POSITION");
+        editor.putInt("DATA_CURRENT_STREAM_POSITION", mMusicService.getCurrentStreamPosition());
         editor.commit();
-
 
     }
 
