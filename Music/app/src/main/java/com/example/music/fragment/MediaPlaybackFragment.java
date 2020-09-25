@@ -313,11 +313,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                 }
 
-
                 int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
                 Log.d("isFirstSetProgress", "" + position);
                 mSeeBar.setMax(Integer.valueOf(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
                 mSeeBar.setProgress(position);
+                if(mMusicService.isFist()){
+                    mPlayTime.setText(formattedTime(String.valueOf(position)));
+                }
 
             }
             int repeat = mMusicService.isRepeat();
