@@ -126,12 +126,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mMusicService.setIPauseNotification(MediaPlaybackFragment.this);
             setDataTop();
         }
-//
-//        if(mMusicService.isFist()){
-//            int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
-//            Log.d("isFirst2",""+position);
-//            mSeeBar.setProgress(position);
-//        }
+
         return view;
 
     }
@@ -267,9 +262,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private void setDataTop() {
 
         if (mMusicService != null) {
-            if (mMusicService.getCurrentPlay() < 0) {
+            if (mMusicService.getCurrentPlay() < 0) {   //chi set khi xoay man hình luc mới vào app
                 int current = sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
-                Log.d("SetDataTop", "null" + current);
+
                 if (current > -1) {
                     mSongName.setText(mSongList.get(current).getmSongName());
                     mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -286,6 +281,14 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                     mMusicService.setCurrentPlay(current);
+
+
+                    int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
+                    Log.d("isFirstSetProgress", "" + position);
+                    mSeeBar.setMax(Integer.parseInt(mSongList.get(current).getmSongTime()));
+                    mSeeBar.setProgress(position);
+                    mPlayTime.setText(formattedTime(String.valueOf(position)));
+
                 }
 
             } else {
@@ -310,6 +313,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                 }
 
+
+                int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
+                Log.d("isFirstSetProgress", "" + position);
+                mSeeBar.setMax(Integer.valueOf(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
+                mSeeBar.setProgress(position);
+
             }
             int repeat = mMusicService.isRepeat();
             if (repeat == MediaPlaybackService.REPEAT) {
@@ -326,7 +335,10 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             } else {
                 mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
             }
-            updateUI();
+            if(!mMusicService.isFist()){
+                  updateUI();
+            }
+
         }
 
 
@@ -385,6 +397,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         mMusicService.createChannel();
                         mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getCurrentPlay()), true);
                     }
+                    updateUI();
                 }
 
                 break;
