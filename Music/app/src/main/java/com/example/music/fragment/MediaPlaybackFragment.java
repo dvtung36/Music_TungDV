@@ -317,7 +317,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 Log.d("isFirstSetProgress", "" + position);
                 mSeeBar.setMax(Integer.valueOf(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
                 mSeeBar.setProgress(position);
-                if(mMusicService.isFist()){
+                if (mMusicService.isFist()) {
                     mPlayTime.setText(formattedTime(String.valueOf(position)));
                 }
 
@@ -337,8 +337,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             } else {
                 mMediaShuffleButton.setBackgroundResource(R.drawable.ic_baseline_shuffle_25);
             }
-            if(!mMusicService.isFist()){
-                  updateUI();
+            if (!mMusicService.isFist()) {
+                updateUI();
             }
 
         }
