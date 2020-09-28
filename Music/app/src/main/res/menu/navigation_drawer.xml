@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single"
-        >
+    <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_listen_now"
             android:icon="@drawable/ic_list_music"
-            android:title="Listen Now" />
+            android:checkable="true"
+            android:checked="true"
+            android:title="@string/listen_now" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_favorite_songs"
             android:icon="@drawable/ic_like"
-            android:title="Recents" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_app"
-            android:title="Music Library" />
+            android:checkable="true"
+            android:checked="false"
+            android:title="@string/favorite_songs" />
     </group>
 
     <item android:title="music">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_setting"
                 android:title="Settings" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_help"
                 android:title="@string/help"/>
         </menu>
     </item>

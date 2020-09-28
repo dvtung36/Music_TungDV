@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.fragment.AllSongsFragment;
+import com.example.music.fragment.FavoriteSongsFragment;
 import com.example.music.fragment.MediaPlaybackFragment;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
@@ -55,6 +56,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private AllSongsFragment allSongsFragment;
     private int Repeat = 11, Shuffle = 12;
     MediaPlaybackFragment mMediaPlaybackFragment;
+    FavoriteSongsFragment favoriteSongsFragment;
+    FragmentManager manager = getSupportFragmentManager();
+
 
     public static final int REPEAT = 10;
     public static final int REPEAT_ALL = 11;
@@ -204,13 +208,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             drawer.addDrawerListener(toggle);
 
         }
-//        toggle.setDrawerIndicatorEnabled(true);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
-//        if (navigationView != null) {
-//            navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
-//        }
+        toggle.setDrawerIndicatorEnabled(true);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
+        }
 
     }
 
@@ -233,9 +237,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             isVertical = false;
         }
-
-
-        FragmentManager manager = getSupportFragmentManager();
 
         mMusicService.setIUpdateUI(allSongsFragment);
         mMusicService.setIUpdateAllSongWhenAutoNext(allSongsFragment);
@@ -288,25 +289,42 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
-            case R.id.nav_camera:
+            case R.id.nav_listen_now:
                 // Handle the camera import action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Click1", Toast.LENGTH_SHORT).show();
+                getSupportActionBar().setTitle("Music");
+
+                Log.d("Activitycheck", "doc");
+                allSongsFragment = new AllSongsFragment();
+                allSongsFragment.setVertical(isVertical);
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
+                fragmentTransaction.commit();
+
+
+                Toast.makeText(this, "listen now", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.nav_gallery:
+            case R.id.nav_favorite_songs:
                 // Handle the gallery action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Click2", Toast.LENGTH_SHORT).show();
+                getSupportActionBar().setTitle("Favorite Songs");
+                favoriteSongsFragment = new FavoriteSongsFragment();
+                FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
+                fragmentTransaction1.replace(R.id.content, favoriteSongsFragment);               //get fragment AllSongsFragment vào activity main
+                fragmentTransaction1.commit();
+                Toast.makeText(this, "favorite songs", Toast.LENGTH_SHORT).show();
+
+
                 return true;
-            case R.id.nav_slideshow:
+            case R.id.nav_setting:
                 // Handle the slideshow action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Click3", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "setting", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.nav_send:
+            case R.id.nav_help:
                 // Handle the send action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
-                Toast.makeText(this, "Click4", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "help", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return false;

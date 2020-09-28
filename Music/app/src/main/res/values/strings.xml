@@ -4,4 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="help"><![CDATA[Help & feedback]]></string>
     <string name="action_search">Search</string>
+    <string name="listen_now">Listen Now</string>
+    <string name="favorite_songs">Favorite Songs</string>
 </resources>

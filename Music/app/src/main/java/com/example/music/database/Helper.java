@@ -40,7 +40,7 @@ public class Helper {
             while (cursor.moveToNext()) {
                 int id = cursor.getInt(0);
                 int trackNumber = cursor.getInt(1);
-                long duration = cursor.getInt(2);
+                String duration = cursor.getString(2);
                 String title = cursor.getString(3);
                 String artistName = cursor.getString(4);
                 String composer = cursor.getString(5);

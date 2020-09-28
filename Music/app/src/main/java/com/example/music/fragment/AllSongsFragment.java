@@ -518,7 +518,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     }
 
-
     public interface IUpdateMediaWhenAllSongClickItem {
 
         void UpdateMediaWhenAllSongClickItem(int pos);

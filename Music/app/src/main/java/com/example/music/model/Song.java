@@ -2,6 +2,16 @@ package com.example.music.model;
 
 public class Song {
     private long mSongID;
+
+    public long getSongIDProvider() {
+        return mSongIDProvider;
+    }
+
+    public void setSongIDProvider(long mSongIDProvider) {
+        this.mSongIDProvider = mSongIDProvider;
+    }
+
+    private long mSongIDProvider;
     private String mSongName;
     private String mSongTime;
     private String mSongAuthor;
@@ -12,8 +22,9 @@ public class Song {
 
     private boolean mIsPause;
 
-    public Song(long mSongID, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay,boolean mIsPause) {
+    public Song(long mSongID,long mSongIDProvider, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay,boolean mIsPause) {
         this.mSongID = mSongID;
+        this.mSongIDProvider=mSongIDProvider;
         this.mSongName = mSongName;
         this.mSongTime = mSongTime;
         this.mSongAuthor = mSongAuthor;
