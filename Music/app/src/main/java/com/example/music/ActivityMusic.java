@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.music.adapter.SongAdapter;
 import com.example.music.fragment.AllSongsFragment;
+import com.example.music.fragment.BaseSongsFragment;
 import com.example.music.fragment.FavoriteSongsFragment;
 import com.example.music.fragment.MediaPlaybackFragment;
 import com.example.music.model.Song;
@@ -48,7 +49,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AllSongsFragment.IUpdateMediaWhenAllSongClickItem {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BaseSongsFragment.IUpdateMediaWhenAllSongClickItem {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
     public boolean isVertical;
@@ -58,6 +59,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     MediaPlaybackFragment mMediaPlaybackFragment;
     FavoriteSongsFragment favoriteSongsFragment;
     FragmentManager manager = getSupportFragmentManager();
+    private BaseSongsFragment baseSongsFragment;
+    private boolean isFavorite = false;
 
 
     public static final int REPEAT = 10;
@@ -98,6 +101,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (savedInstanceState != null) {
             Repeat = savedInstanceState.getInt("REPEAT");
             Shuffle = savedInstanceState.getInt("SHUFFLE");
+            isFavorite=savedInstanceState.getBoolean("Favorite");
         }
 
 
@@ -147,7 +151,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             unbindService(serviceConnection);
         }
-        allSongsFragment.saveData();
+        baseSongsFragment.saveData();
         Log.d("ActivityOnDestroy", "onDestroy");
     }
 
@@ -238,34 +242,42 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             isVertical = false;
         }
 
-        mMusicService.setIUpdateUI(allSongsFragment);
-        mMusicService.setIUpdateAllSongWhenAutoNext(allSongsFragment);
+        mMusicService.setIUpdateUI(baseSongsFragment);
+        mMusicService.setIUpdateAllSongWhenAutoNext(baseSongsFragment);
 
         if (isVertical) {
-            Log.d("Activitycheck", "doc");
-            allSongsFragment = new AllSongsFragment();
+        if (isFavorite){
+            baseSongsFragment = new AllSongsFragment();
+        }else baseSongsFragment= new FavoriteSongsFragment();
 
-            allSongsFragment.setVertical(isVertical);
+
+            baseSongsFragment.setVertical(isVertical);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
+            fragmentTransaction.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
         } else {
-            Log.d("Activitycheck", "ngang");
-            allSongsFragment = new AllSongsFragment();
-            allSongsFragment.setVertical(isVertical);
-            mMusicService.setIUpdateUI(allSongsFragment);
-            mMusicService.setIUpdateUI(allSongsFragment);
+            if(isFavorite){
+                Log.d("XXX","okokok"+isFavorite);
+                baseSongsFragment= new FavoriteSongsFragment();
+            } else{
+                baseSongsFragment = new AllSongsFragment();
+
+            }
+
+            baseSongsFragment.setVertical(isVertical);
+            mMusicService.setIUpdateUI(baseSongsFragment);
+            mMusicService.setIUpdateUI(baseSongsFragment);
 
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
+            fragmentTransaction.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
             fragmentTransaction.commit();
 
             mMediaPlaybackFragment = new MediaPlaybackFragment();
 
-            mMediaPlaybackFragment.setIUpdateAllSong(allSongsFragment);
-            mMediaPlaybackFragment.setIUpdateAllSongWhenPauseMedia(allSongsFragment);
-            mMediaPlaybackFragment.setIUpdateAllSongWhenPlayMedia(allSongsFragment);
+            mMediaPlaybackFragment.setIUpdateAllSong(baseSongsFragment);
+            mMediaPlaybackFragment.setIUpdateAllSongWhenPauseMedia(baseSongsFragment);
+            mMediaPlaybackFragment.setIUpdateAllSongWhenPlayMedia(baseSongsFragment);
 
             mMediaPlaybackFragment.setVertical(isVertical);
             FragmentTransaction mPlayFragment = manager.beginTransaction();
@@ -281,6 +293,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         // truoc xoay luu du lieu
         outState.putInt("REPEAT", mMusicService.isRepeat());
         outState.putInt("SHUFFLE", mMusicService.isShuffle());
+        outState.putBoolean("Favorite",isFavorite);
+
 
     }
 
@@ -291,14 +305,14 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         switch (item.getItemId()) {
             case R.id.nav_listen_now:
                 // Handle the camera import action (for now display a toast).
+                isFavorite=false;
                 drawer.closeDrawer(GravityCompat.START);
                 getSupportActionBar().setTitle("Music");
-
-                Log.d("Activitycheck", "doc");
-                allSongsFragment = new AllSongsFragment();
-                allSongsFragment.setVertical(isVertical);
+                Log.d("ActivityCheck", "doc");
+                baseSongsFragment = new AllSongsFragment();
+                baseSongsFragment.setVertical(isVertical);
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.replace(R.id.content, allSongsFragment);               //get fragment AllSongsFragment vào activity main
+                fragmentTransaction.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
                 fragmentTransaction.commit();
 
 
@@ -307,10 +321,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             case R.id.nav_favorite_songs:
                 // Handle the gallery action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
+                isFavorite=true;
                 getSupportActionBar().setTitle("Favorite Songs");
-                favoriteSongsFragment = new FavoriteSongsFragment();
+                baseSongsFragment = new FavoriteSongsFragment();
                 FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
-                fragmentTransaction1.replace(R.id.content, favoriteSongsFragment);               //get fragment AllSongsFragment vào activity main
+                fragmentTransaction1.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
                 fragmentTransaction1.commit();
                 Toast.makeText(this, "favorite songs", Toast.LENGTH_SHORT).show();
 
