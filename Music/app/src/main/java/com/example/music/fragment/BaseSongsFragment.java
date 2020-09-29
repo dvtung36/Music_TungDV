@@ -61,6 +61,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    protected boolean isFavorite=false;
+
     //get activity
     protected ActivityMusic getActivityMusic() {
         if (getActivity() instanceof ActivityMusic) {
@@ -81,6 +87,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     protected List<Song> getListSong() {
         return getActivityMusic().getListSong();
     }
+    protected List<Song> getListSongFavorite() {
+        return getActivityMusic().getListSongFavorite();
+    }
 
     protected SongAdapter getSongAdapter() {
         return getActivityMusic().getSongAdapter();
@@ -88,7 +97,10 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     public void setData() {
         mMusicService = getMusicService();
-        mListSong = getListSong();
+        if(!isFavorite){
+            mListSong = getListSong();
+        }else mListSong=getListSongFavorite();
+
         mSongAdapter = getSongAdapter();
     }
 
@@ -353,21 +365,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                         @Override
                         public void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos) {
-
-                            PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-                            // Inflate the Popup using XML file.
-                            popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-                            popup.show();
-                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                                 @Override
-                                                                 public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
-                                                                     Toast.makeText(getActivity(),
-                                                                             "item Click", Toast.LENGTH_SHORT).show();
-                                                                     return false;
-
-                                                                 }
-                                                             }
-                            );
+                            updatePopupMenu(v,song,pos);
                         }
                     }
             );
@@ -376,7 +374,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     }
-
+    protected abstract void updatePopupMenu(View v,Song song, int pos);
     @Override
     public void onClick(View view) {
 

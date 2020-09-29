@@ -78,6 +78,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     private List<Song> mListSong;
 
+    public List<Song> getListSongFavorite() {
+        return mListSongFavorite;
+    }
+
+    private List<Song> mListSongFavorite;
+
     public SongAdapter getSongAdapter() {
         return mSongAdapter;
     }
@@ -88,7 +94,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("Activitycheck", "onCreate");
+        Log.d("ActivityCheck", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         initView();
@@ -101,10 +107,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (savedInstanceState != null) {
             Repeat = savedInstanceState.getInt("REPEAT");
             Shuffle = savedInstanceState.getInt("SHUFFLE");
-            isFavorite=savedInstanceState.getBoolean("Favorite");
+            isFavorite = savedInstanceState.getBoolean("Favorite");
         }
-
-
 
         /* check permission*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -119,8 +123,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public void getData() {
         mListSong = new ArrayList<>();
+        mListSongFavorite= new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
+        SongManager.getFavorAllSongs(this,mListSongFavorite);
         mSongAdapter = new SongAdapter(this, mListSong);
+
+
     }
 
     @Override
@@ -139,7 +147,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onStart() {
-        Log.d("Activitycheck", "onStart");
+        Log.d("ActivityCheck", "onStart");
         setService();
 
         super.onStart();
@@ -152,7 +160,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             unbindService(serviceConnection);
         }
         baseSongsFragment.saveData();
-        Log.d("ActivityOnDestroy", "onDestroy");
+
     }
 
     @Override
@@ -161,12 +169,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             mMusicService.cancelNotification();
         }
+        Log.d("ActivityOnDestroy", "onDestroy");
 
     }
 
     @Override
     protected void onPause() {
-
 
         super.onPause();
     }
@@ -183,10 +191,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
-            mMusicService.setListSong(mListSong);
-          /*  mMusicService.setRepeat(REPEAT_ALL);
-            mMusicService.setShuffle(NORMAL);
-*/
+            if(!isFavorite){
+                mMusicService.setListSong(mListSong);
+            }else mMusicService.setListSong(mListSongFavorite);
+
             mMusicService.setRepeat(Repeat);
             mMusicService.setShuffle(Shuffle);
 
@@ -246,10 +254,16 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mMusicService.setIUpdateAllSongWhenAutoNext(baseSongsFragment);
 
         if (isVertical) {
-        if (isFavorite){
-            baseSongsFragment = new AllSongsFragment();
-        }else baseSongsFragment= new FavoriteSongsFragment();
 
+            if (!isFavorite) {
+                Log.d("isFavorite", "" + isFavorite);
+                baseSongsFragment = new AllSongsFragment();
+                getSupportActionBar().setTitle("Music");
+            } else {
+                Log.d("isFavorite", "done" + isFavorite);
+                baseSongsFragment = new FavoriteSongsFragment();
+                getSupportActionBar().setTitle("Favorite Songs");
+            }
 
             baseSongsFragment.setVertical(isVertical);
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
@@ -257,11 +271,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.commit();
 
         } else {
-            if(isFavorite){
-                Log.d("XXX","okokok"+isFavorite);
-                baseSongsFragment= new FavoriteSongsFragment();
-            } else{
+            if (isFavorite) {
+                baseSongsFragment = new FavoriteSongsFragment();
+                getSupportActionBar().setTitle("Favorite Songs");
+            } else {
+
                 baseSongsFragment = new AllSongsFragment();
+                getSupportActionBar().setTitle("Music");
 
             }
 
@@ -293,7 +309,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         // truoc xoay luu du lieu
         outState.putInt("REPEAT", mMusicService.isRepeat());
         outState.putInt("SHUFFLE", mMusicService.isShuffle());
-        outState.putBoolean("Favorite",isFavorite);
+        outState.putBoolean("Favorite", isFavorite);
 
 
     }
@@ -305,12 +321,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         switch (item.getItemId()) {
             case R.id.nav_listen_now:
                 // Handle the camera import action (for now display a toast).
-                isFavorite=false;
+                isFavorite = false;
                 drawer.closeDrawer(GravityCompat.START);
                 getSupportActionBar().setTitle("Music");
                 Log.d("ActivityCheck", "doc");
                 baseSongsFragment = new AllSongsFragment();
                 baseSongsFragment.setVertical(isVertical);
+                baseSongsFragment.setFavorite(false);
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
                 fragmentTransaction.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
                 fragmentTransaction.commit();
@@ -321,9 +338,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             case R.id.nav_favorite_songs:
                 // Handle the gallery action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
-                isFavorite=true;
+                isFavorite = true;
                 getSupportActionBar().setTitle("Favorite Songs");
                 baseSongsFragment = new FavoriteSongsFragment();
+                baseSongsFragment.setVertical(isVertical);
+                baseSongsFragment.setFavorite(true);
                 FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
                 fragmentTransaction1.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
                 fragmentTransaction1.commit();

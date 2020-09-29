@@ -45,9 +45,6 @@ import java.util.List;
 public class AllSongsFragment extends BaseSongsFragment {
 
 
-
-
-
     public AllSongsFragment() {
     }
 
@@ -55,8 +52,25 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
+    @Override
+    protected void updatePopupMenu(View v, Song song, int pos) {
+// click vao popup menu
+        PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
+        // Inflate the Popup using XML file.
+        popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
+        popup.show();
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                             @Override
+                                             public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
+                                                 Toast.makeText(getActivity(),
+                                                         "item Click", Toast.LENGTH_SHORT).show();
+                                                 return false;
 
+                                             }
+                                         }
+        );
     }
 
 
@@ -69,6 +83,7 @@ public class AllSongsFragment extends BaseSongsFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
 
     }
 

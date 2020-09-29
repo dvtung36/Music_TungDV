@@ -183,7 +183,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> im
 
     public interface IIClick {
         void onItemClick(Song song, int pos);
-
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);
     }
 

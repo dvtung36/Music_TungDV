@@ -41,7 +41,7 @@ public class SongManager {
                 String currentTime = songCursor.getString(songTime);
                 String currentAuthor = songCursor.getString(songAuthor);
                 String currentArt = songCursor.getString(songArt);
-                mListSong.add(new Song(currentId, 0,currentName, currentTime, currentAuthor, currentArt, false,false));
+                mListSong.add(new Song(currentId, 0, currentName, currentTime, currentAuthor, currentArt, false, false));
             } while (songCursor.moveToNext());
             for (int i = 0; i < mListSong.size(); i++) {
                 for (int j = i + 1; j < mListSong.size(); j++) {
@@ -56,11 +56,12 @@ public class SongManager {
 
     }
 
-    public static List<Song> getFavorAllSongs(Context context) {
+    public static void getFavorAllSongs(Context context, List<Song> mListSong) {
         // get data in SQL lite
-        List<Song> songListFavor = new ArrayList<>();
+        mListSong = new ArrayList<>();
         int posFavor = 0;
-        Uri uri =  Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));;
+        Uri uri = Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));
+        ;
         String[] projection = {
                 MusicDatabase.ID,
                 MusicDatabase.ID_PROVIDER,
@@ -82,14 +83,17 @@ public class SongManager {
                 String data = cursor.getString(5);
                 int is_fravorite = cursor.getInt(6);
                 String count_of_play = cursor.getString(7);
-                if (is_fravorite == 2 ) {
-                    Song song = new Song(id,id_provider,title, duration,artistName,data,false,false);
-                    songListFavor.add(song);
+                if (is_fravorite == 2) {
+                    Song song = new Song(id, id_provider, title, duration, artistName, data, false, false);
+                    mListSong.add(song);
                 }
                 posFavor++;
             }
             cursor.close();
         }
-        return  songListFavor;
+
     }
 }
+
+
+
