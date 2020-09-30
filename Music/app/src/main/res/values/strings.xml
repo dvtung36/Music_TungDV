@@ -6,4 +6,5 @@
     <string name="action_search">Search</string>
     <string name="listen_now">Listen Now</string>
     <string name="favorite_songs">Favorite Songs</string>
+    <string name="favorite_null">"Chưa có bài hát yêu thích "</string>
 </resources>

@@ -10,6 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
        >
+        <provider
+            android:name=".database.MusicProvider"
+            android:authorities="com.example.music.database.MusicProvider"
+            android:enabled="true"
+            android:exported="false" />
         <activity
             android:name=".ActivityMusic"
             android:theme="@style/AppTheme.NoActionBar">

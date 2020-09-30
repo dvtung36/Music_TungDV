@@ -56,9 +56,9 @@ public class SongManager {
 
     }
 
-    public static void getFavorAllSongs(Context context, List<Song> mListSong) {
+    public static List<Song> getFavorAllSongs(Context context) {
         // get data in SQL lite
-        mListSong = new ArrayList<>();
+        List<Song> mListSong = new ArrayList<>();
         int posFavor = 0;
         Uri uri = Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));
         ;
@@ -92,6 +92,7 @@ public class SongManager {
             cursor.close();
         }
 
+        return mListSong;
     }
 }
 

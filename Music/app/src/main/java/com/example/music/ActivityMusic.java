@@ -54,10 +54,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
     public boolean isVertical;
     public MediaPlaybackService mMusicService;
-    private AllSongsFragment allSongsFragment;
     private int Repeat = 11, Shuffle = 12;
     MediaPlaybackFragment mMediaPlaybackFragment;
-    FavoriteSongsFragment favoriteSongsFragment;
     FragmentManager manager = getSupportFragmentManager();
     private BaseSongsFragment baseSongsFragment;
     private boolean isFavorite = false;
@@ -78,14 +76,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     private List<Song> mListSong;
 
-    public List<Song> getListSongFavorite() {
-        return mListSongFavorite;
-    }
-
-    private List<Song> mListSongFavorite;
 
     public SongAdapter getSongAdapter() {
         return mSongAdapter;
+    }
+
+    public void setSongAdapter(SongAdapter mSongAdapter) {
+        this.mSongAdapter = mSongAdapter;
     }
 
     private SongAdapter mSongAdapter;
@@ -122,10 +119,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     }
 
     public void getData() {
+
         mListSong = new ArrayList<>();
-        mListSongFavorite= new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
-        SongManager.getFavorAllSongs(this,mListSongFavorite);
         mSongAdapter = new SongAdapter(this, mListSong);
 
 
@@ -191,13 +187,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
-            if(!isFavorite){
-                mMusicService.setListSong(mListSong);
-            }else mMusicService.setListSong(mListSongFavorite);
-
+            mMusicService.setListSong(mListSong);
             mMusicService.setRepeat(Repeat);
             mMusicService.setShuffle(Shuffle);
-
             getFragment();
         }
 

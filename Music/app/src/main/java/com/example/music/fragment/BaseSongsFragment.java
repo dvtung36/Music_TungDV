@@ -55,17 +55,18 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     protected ImageView mSongArt;
     protected int mCurrentPosition;
     protected Button mBtnPay;
-    protected TextView mSongName, mSongAuthor, mImageID;
+    protected TextView mSongName, mSongAuthor, mImageID,mTextView;
     protected boolean isVertical = false;
     public MediaPlaybackService mMusicService;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    public abstract void updateAdapter();
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
     }
 
-    protected boolean isFavorite=false;
+    protected boolean isFavorite = false;
 
     //get activity
     protected ActivityMusic getActivityMusic() {
@@ -87,9 +88,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     protected List<Song> getListSong() {
         return getActivityMusic().getListSong();
     }
-    protected List<Song> getListSongFavorite() {
-        return getActivityMusic().getListSongFavorite();
-    }
 
     protected SongAdapter getSongAdapter() {
         return getActivityMusic().getSongAdapter();
@@ -97,42 +95,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     public void setData() {
         mMusicService = getMusicService();
-        if(!isFavorite){
-            mListSong = getListSong();
-        }else mListSong=getListSongFavorite();
-
+        mListSong = getListSong();
         mSongAdapter = getSongAdapter();
     }
 
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public BaseSongsFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BaseSongsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static BaseSongsFragment newInstance(String param1, String param2) {
-//        BaseSongsFragment fragment = new BaseSongsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return null;
     }
 
@@ -215,7 +183,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     private void setDataBottom() {
-        if (mMusicService != null) {
+        if (mMusicService != null && mListSong.size() > 0) {
             if (mMusicService.getCurrentPlay() < 0) {
                 int current = sharedPreferences.getInt("DATA_CURRENT", -1);
                 Log.d("ClickPlay", "" + current);
@@ -237,7 +205,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 }
             }
 
-            if (mMusicService.getCurrentPlay() >= 0) {     //khi chạy nhạc
+            if (mMusicService.getCurrentPlay() >= 0 && mListSong.size()>0) {     //khi chạy nhạc
                 if (isVertical)
                     mLlBottom.setVisibility(View.VISIBLE);
                 else mLlBottom.setVisibility(View.GONE);
@@ -272,10 +240,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         mLlBottom = view.findViewById(R.id.bottom);
         mBtnPay = view.findViewById(R.id.btn_play);
         mImageID = view.findViewById(R.id.tv_imageItem_pause);
+        mTextView= view.findViewById(R.id.text_favorite_song);
 
         mBtnPay.setOnClickListener(this);
         mLlBottom.setOnClickListener(this);
 
+        updateAdapter();
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
@@ -365,7 +335,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                         @Override
                         public void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos) {
-                            updatePopupMenu(v,song,pos);
+                            updatePopupMenu(v, song, pos);
                         }
                     }
             );
@@ -374,7 +344,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     }
-    protected abstract void updatePopupMenu(View v,Song song, int pos);
+
+    protected abstract void updatePopupMenu(View v, Song song, int pos);
+
     @Override
     public void onClick(View view) {
 

@@ -5,7 +5,7 @@
     android:theme="@style/PopupMenu"
     tools:context="com.example.music.activities.ActivityMusic">
     <item
-        android:id="@+id/action_delete_songs"
+        android:id="@+id/action_remove_songs"
         android:orderInCategory="100"
         android:title="Delete PlayList"
         app:showAsAction="never" />

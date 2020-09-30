@@ -7,15 +7,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.music.ActivityMusic;
 import com.example.music.R;
+import com.example.music.adapter.SongAdapter;
 import com.example.music.model.Song;
+import com.example.music.service.MediaPlaybackService;
 import com.example.music.service.SongManager;
+
+import java.util.ArrayList;
 
 
 public class FavoriteSongsFragment extends BaseSongsFragment {
@@ -53,8 +59,11 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
         super.onResume();
     }
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
 
         super.onCreate(savedInstanceState);
 
@@ -69,5 +78,29 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    public void setMediaPlaybackService(MediaPlaybackService mMusicService) {
+        this.mMusicService = mMusicService;
+    }
+    protected ActivityMusic getActivityMusic() {
+        if (getActivity() instanceof ActivityMusic) {
+            return (ActivityMusic) getActivity();
+        }
+        return null;
+    }
+
+
+    @Override
+    public void updateAdapter() {
+
+        mListSong=  SongManager.getFavorAllSongs(getContext());
+        Log.d("SDd", "onCreate: "+mListSong.size());
+        mSongAdapter.setListSong(mListSong);
+        if (mListSong.size() <= 0) {
+            mTextView.setText(R.string.favorite_null);
+            mTextView.setVisibility(View.VISIBLE);
+        } else mTextView.setVisibility(View.INVISIBLE);
+
     }
 }

@@ -18,11 +18,11 @@ public class MusicProvider extends ContentProvider {
 
     private static final int URI_ALL_ITEMS_CODE = 1;
     private static final int URI_ONE_ITEM_CODE = 2;
-    private static final String AUTHORITY = "com.example.music.MusicProvider";
+    private static final String AUTHORITY = "com.example.music.database.MusicProvider";
 
     // create content URIs from the authority by appending path to database table
     public static final Uri CONTENT_URI =
-            Uri.parse("content://" + AUTHORITY + "/music");
+            Uri.parse("content://" + AUTHORITY + "/MusicDB");
 
     // a content URI pattern matches content URIs using wildcard characters:
     // *: Matches a string of any valid characters of any length.
@@ -31,8 +31,8 @@ public class MusicProvider extends ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, "music", URI_ALL_ITEMS_CODE);
-        uriMatcher.addURI(AUTHORITY, "music/#", URI_ONE_ITEM_CODE);
+        uriMatcher.addURI(AUTHORITY, "MusicDB", URI_ALL_ITEMS_CODE);
+        uriMatcher.addURI(AUTHORITY, "MusicDB/#", URI_ONE_ITEM_CODE);
     }
 
     public MusicProvider() {
@@ -52,9 +52,9 @@ public class MusicProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case URI_ALL_ITEMS_CODE:
-                return "vnd.android.cursor.dir/vnd.com.example.music.MusicProvider.musics";
+                return "vnd.android.cursor.dir/vnd.com.example.music.database.MusicProvider.musics";
             case URI_ONE_ITEM_CODE:
-                return "vnd.android.cursor.item/vnd.com.example.music.MusicProvider.musics";
+                return "vnd.android.cursor.item/vnd.com.example.music.database.MusicProvider.musics";
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }

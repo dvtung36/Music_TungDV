@@ -43,6 +43,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> im
         this.mListener = mListener;
     }
 
+    public void setListSong(List<Song> mListSong) {
+        this.mListSong = mListSong;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (mListSongFull.get(position).ismIsPlay())

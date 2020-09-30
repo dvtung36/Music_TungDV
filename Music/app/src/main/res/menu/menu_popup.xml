@@ -9,5 +9,11 @@
         android:orderInCategory="100"
         android:title="Add PlayList"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_remove_songs"
+        android:orderInCategory="100"
+        android:title="Remove PlayList"
+        app:showAsAction="never" />
+
 
 </menu>

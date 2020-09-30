@@ -1,9 +1,12 @@
 package com.example.music.fragment;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,9 +40,13 @@ import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
+import com.example.music.database.MusicDatabase;
+import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
+import com.example.music.service.SongManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AllSongsFragment extends BaseSongsFragment {
@@ -55,22 +62,32 @@ public class AllSongsFragment extends BaseSongsFragment {
     }
 
     @Override
-    protected void updatePopupMenu(View v, Song song, int pos) {
-// click vao popup menu
+    protected void updatePopupMenu(View v, final Song song, int pos) {
         PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-        // Inflate the Popup using XML file.
+        //int id = (int) song.getmSongID();
+        //final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+        //  final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-        popup.show();
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                              @Override
                                              public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
-                                                 Toast.makeText(getActivity(),
-                                                         "item Click", Toast.LENGTH_SHORT).show();
+                                                 ContentValues values = new ContentValues();
+                                                 values.put(MusicDatabase.ID_PROVIDER, song.getmSongID());
+                                                 if (item.getItemId() == R.id.action_add_songs) {
+                                                     values.put(MusicDatabase.IS_FAVORITE, 2);
+                                                     Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
+                                                 } else if (item.getItemId() == R.id.action_remove_songs) {
+                                                     values.put(MusicDatabase.IS_FAVORITE, 0);
+                                                     Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
+                                                 }
+                                                 getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                                                  return false;
 
                                              }
                                          }
         );
+
+        popup.show();
     }
 
 
@@ -79,10 +96,11 @@ public class AllSongsFragment extends BaseSongsFragment {
         super.onResume();
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        //    SongManager.getSong(getContext(),mListSong);
 
 
     }
@@ -97,5 +115,12 @@ public class AllSongsFragment extends BaseSongsFragment {
         super.onStop();
     }
 
+
+    @Override
+    public void updateAdapter() {
+        mListSong = new ArrayList<>();
+        SongManager.getSong(getContext(), mListSong);   //set List song cho activity
+        mSongAdapter = new SongAdapter(getContext(), mListSong);
+    }
 
 }
