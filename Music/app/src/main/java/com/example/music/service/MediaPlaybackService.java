@@ -106,6 +106,10 @@ public class MediaPlaybackService extends Service {
         this.mListSong = mListSong;
     }
 
+    public List<Song> getListSong() {
+        return mListSong;
+    }
+
     private List<Song> mListSong;
 
 

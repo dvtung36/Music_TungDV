@@ -11,6 +11,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     MyDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         MusicDatabase.onCreate(db);
@@ -18,6 +19,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        MusicDatabase.onUpgrade(db,oldVersion,newVersion);
+        MusicDatabase.onUpgrade(db, oldVersion, newVersion);
     }
 }

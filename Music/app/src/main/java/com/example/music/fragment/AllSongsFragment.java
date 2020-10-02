@@ -64,23 +64,30 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     protected void updatePopupMenu(View v, final Song song, int pos) {
         PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-        //int id = (int) song.getmSongID();
-        //final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-        //  final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+          int id = (int) song.getmSongID();
+          final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+          final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                              @Override
                                              public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
                                                  ContentValues values = new ContentValues();
-                                                 values.put(MusicDatabase.ID_PROVIDER, song.getmSongID());
                                                  if (item.getItemId() == R.id.action_add_songs) {
+                                                     values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
+                                                     values.put(MusicDatabase.ID, song.getmSongID());
+                                                     values.put(MusicDatabase.TITLE, song.getmSongName());
+                                                     values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
+                                                     values.put(MusicDatabase.DATA, song.getmSongArt());
+                                                     values.put(MusicDatabase.DURATION, song.getmSongTime());
                                                      values.put(MusicDatabase.IS_FAVORITE, 2);
+                                                     getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                                                      Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
                                                  } else if (item.getItemId() == R.id.action_remove_songs) {
                                                      values.put(MusicDatabase.IS_FAVORITE, 0);
+
                                                      Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                                                  }
-                                                 getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+
                                                  return false;
 
                                              }
