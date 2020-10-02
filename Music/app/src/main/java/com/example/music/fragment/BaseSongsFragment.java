@@ -439,10 +439,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public void updateAllSong(int pos) {
 
-        for (int i = 0; i < mListSong.size(); i++) {
-            mListSong.get(i).setmIsPlay(false);
-        }
-        mListSong.get(pos).setmIsPlay(true);                            //update khi media next
+       setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
 
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
@@ -466,19 +463,14 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     public void updateNotificationWhenNextAndPre(int pos) {
 
         //update Notification next  and pre
-        for (int i = 0; i < mListSong.size(); i++) {
-            mListSong.get(i).setmIsPlay(false);
-            mListSong.get(i).setIsPause(false);
-        }
-        mListSong.get(pos).setmIsPlay(true);
-
-        mSongAdapter.notifyDataSetChanged();
+      setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
         setDataBottom();
     }
 
     @Override
     public void updateNotificationWhenPause(int pos) {
         //update Notification when pause
+        setItemWhenPause(mMusicService.getListSong().get(pos).getmSongID());
         setDataBottom();                                                 //update Notification next  and pre
         mSongAdapter.notifyDataSetChanged();
     }
@@ -486,7 +478,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public void updateUI(int pos) { //update when auto next
         Log.d("AllSongNext", "ok ok");
-       setItemWhenPause(mMusicService.getListSong().get(pos).getmSongID());                 //update  khi auto next
+        setItemWhenPause(mMusicService.getListSong().get(pos).getmSongID());                 //update  khi auto next
         setDataBottom();
         mMusicService.createChannel();
         mMusicService.createNotification(getActivity(), mMusicService.getListSong().get(pos), true);
@@ -496,9 +488,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public void updateAllSongWhenAutoNext(int pos) {
         Log.d("AllSongFag", "okokokok");
-        setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
 
-        mSongAdapter.notifyDataSetChanged();
+        setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
         setDataBottom();
 
 

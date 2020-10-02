@@ -64,9 +64,9 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     protected void updatePopupMenu(View v, final Song song, int pos) {
         PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-          int id = (int) song.getmSongID();
-          final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-          final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+//          int id = (int) song.getmSongID();
+//          final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+//          final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                                              @Override
@@ -126,7 +126,7 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     public void updateAdapter() {
         mListSong = new ArrayList<>();
-        SongManager.getSong(getContext(), mListSong);   //set List song cho activity
+        SongManager.getSong(getContext(), mListSong);
         mSongAdapter = new SongAdapter(getContext(), mListSong);
     }
 
