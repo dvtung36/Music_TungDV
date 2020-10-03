@@ -127,7 +127,7 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //    SongManager.getSong(getContext(),mListSong);
+      //  SongManager.getSong(getContext(),mListSong);
     }
 
     @Override
