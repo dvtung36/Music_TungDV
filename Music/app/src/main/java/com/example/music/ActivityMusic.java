@@ -60,8 +60,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private BaseSongsFragment baseSongsFragment;
     private boolean isFavorite = false;
 
-
-    public static final int REPEAT = 10;
     public static final int REPEAT_ALL = 11;
     public static final int NORMAL = 12;
 
@@ -79,10 +77,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public SongAdapter getSongAdapter() {
         return mSongAdapter;
-    }
-
-    public void setSongAdapter(SongAdapter mSongAdapter) {
-        this.mSongAdapter = mSongAdapter;
     }
 
     private SongAdapter mSongAdapter;
@@ -145,7 +139,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onStart() {
         Log.d("ActivityCheck", "onStart");
         setService();
-
         super.onStart();
     }
 
@@ -191,6 +184,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mMusicService.setRepeat(Repeat);
             mMusicService.setShuffle(Shuffle);
             getFragment();
+
         }
 
         @Override
@@ -201,6 +195,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
@@ -214,6 +209,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         }
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_menu);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
         if (navigationView != null) {
@@ -229,7 +225,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onBackPressed();
 
     }
-
 
     public void getFragment() {
 
@@ -302,17 +297,14 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         outState.putInt("REPEAT", mMusicService.isRepeat());
         outState.putInt("SHUFFLE", mMusicService.isShuffle());
         outState.putBoolean("Favorite", isFavorite);
-
-
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
-        // Handle navigation view item clicks here.
+
         switch (item.getItemId()) {
             case R.id.nav_listen_now:
-                // Handle the camera import action (for now display a toast).
                 isFavorite = false;
                 drawer.closeDrawer(GravityCompat.START);
                 getSupportActionBar().setTitle("Music");
@@ -321,7 +313,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 baseSongsFragment.setVertical(isVertical);
                 baseSongsFragment.setFavorite(false);
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
+                fragmentTransaction.replace(R.id.content, baseSongsFragment);
                 fragmentTransaction.commit();
 
 

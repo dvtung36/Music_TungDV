@@ -1,7 +1,10 @@
 package com.example.music.fragment;
 
+import android.content.ContentValues;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +27,8 @@ import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
+import com.example.music.database.MusicDatabase;
+import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
 
@@ -54,7 +59,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private TextView mPlayTime, mEndTime;
     private ImageButton mPlayMedia, mPreMedia, mNextMedia, mLikeMedia, mDisLikeMedia, mMenu;
     private Button mMediaRepeatButton, mMediaShuffleButton;
-
     private MediaPlaybackService mMusicService;
     private SeekBar mSeeBar;
     private List<Song> mSongList = new ArrayList<>();
@@ -109,17 +113,14 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mUpdateSeekBarThread = new UpdateSeekBarThread();
         mUpdateSeekBarThread.start();
 
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
-
         setData();
         initView();
-
         if (mMusicService != null) {
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             mMusicService.setINextAndPreNotification(MediaPlaybackFragment.this);
@@ -135,7 +136,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mMusicService = getMusicService();
         mSongList = getListSong();
     }
-
 
     public void initView() {
         mSongName = view.findViewById(R.id.tv_song_name_media);
@@ -164,7 +164,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mMenu.setOnClickListener(this);
         mMediaRepeatButton.setOnClickListener(this);
         mMediaShuffleButton.setOnClickListener(this);
-
 
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -218,7 +217,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
         mEndTime.setText(formattedTime(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
 
-
     }
 
     public static MediaPlaybackFragment newInstance(String songName, String songArtist, String songArt, int mCurrentPosition) {
@@ -230,7 +228,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         args.putInt(CURRENT_POSITION, mCurrentPosition);
         fragment.setArguments(args);
         return fragment;
-
     }
 
     @Override
@@ -242,7 +239,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void onStop() {
         super.onStop();
     }
-
 
     @Override
     public void onDestroy() {
@@ -282,15 +278,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                     mMusicService.setCurrentPlay(current);
 
-
                     int position = sharedPreferencesCurrent.getInt("DATA_CURRENT_STREAM_POSITION", 0);
                     Log.d("isFirstSetProgress", "" + position);
                     mSeeBar.setMax(Integer.parseInt(mSongList.get(current).getmSongTime()));
                     mSeeBar.setProgress(position);
                     mPlayTime.setText(formattedTime(String.valueOf(position)));
-
                 }
-
             } else {
                 int current = mMusicService.getCurrentPlay();
                 Log.d("SetDataTop", "" + current);
@@ -340,10 +333,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             if (!mMusicService.isFist()) {
                 updateUI();
             }
-
         }
-
-
     }
 
     private void updateUI() {
@@ -451,15 +441,39 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.btn_like_media:
-                Toast.makeText(mMusicService, "Added to favorites list", Toast.LENGTH_SHORT).show();
+                ContentValues values = new ContentValues();
+                Song song = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
+                values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
+                values.put(MusicDatabase.ID, song.getmSongID());
+                values.put(MusicDatabase.TITLE, song.getmSongName());
+                values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
+                values.put(MusicDatabase.DATA, song.getmSongArt());
+                values.put(MusicDatabase.DURATION, song.getmSongTime());
+                values.put(MusicDatabase.IS_FAVORITE, 2);
+                getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+
+                Toast.makeText(mMusicService, "Added favorites list", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.btn_dislike_media:
-                Toast.makeText(mMusicService, "Added dislike list", Toast.LENGTH_SHORT).show();
+                Song song1 = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
+                final int id = (int) song1.getmSongID();
+                final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+
+                if (cursor != null) {
+                    getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
+
+//                        ContentValues values = new ContentValues();
+//                        values.put(MusicDatabase.IS_FAVORITE, 1);
+//                        getContext().getContentResolver().update(uri, values, null, null);
+
+                    Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case R.id.btn_menu_media:
-                Toast.makeText(mMusicService, "Menu chưa làm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mMusicService, "Click", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_media_repeat:
                 int repeat = mMusicService.isRepeat();

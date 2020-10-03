@@ -137,7 +137,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     public void saveData() {
 
         Log.d("AllSongOk", "" + mMusicService.getCurrentStreamPosition());
-        editor.remove("DATA_CURRENT");           //luu vitri dang phat
+        editor.remove("DATA_CURRENT");           //luu position dang phat
         editor.putInt("DATA_CURRENT", mMusicService.getCurrentPlay());
         editor.remove("DATA_CURRENT_STREAM_POSITION");
         editor.putInt("DATA_CURRENT_STREAM_POSITION", mMusicService.getCurrentStreamPosition());
@@ -349,10 +349,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                         }
                     }
             );
-
         }
-
-
     }
 
     protected abstract void updatePopupMenu(View v, Song song, int pos);
@@ -444,7 +441,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
 
-
     }
 
     @Override
@@ -492,16 +488,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
         setDataBottom();
 
-
     }
 
     public interface IUpdateMediaWhenAllSongClickItem {
         void UpdateMediaWhenAllSongClickItem(int pos);
     }
 
-    public void setIUpdateMediaWhenAllSongClickItem(IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem) {
-        this.iUpdateMediaWhenAllSongClickItem = iUpdateMediaWhenAllSongClickItem;
-    }
 
     private BaseSongsFragment.IUpdateMediaWhenAllSongClickItem iUpdateMediaWhenAllSongClickItem;
 

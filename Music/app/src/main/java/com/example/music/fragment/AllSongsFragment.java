@@ -63,40 +63,60 @@ public class AllSongsFragment extends BaseSongsFragment {
 
     @Override
     protected void updatePopupMenu(View v, final Song song, int pos) {
+        final int id = (int) song.getmSongID();
+        final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+
         PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-//          int id = (int) song.getmSongID();
-//          final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-//          final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                             @Override
-                                             public boolean onMenuItemClick(MenuItem item) {                      //setClick cho option menu
-                                                 ContentValues values = new ContentValues();
-                                                 if (item.getItemId() == R.id.action_add_songs) {
-                                                     values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
-                                                     values.put(MusicDatabase.ID, song.getmSongID());
-                                                     values.put(MusicDatabase.TITLE, song.getmSongName());
-                                                     values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
-                                                     values.put(MusicDatabase.DATA, song.getmSongArt());
-                                                     values.put(MusicDatabase.DURATION, song.getmSongTime());
-                                                     values.put(MusicDatabase.IS_FAVORITE, 2);
-                                                     getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
-                                                     Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
-                                                 } else if (item.getItemId() == R.id.action_remove_songs) {
-                                                     values.put(MusicDatabase.IS_FAVORITE, 0);
 
-                                                     Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
-                                                 }
+       /*setClick cho option menu*/
+        popup.setOnMenuItemClickListener(
+                new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
 
-                                                 return false;
+                        ContentValues values = new ContentValues();
+                        if (item.getItemId() == R.id.action_add_songs) {
+                            values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
+                            values.put(MusicDatabase.ID, song.getmSongID());
+                            values.put(MusicDatabase.TITLE, song.getmSongName());
+                            values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
+                            values.put(MusicDatabase.DATA, song.getmSongArt());
+                            values.put(MusicDatabase.DURATION, song.getmSongTime());
+                            values.put(MusicDatabase.IS_FAVORITE, 2);
+                            getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+                            Toast.makeText(getActivity().getApplicationContext(), "Added favorites list",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        else if (item.getItemId() == R.id.action_remove_songs) {
+                            values.put(MusicDatabase.IS_FAVORITE, 0);
+                            if (cursor != null) {
+                                getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID+"="+id, null);
 
-                                             }
-                                         }
+/*                        values.put(MusicDatabase.IS_FAVORITE, 1);
+                        getContext().getContentResolver().update(uri, values, null, null);*/
+                            }
+                            Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        return false;
+                    }
+                }
         );
 
         popup.show();
     }
-
+   /*  public void update(){
+        mListSong = SongManager.getFavorAllSongs(getContext());
+        Log.d("ClickDelete", "onCreate: " + mListSong.size());
+        mSongAdapter.setListSong(mListSong);
+        if (mListSong.size() <= 0) {
+            mTextView.setText(R.string.favorite_null);
+            mTextView.setVisibility(View.VISIBLE);
+        } else mTextView.setVisibility(View.INVISIBLE);
+    }*/
 
     @Override
     public void onResume() {
@@ -108,8 +128,6 @@ public class AllSongsFragment extends BaseSongsFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //    SongManager.getSong(getContext(),mListSong);
-
-
     }
 
     @Override

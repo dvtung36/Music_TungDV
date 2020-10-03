@@ -19,14 +19,11 @@ import android.widget.Toast;
 
 import com.example.music.ActivityMusic;
 import com.example.music.R;
-import com.example.music.adapter.SongAdapter;
 import com.example.music.database.MusicDatabase;
 import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
 import com.example.music.service.SongManager;
-
-import java.util.ArrayList;
 
 
 public class FavoriteSongsFragment extends BaseSongsFragment {
@@ -42,60 +39,54 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
 
     @Override
     protected void updatePopupMenu(View v, Song song, int pos) {
-
-        int id = (int) song.getmSongID();
-      //  final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+        final int id = (int) song.getmSongID();
         final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
         final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
 
-        PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
-        // Inflate the Popup using XML file.
+        /*gán menu_popup  khi click vào các option */
+        PopupMenu popup = new PopupMenu(v.getContext(), v);
         popup.getMenuInflater().inflate(R.menu.menu_popup_favorite, popup.getMenu());
+
         popup.show();
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                             @Override
-                                             public boolean onMenuItemClick(MenuItem item) {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
 
-                                                 if (item.getItemId() == R.id.action_remove_songs) {
+                if (item.getItemId() == R.id.action_remove_songs) {
 
-                                                   if(cursor!=null){
-                                                       Log.d("ClickDelete","kz"+item);
-                                                      getContext().getContentResolver().delete(uri,null,null);
+                    if (cursor != null) {
+                        getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
+                        Log.d("ClickDelete", "" + mListSong.size());
+                        update();
+                        Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
+                    }
 
+                }
+                return false;
+            }
 
-
-                                                       mListSong = SongManager.getFavorAllSongs(getContext());
-                                                       Log.d("ClickDelete", "onCreate: " + mListSong.size());
-
-                                                       mSongAdapter.setListSong(mListSong);
-                                                       if (mListSong.size() <= 0) {
-                                                           mTextView.setText(R.string.favorite_null);
-                                                           mTextView.setVisibility(View.VISIBLE);
-                                                       } else mTextView.setVisibility(View.INVISIBLE);
-
-                                                   }
-
-                                                     Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
-                                                 }
-                                                 return false;
-                                             }
-
-                                         }
-        );
+        });
     }
 
+    public void update() {
+        mListSong = SongManager.getFavorAllSongs(getContext());
+        Log.d("ClickDelete", "onCreate: " + mListSong.size());
+        mSongAdapter.setListSong(mListSong);
+        if (mListSong.size() <= 0) {
+            mTextView.setText(R.string.favorite_null);
+            mTextView.setVisibility(View.VISIBLE);
+        } else mTextView.setVisibility(View.INVISIBLE);
+        mSongAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onResume() {
         super.onResume();
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override

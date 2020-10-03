@@ -52,9 +52,9 @@ public class MusicProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case URI_ALL_ITEMS_CODE:
-                return "vnd.android.cursor.dir/vnd.com.example.music.database.MusicProvider.musics";
+                return "vnd.android.cursor.dir/vnd.com.example.music.database.MusicProvider.MusicDBs";
             case URI_ONE_ITEM_CODE:
-                return "vnd.android.cursor.item/vnd.com.example.music.database.MusicProvider.musics";
+                return "vnd.android.cursor.item/vnd.com.example.music.database.MusicProvider.MusicDBs";
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
