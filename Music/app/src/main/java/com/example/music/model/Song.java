@@ -18,11 +18,33 @@ public class Song {
     private String mSongArt;
     private boolean mIsPlay;
 
+    public long getmSongIDProvider() {
+        return mSongIDProvider;
+    }
+
+    public void setmSongIDProvider(long mSongIDProvider) {
+        this.mSongIDProvider = mSongIDProvider;
+    }
+
+    public int getCountOfPlay() {
+        return mCountOfPlay;
+    }
+
+    public void setCountOfPlay(int mCountOfPlay) {
+        this.mCountOfPlay = mCountOfPlay;
+    }
+
+    public void setmIsPause(boolean mIsPause) {
+        this.mIsPause = mIsPause;
+    }
+
+    private int mCountOfPlay;
+
 
 
     private boolean mIsPause;
 
-    public Song(long mSongID,long mSongIDProvider, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay,boolean mIsPause) {
+    public Song(long mSongID,long mSongIDProvider, String mSongName, String mSongTime, String mSongAuthor, String mSongArt, boolean mIsPlay,boolean mIsPause,int mCountOfPlay) {
         this.mSongID = mSongID;
         this.mSongIDProvider=mSongIDProvider;
         this.mSongName = mSongName;
@@ -31,6 +53,7 @@ public class Song {
         this.mSongArt = mSongArt;
         this.mIsPlay = mIsPlay;
         this.mIsPause=mIsPause;
+        this.mCountOfPlay=mCountOfPlay;
     }
 
 

@@ -1,8 +1,12 @@
 package com.example.music.fragment;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.ContentObservable;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,6 +37,8 @@ import com.bumptech.glide.Glide;
 import com.example.music.ActivityMusic;
 import com.example.music.R;
 import com.example.music.adapter.SongAdapter;
+import com.example.music.database.MusicDatabase;
+import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
 
@@ -244,6 +250,19 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     }
+    public void inSert(Song song){
+        ContentValues values = new ContentValues();
+        values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
+        values.put(MusicDatabase.ID, song.getmSongID());
+        values.put(MusicDatabase.TITLE, song.getmSongName());
+        values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
+        values.put(MusicDatabase.DATA, song.getmSongArt());
+        values.put(MusicDatabase.DURATION, song.getmSongTime());
+        values.put(MusicDatabase.IS_FAVORITE, 2);
+        getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+        Toast.makeText(getActivity().getApplicationContext(), "Added favorites list",
+                Toast.LENGTH_SHORT).show();
+    }
 
     private void initView(final View view) {
         mSongArt = view.findViewById(R.id.img_bottomArt);
@@ -289,8 +308,20 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     new SongAdapter.IIClick() {
                         @Override
                         public void onItemClick(Song song, int pos) {
-                            Log.d("ClickItem", "onItemClick:" + pos);
 
+                            final int id = (int) song.getmSongID();
+                            final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                            final Cursor cursor = getContext().getContentResolver().query(uri,
+                                    null, null, null, null);
+                            ContentValues values = new ContentValues();
+                            int count= cursor.getColumnIndex(MusicDatabase.COUNT_OF_PLAY);
+                            Log.d("COUNT_OF_PLAY","ok"+count);
+                            values.put(MusicDatabase.COUNT_OF_PLAY,count);
+                            getContext().getContentResolver().update(MusicProvider.CONTENT_URI,
+                                    values,MusicDatabase.ID + "=" + id,null );
+                     if(count>=3){
+                         inSert(song);
+                     }
                             if (mMusicService != null) {
                                 mMusicService.createChannel();
                                 mMusicService.createNotification(getActivity(), song, true);

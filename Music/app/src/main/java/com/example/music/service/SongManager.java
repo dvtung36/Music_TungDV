@@ -42,7 +42,7 @@ public class SongManager {
                     String currentTime = songCursor.getString(songTime);
                     String currentAuthor = songCursor.getString(songAuthor);
                     String currentArt = songCursor.getString(songArt);
-                    mListSong.add(new Song(currentId, -1, currentName, currentTime, currentAuthor, currentArt, false, false));
+                    mListSong.add(new Song(currentId, -1, currentName, currentTime, currentAuthor, currentArt, false, false,0));
                 } while (songCursor.moveToNext());
                 for (int i = 0; i < mListSong.size(); i++) {
                     for (int j = i + 1; j < mListSong.size(); j++) {
@@ -85,9 +85,9 @@ public class SongManager {
                 String duration = cursor.getString(4);
                 String data = cursor.getString(5);
                 int is_fravorite = cursor.getInt(6);
-                String count_of_play = cursor.getString(7);
+                int count_of_play = cursor.getInt(7);
                 if (is_fravorite == 2) {
-                    Song song = new Song(id, id_provider, title, duration, artistName, data, false, false);
+                    Song song = new Song(id, id_provider, title, duration, artistName, data, false, false,count_of_play);
                     mListSong.add(song);
                 }
                 posFavor++;
