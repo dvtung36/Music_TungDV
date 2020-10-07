@@ -62,6 +62,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public static final int REPEAT_ALL = 11;
     public static final int NORMAL = 12;
+    int permissionCheck;
 
     public MediaPlaybackService getMusicService() {
         return mMusicService;
@@ -102,12 +103,15 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         }
 
         /* check permission*/
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            Log.d("TAG", "" + "check permissionCheck");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
 
         } else {
+            Log.d("TAG", "serviceConnection" + "khi dã co quyen ok");
             getData();
+            //  getFragment();
         }
 
     }
@@ -125,8 +129,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_MEDIA) {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getFragment();                        //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
+                Log.d("TAG", "" + "nếu đồng ý check permissionCheck ok");
+                //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
                 getData();
+                mMusicService.setListSong(mListSong);
+                mMusicService.setRepeat(Repeat);
+                mMusicService.setShuffle(Shuffle);
+                getFragment();
                 Toast.makeText(this, "Permission Granted !", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
@@ -148,7 +157,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             unbindService(serviceConnection);
         }
-        baseSongsFragment.saveData();
+
 
     }
 
@@ -157,6 +166,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onDestroy();
         if (mMusicService != null) {
             mMusicService.cancelNotification();
+            baseSongsFragment.saveData();
         }
         Log.d("ActivityOnDestroy", "onDestroy");
 
@@ -180,10 +190,25 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
-            mMusicService.setListSong(mListSong);
-            mMusicService.setRepeat(Repeat);
-            mMusicService.setShuffle(Shuffle);
-            getFragment();
+
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                mMusicService.setListSong(mListSong);
+                mMusicService.setRepeat(Repeat);
+                mMusicService.setShuffle(Shuffle);
+                getFragment();
+            }
+
+
+            Log.d("TAG", "serviceConnection");
+            //  getData();
+
+//            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+//
+//                Log.d("TAG","serviceConnection"+"permissionCheck ok");
+//                getData();
+//                getFragment();
+//            }
+
 
         }
 
@@ -236,9 +261,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             isVertical = false;
         }
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            mMusicService.setIUpdateUI(baseSongsFragment);
+            mMusicService.setIUpdateAllSongWhenAutoNext(baseSongsFragment);
 
-        mMusicService.setIUpdateUI(baseSongsFragment);
-        mMusicService.setIUpdateAllSongWhenAutoNext(baseSongsFragment);
+        }
 
         if (isVertical) {
 
