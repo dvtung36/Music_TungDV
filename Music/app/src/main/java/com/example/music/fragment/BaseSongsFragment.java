@@ -320,7 +320,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                             getContext().getContentResolver().update(MusicProvider.CONTENT_URI,
                                     values,MusicDatabase.ID + "=" + id,null );
                      if(count>=3){
-                         inSert(song);
+                        // inSert(song);
                      }
                             if (mMusicService != null) {
                                 mMusicService.createChannel();

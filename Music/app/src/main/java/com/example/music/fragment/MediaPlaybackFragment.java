@@ -31,6 +31,7 @@ import com.example.music.database.MusicDatabase;
 import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
+import com.example.music.service.SongManager;
 
 
 import java.util.ArrayList;
@@ -66,6 +67,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     private UpdateSeekBarThread mUpdateSeekBarThread;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    private List<Song> mSongListFavorite = new ArrayList<>();
+    private boolean isSongFavorite = false;
+    private boolean isSongDislike = false;
 
     SharedPreferences sharedPreferencesCurrent;
     SharedPreferences.Editor editorCurrent;
@@ -121,6 +125,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         view = inflater.inflate(R.layout.media_play_back_fragment, container, false);
         setData();
         initView();
+        checkSongFavorite();
+        if (isSongFavorite) {
+            mLikeMedia.setBackgroundResource(R.drawable.ic_liked);
+            mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+        }
+        else {
+            mLikeMedia.setBackgroundResource(R.drawable.ic_like);
+            mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+        }
         if (mMusicService != null) {
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             mMusicService.setINextAndPreNotification(MediaPlaybackFragment.this);
@@ -135,6 +148,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     public void setData() {
         mMusicService = getMusicService();
         mSongList = getListSong();
+        mSongListFavorite = SongManager.getFavorAllSongs(getContext());
     }
 
     public void initView() {
@@ -217,6 +231,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
         mEndTime.setText(formattedTime(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
 
+    }
+
+    public void checkSongFavorite() {
+        long idPlay = mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID();
+        for (int i = 0; i < mSongListFavorite.size(); i++) {
+            if (mSongListFavorite.get(i).getmSongID() == idPlay) {
+                isSongFavorite = true;
+            }
+        }
     }
 
     public static MediaPlaybackFragment newInstance(String songName, String songArtist, String songArt, int mCurrentPosition) {
@@ -354,6 +377,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         isVertical = vertical;
     }
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -441,35 +465,57 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.btn_like_media:
-                ContentValues values = new ContentValues();
-                Song song = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
-                values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
-                values.put(MusicDatabase.ID, song.getmSongID());
-                values.put(MusicDatabase.TITLE, song.getmSongName());
-                values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
-                values.put(MusicDatabase.DATA, song.getmSongArt());
-                values.put(MusicDatabase.DURATION, song.getmSongTime());
-                values.put(MusicDatabase.IS_FAVORITE, 2);
-                getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+                if (isSongFavorite) {
+                    isSongFavorite = false;
+                    mLikeMedia.setBackgroundResource(R.drawable.ic_like);
+                    Song song1 = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
+                    final int id = (int) song1.getmSongID();
+                    getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
+                    Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(mMusicService, "Added favorites list", Toast.LENGTH_SHORT).show();
+                    if(isSongDislike){
+                        mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+                    }
+
+                } else {
+                    isSongFavorite = true;
+                    mLikeMedia.setBackgroundResource(R.drawable.ic_liked);
+                    ContentValues values = new ContentValues();
+                    Song song = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
+                    values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
+                    values.put(MusicDatabase.ID, song.getmSongID());
+                    values.put(MusicDatabase.TITLE, song.getmSongName());
+                    values.put(MusicDatabase.ARTIST, song.getmSongAuthor());
+                    values.put(MusicDatabase.DATA, song.getmSongArt());
+                    values.put(MusicDatabase.DURATION, song.getmSongTime());
+                    values.put(MusicDatabase.IS_FAVORITE, 2);
+                    getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+                    Toast.makeText(mMusicService, "Added favorites list", Toast.LENGTH_SHORT).show();
+
+                    if(isSongDislike){
+                        mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+                    }
+                }
+
                 break;
 
             case R.id.btn_dislike_media:
-                Song song1 = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
-                final int id = (int) song1.getmSongID();
-                final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
-
-                if (cursor != null) {
+                if (isSongFavorite) {
+                    isSongFavorite = false;
+                    isSongDislike= true;
+                    mLikeMedia.setBackgroundResource(R.drawable.ic_like);
+                    mDisLikeMedia.setBackgroundResource(R.drawable.ic_disliked);
+                    Song song1 = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
+                    final int id = (int) song1.getmSongID();
                     getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
-
-//                        ContentValues values = new ContentValues();
-//                        values.put(MusicDatabase.IS_FAVORITE, 1);
-//                        getContext().getContentResolver().update(uri, values, null, null);
-
                     Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    isSongDislike= true;
+                    mDisLikeMedia.setBackgroundResource(R.drawable.ic_disliked);
+                }
+
+
                 break;
 
             case R.id.btn_menu_media:
