@@ -327,6 +327,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 isFavorite = false;
                 drawer.closeDrawer(GravityCompat.START);
                 getSupportActionBar().setTitle("Music");
+                getSupportActionBar().show();
                 Log.d("ActivityCheck", "doc");
                 baseSongsFragment = new AllSongsFragment();
                 baseSongsFragment.setVertical(isVertical);
@@ -343,6 +344,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 drawer.closeDrawer(GravityCompat.START);
                 isFavorite = true;
                 getSupportActionBar().setTitle("Favorite Songs");
+                getSupportActionBar().show();
                 baseSongsFragment = new FavoriteSongsFragment();
                 baseSongsFragment.setVertical(isVertical);
                 baseSongsFragment.setFavorite(true);

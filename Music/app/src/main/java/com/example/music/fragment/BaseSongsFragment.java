@@ -325,16 +325,27 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
         if (mMusicService != null && mMusicService.isStatusPlay()) { //khi chạy nhạc
             mLlBottom.setVisibility(View.VISIBLE);
-            mSongName.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
-            mSongAuthor.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongAuthor());
-            byte[] songArt = getAlbumArt(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongArt());
-            Glide.with(view.getContext()).asBitmap()
-                    .error(R.drawable.ic_nct)
-                    .load(songArt)
-                    .into(mSongArt);
-            if (!mMusicService.isStatusPlay()) {
-                mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
+            int pos= -1;
+            long id= mMusicService.getIdPlay();
+            for(int i=0;i<mListSong.size();i++){
+                if(mListSong.get(1 ).getmSongID()==id){
+                    pos=i;
+                }
             }
+            if(pos!=-1){
+
+                mSongName.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
+                mSongAuthor.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongAuthor());
+                byte[] songArt = getAlbumArt(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongArt());
+                Glide.with(view.getContext()).asBitmap()
+                        .error(R.drawable.ic_nct)
+                        .load(songArt)
+                        .into(mSongArt);
+                if (!mMusicService.isStatusPlay()) {
+                    mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
+                }
+            }
+
         }
         if (mSongAdapter != null) {
             mSongAdapter.setSongAdapter(
