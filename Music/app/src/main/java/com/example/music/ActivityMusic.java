@@ -129,7 +129,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_MEDIA) {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Log.d("TAG", "" + "nếu đồng ý check permissionCheck ok");
                 //  Override  onRequestPermissionsResult() để nhận lại cuộc gọi (check permission)\
                 getData();
                 mMusicService.setListSong(mListSong);
@@ -146,8 +145,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onStart() {
-        Log.d("ActivityCheck", "onStart");
         setService();
+        Log.d("ActivityCheck", "onStart service = " + mMusicService);
         super.onStart();
     }
 
@@ -158,7 +157,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             unbindService(serviceConnection);
         }
         baseSongsFragment.saveData();
-
 
     }
 
@@ -184,31 +182,23 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         startService(intent);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 
+
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlaybackService.MusicBinder binder = (MediaPlaybackService.MusicBinder) service;
             mMusicService = binder.getMusicService();
-
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 mMusicService.setListSong(mListSong);
                 mMusicService.setRepeat(Repeat);
                 mMusicService.setShuffle(Shuffle);
+                Log.d("ActivityCheck", "service  ở onServiceConnected= " + mMusicService);
                 getFragment();
+
             }
-
-
-            Log.d("TAG", "serviceConnection");
-            //  getData();
-
-//            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-//
-//                Log.d("TAG","serviceConnection"+"permissionCheck ok");
-//                getData();
-//                getFragment();
-//            }
 
 
         }
@@ -263,6 +253,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             isVertical = false;
         }
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+
+
             mMusicService.setIUpdateUI(baseSongsFragment);
             mMusicService.setIUpdateAllSongWhenAutoNext(baseSongsFragment);
 
@@ -305,7 +297,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.commit();
 
             mMediaPlaybackFragment = new MediaPlaybackFragment();
-
             mMediaPlaybackFragment.setIUpdateAllSong(baseSongsFragment);
             mMediaPlaybackFragment.setIUpdateAllSongWhenPauseMedia(baseSongsFragment);
             mMediaPlaybackFragment.setIUpdateAllSongWhenPlayMedia(baseSongsFragment);
