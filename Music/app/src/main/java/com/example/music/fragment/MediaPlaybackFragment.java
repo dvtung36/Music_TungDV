@@ -129,8 +129,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (isSongFavorite) {
             mLikeMedia.setBackgroundResource(R.drawable.ic_liked);
             mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
-        }
-        else {
+        } else {
             mLikeMedia.setBackgroundResource(R.drawable.ic_like);
             mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
         }
@@ -147,10 +146,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     public void setData() {
         mMusicService = getMusicService();
-        if(mMusicService.isFavorite()){
-            mSongList =SongManager.getFavorAllSongs(getContext());
-        }
-        else {
+        if (mMusicService.isFavorite()) {
+            mSongList = SongManager.getFavorAllSongs(getContext());
+        } else {
             mSongList = getListSong();
         }
 
@@ -188,7 +186,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
             if (mMusicService != null && mSongList.size() > 0) {
-              //  update();
+                //  update();
             }
 
         } else {
@@ -314,11 +312,11 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayTime.setText(formattedTime(String.valueOf(position)));
                 }
             } else {
-                int current =0;
-                long IdPlay=mMusicService.getIdPlay();
-                for(int i=0;i<mSongList.size();i++){
-                    if(mSongList.get(i).getmSongID()==IdPlay){
-                        current=i;
+                int current = 0;
+                long IdPlay = mMusicService.getIdPlay();
+                for (int i = 0; i < mSongList.size(); i++) {
+                    if (mSongList.get(i).getmSongID() == IdPlay) {
+                        current = i;
                         mMusicService.setCurrentPlay(i);
                     }
                 }
@@ -402,7 +400,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
                         mMusicService.pauseSong();
                         mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
-
                         mMusicService.createChannel();
                         mMusicService.createNotification(getActivity(), mSongList.get(mMusicService.getCurrentPlay()), false);
 
@@ -435,9 +432,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             case R.id.btn_next_media:                            //buton điều hướng bên media
                 if (mMusicService.getCurrentPlay() >= 0) {
                     int pos = -1;
-                    for(int i=0;i<mSongList.size();i++){
-                        if(mSongList.get(i).getmSongID()==mMusicService.getIdPlay()){
-                            pos=i;
+                    for (int i = 0; i < mSongList.size(); i++) {
+                        if (mSongList.get(i).getmSongID() == mMusicService.getIdPlay()) {
+                            pos = i;
                         }
                     }
                     Log.d("MediaNext", "" + pos);
@@ -461,9 +458,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 if (mMusicService.getCurrentPlay() >= 0) {
 
                     int pos = -1;
-                    for(int i=0;i<mSongList.size();i++){
-                        if(mSongList.get(i).getmSongID()==mMusicService.getIdPlay()){
-                            pos=i;
+                    for (int i = 0; i < mSongList.size(); i++) {
+                        if (mSongList.get(i).getmSongID() == mMusicService.getIdPlay()) {
+                            pos = i;
                         }
                     }
                     mMusicService.previousSong(pos);
@@ -497,7 +494,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
                     Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
 
-                    if(isSongDislike){
+                    if (isSongDislike) {
                         mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
                     }
 
@@ -516,7 +513,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                     Toast.makeText(mMusicService, "Added favorites list", Toast.LENGTH_SHORT).show();
 
-                    if(isSongDislike){
+                    if (isSongDislike) {
                         mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
                     }
                 }
@@ -526,16 +523,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             case R.id.btn_dislike_media:
                 if (isSongFavorite) {
                     isSongFavorite = false;
-                    isSongDislike= true;
+                    isSongDislike = true;
                     mLikeMedia.setBackgroundResource(R.drawable.ic_like);
                     mDisLikeMedia.setBackgroundResource(R.drawable.ic_disliked);
                     Song song1 = mMusicService.getListSong().get(mMusicService.getCurrentPlay());
                     final int id = (int) song1.getmSongID();
                     getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
                     Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    isSongDislike= true;
+                } else {
+                    isSongDislike = true;
                     mDisLikeMedia.setBackgroundResource(R.drawable.ic_disliked);
                 }
 

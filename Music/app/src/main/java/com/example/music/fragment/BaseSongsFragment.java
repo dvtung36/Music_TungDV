@@ -426,18 +426,25 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             case R.id.btn_play: {
 
                 Log.d("ClickPlay", "" + mMusicService.getCurrentPlay());
+                int current = -1;
+                for (int i = 0; i < mListSong.size(); i++) {
+                    if (mListSong.get(i).getmSongID() == mMusicService.getIdPlay()) {
+                        current = i;
+                    }
+                }
                 if (mMusicService.isStatusPlay()) {
-                    setItemWhenPause(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID());
+
+                    setItemWhenPause(mListSong.get(current).getmSongID());
                     mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(), mMusicService.getListSong().get(mMusicService.getCurrentPlay()), false);
+                    mMusicService.createNotification(getActivity(), mListSong.get(current), false);
                 } else {
-                    setItemWhenPlay(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID());
+                    setItemWhenPlay(mListSong.get(current).getmSongID());
                     if (mMusicService.isResume())
                         mMusicService.reSumSong();
                     else {
-                        mMusicService.playSong(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongArt());
+                        mMusicService.playSong(mListSong.get(current).getmSongArt());
                         int position = sharedPreferences.getInt("DATA_CURRENT_STREAM_POSITION", 0);
                         Log.d("DATA_CURRENT", "" + position);
                         mMusicService.seekTo(position);
@@ -446,9 +453,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(), mMusicService.getListSong().get(mMusicService.getCurrentPlay()), true);
+                    mMusicService.createNotification(getActivity(),mListSong.get(current), true);
                 }
-
                 break;
             }
             case R.id.bottom: {
