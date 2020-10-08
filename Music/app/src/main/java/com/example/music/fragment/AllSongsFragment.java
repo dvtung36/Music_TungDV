@@ -62,6 +62,11 @@ public class AllSongsFragment extends BaseSongsFragment {
     }
 
     @Override
+    protected void absSetFavorite() {
+        mMusicService.setIsFavorite(false);
+    }
+
+    @Override
     protected void updatePopupMenu(View v, final Song song, int pos) {
         final int id = (int) song.getmSongID();
         final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
@@ -85,6 +90,7 @@ public class AllSongsFragment extends BaseSongsFragment {
                             values.put(MusicDatabase.DATA, song.getmSongArt());
                             values.put(MusicDatabase.DURATION, song.getmSongTime());
                             values.put(MusicDatabase.IS_FAVORITE, 2);
+                            values.put(MusicDatabase.COUNT_OF_PLAY,3);
                             getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                             Toast.makeText(getActivity().getApplicationContext(), "Added favorites list",
                                     Toast.LENGTH_SHORT).show();
@@ -143,6 +149,7 @@ public class AllSongsFragment extends BaseSongsFragment {
 
     @Override
     public void updateAdapter() {
+        mMusicService.setIsFavorite(false);
         mListSong = new ArrayList<>();
         SongManager.getSong(getContext(), mListSong);
         mSongAdapter = new SongAdapter(getContext(), mListSong);

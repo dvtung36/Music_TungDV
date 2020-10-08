@@ -29,7 +29,6 @@ public class SongManager {
         Uri songUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         if(songUri!=null){
             Cursor songCursor = musicResolver.query(songUri, null, null, null, null);
-
             if (songCursor != null && songCursor.moveToFirst()) {
                 int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
                 int songName = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);

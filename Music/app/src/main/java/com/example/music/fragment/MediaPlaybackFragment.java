@@ -147,7 +147,13 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     public void setData() {
         mMusicService = getMusicService();
-        mSongList = getListSong();
+        if(mMusicService.isFavorite()){
+            mSongList =SongManager.getFavorAllSongs(getContext());
+        }
+        else {
+            mSongList = getListSong();
+        }
+
         mSongListFavorite = SongManager.getFavorAllSongs(getContext());
     }
 
@@ -182,7 +188,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
             if (mMusicService != null && mSongList.size() > 0) {
-                update();
+              //  update();
             }
 
         } else {
@@ -234,7 +240,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     public void checkSongFavorite() {
-        long idPlay = mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID();
+        long idPlay = mMusicService.getIdPlay();
         for (int i = 0; i < mSongListFavorite.size(); i++) {
             if (mSongListFavorite.get(i).getmSongID() == idPlay) {
                 isSongFavorite = true;
@@ -308,7 +314,14 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mPlayTime.setText(formattedTime(String.valueOf(position)));
                 }
             } else {
-                int current = mMusicService.getCurrentPlay();
+                int current =0;
+                long IdPlay=mMusicService.getIdPlay();
+                for(int i=0;i<mSongList.size();i++){
+                    if(mSongList.get(i).getmSongID()==IdPlay){
+                        current=i;
+                        mMusicService.setCurrentPlay(i);
+                    }
+                }
                 Log.d("SetDataTop", "" + current);
                 mSongName.setText(mSongList.get(current).getmSongName());
                 mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
@@ -421,8 +434,12 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
             case R.id.btn_next_media:                            //buton điều hướng bên media
                 if (mMusicService.getCurrentPlay() >= 0) {
-
-                    int pos = mMusicService.getCurrentPlay();
+                    int pos = -1;
+                    for(int i=0;i<mSongList.size();i++){
+                        if(mSongList.get(i).getmSongID()==mMusicService.getIdPlay()){
+                            pos=i;
+                        }
+                    }
                     Log.d("MediaNext", "" + pos);
                     mMusicService.nextSong(pos);
                     mCurrentPosition = mMusicService.getCurrentPlay();
@@ -434,7 +451,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mMusicService.createChannel();
                     mMusicService.createNotification(getActivity(), song, true);
                     if (!isVertical) {
-                        iUpdateAllSong.updateAllSong(mMusicService.getCurrentPlay());
+                        iUpdateAllSong.updateAllSong(mCurrentPosition);
                     }
                 }
 
@@ -442,7 +459,14 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
             case R.id.btn_pre_media:
                 if (mMusicService.getCurrentPlay() >= 0) {
-                    mMusicService.previousSong(mMusicService.getCurrentPlay());
+
+                    int pos = -1;
+                    for(int i=0;i<mSongList.size();i++){
+                        if(mSongList.get(i).getmSongID()==mMusicService.getIdPlay()){
+                            pos=i;
+                        }
+                    }
+                    mMusicService.previousSong(pos);
                     mCurrentPosition = mMusicService.getCurrentPlay();
                     Song song1 = mSongList.get(mCurrentPosition);
                     mSongNameMedia = song1.getmSongName();

@@ -38,6 +38,11 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
     }
 
     @Override
+    protected void absSetFavorite() {
+        mMusicService.setIsFavorite(true);
+    }
+
+    @Override
     protected void updatePopupMenu(View v, Song song, int pos) {
         final int id = (int) song.getmSongID();
         final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
@@ -113,7 +118,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
 
     @Override
     public void updateAdapter() {
-
+        //mMusicService.setIsFavorite(true);
         mListSong = SongManager.getFavorAllSongs(getContext());
         Log.d("SDd", "onCreate: " + mListSong.size());
 

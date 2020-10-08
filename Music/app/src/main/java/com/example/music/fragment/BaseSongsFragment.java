@@ -41,6 +41,7 @@ import com.example.music.database.MusicDatabase;
 import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
+import com.example.music.service.SongManager;
 
 import java.util.List;
 
@@ -101,9 +102,17 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     }
 
     public void setData() {
-        mMusicService = getMusicService();
-        mListSong = getListSong();
-        mSongAdapter = getSongAdapter();
+        if (mMusicService.isFavorite()) {
+
+            mListSong = SongManager.getFavorAllSongs(getContext());
+            mSongAdapter = new SongAdapter(getContext(), mListSong);
+            mMusicService.setListSong(mListSong);
+        } else {
+            mListSong = getListSong();
+            mSongAdapter = getSongAdapter();
+            mMusicService.setListSong(mListSong);
+        }
+
     }
 
 
@@ -124,9 +133,13 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
+        mMusicService = getMusicService();
+        absSetFavorite();
         setData();
+        Log.d("onCreateViewBase", "" + mListSong.size());
         initView(view);
         setDataBottom();
         if (mMusicService != null && mSongAdapter != null) {
@@ -141,10 +154,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     }
 
     public void saveData() {
-
-        Log.d("AllSongOk", "" + mMusicService.getCurrentStreamPosition());
-        editor.remove("DATA_CURRENT");           //luu position dang phat
-        editor.putInt("DATA_CURRENT", mMusicService.getCurrentPlay());
+        Log.d("AllSongOk", "" + mMusicService.getIdPlay());
+        editor.remove("DATA_CURRENT_ID");           //luu position dang phat
+        editor.putLong("DATA_CURRENT_ID", mMusicService.getIdPlay());
         editor.remove("DATA_CURRENT_STREAM_POSITION");
         editor.putInt("DATA_CURRENT_STREAM_POSITION", mMusicService.getCurrentStreamPosition());
         editor.commit();
@@ -203,33 +215,54 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     private void setDataBottom() {
         if (mMusicService != null && mListSong.size() > 0) {
             if (mMusicService.getCurrentPlay() < 0) {
-                int current = sharedPreferences.getInt("DATA_CURRENT", -1);
-                Log.d("ClickPlay", "" + current);
-                if (current > -1) {
+                long id = sharedPreferences.getLong("DATA_CURRENT_ID", -1);
+                int current = -1;
+                Log.d("ClickPlay", "" + id);
+                if (id != -1) {
                     if (isVertical) {
                         mLlBottom.setVisibility(View.VISIBLE);
-                        mMusicService.setCurrentPlay(current);
+                        for (int i = 0; i < mListSong.size(); i++) {
+                            if (mListSong.get(i).getmSongID() == id) {
+                                mMusicService.setCurrentPlay(i);
+                                mMusicService.setIdPlay(id);
+                                current = i;
+                            }
+                        }
+
                     }
-                    mSongName.setText(mMusicService.getListSong().get(current).getmSongName());                         //Click item RecycleView
-                    mSongAuthor.setText(mMusicService.getListSong().get(current).getmSongAuthor());
-                    byte[] songArt = getAlbumArt(mMusicService.getListSong().get(current).getmSongArt());
+                    mSongName.setText(mListSong.get(current).getmSongName());                         //Click item RecycleView
+                    mSongAuthor.setText(mListSong.get(current).getmSongAuthor());
+                    byte[] songArt = getAlbumArt(mListSong.get(current).getmSongArt());
                     Glide.with(getContext()).asBitmap()
                             .error(R.drawable.ic_nct)
                             .load(songArt)
                             .into(mSongArt);
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                    setItemWhenPause(mMusicService.getListSong().get(current).getmSongID());
+                    setItemWhenPause(mListSong.get(current).getmSongID());
 
                 }
             }
 
             if (mMusicService.getCurrentPlay() >= 0 && mListSong.size() > 0) {     //khi chạy nhạc
+
+                Log.d("PlayMui", "size" + mListSong.size());
                 if (isVertical)
                     mLlBottom.setVisibility(View.VISIBLE);
                 else mLlBottom.setVisibility(View.GONE);
-                mSongName.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongName());                         //Click item RecycleView
-                mSongAuthor.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongAuthor());
-                byte[] songArt = getAlbumArt(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongArt());
+
+                long id = mMusicService.getIdPlay();
+
+                Log.d("PlayMui", "id " + mMusicService.getIdPlay());
+                int temp = -1;
+                for (int i = 0; i < mListSong.size(); i++) {
+                    if (mListSong.get(i).getmSongID() == id) {
+                        temp = i;
+                    }
+                }
+
+                mSongName.setText(mListSong.get(temp).getmSongName());                         //Click item RecycleView
+                mSongAuthor.setText(mListSong.get(temp).getmSongAuthor());
+                byte[] songArt = getAlbumArt(mListSong.get(temp).getmSongArt());
                 Glide.with(getContext()).asBitmap()
                         .error(R.drawable.ic_nct)
                         .load(songArt)
@@ -238,10 +271,10 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 if (mMusicService.isStatusPlay()) {
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
-                    setItemWhenPlay(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID());
+                    setItemWhenPlay(mListSong.get(temp).getmSongID());
                 } else {
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                    setItemWhenPause(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongID());
+                    setItemWhenPause(mListSong.get(temp).getmSongID());
 
                 }
 
@@ -250,7 +283,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     }
-    public void inSert(Song song){
+
+    public void inSert(Song song) {
         ContentValues values = new ContentValues();
         values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
         values.put(MusicDatabase.ID, song.getmSongID());
@@ -276,13 +310,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
         mBtnPay.setOnClickListener(this);
         mLlBottom.setOnClickListener(this);
-
-        updateAdapter();
+        // updateAdapter();
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
         mRcvSong.setLayoutManager(manager);
-        //  mSongAdapter = new SongAdapter(getActivity(), mListSong);
         mRcvSong.setAdapter(mSongAdapter);
         setDataBottom();
         if (mSongAdapter != null) {
@@ -308,28 +340,28 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     new SongAdapter.IIClick() {
                         @Override
                         public void onItemClick(Song song, int pos) {
-
-                            final int id = (int) song.getmSongID();
+/*                            final long id = song.getmSongID();
                             final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                             final Cursor cursor = getContext().getContentResolver().query(uri,
-                                    null, null, null, null);
+                                    null,null,null, null, null);
                             ContentValues values = new ContentValues();
-                            int count= cursor.getColumnIndex(MusicDatabase.COUNT_OF_PLAY);
-                            Log.d("COUNT_OF_PLAY","ok"+count);
-                            values.put(MusicDatabase.COUNT_OF_PLAY,count);
+                            int count = cursor.getColumnIndex(MusicDatabase.COUNT_OF_PLAY)+1;
+                            Log.d("COUNT_OF_PLAY", "ok" + count);
+                            values.put(MusicDatabase.COUNT_OF_PLAY, count);
                             getContext().getContentResolver().update(MusicProvider.CONTENT_URI,
-                                    values,MusicDatabase.ID + "=" + id,null );
-                     if(count>=3){
-                        // inSert(song);
-                     }
+                                    values, MusicDatabase.ID + "=" + id, null);
+                            if (count >= 3) {
+                                 inSert(song);
+                            }*/
                             if (mMusicService != null) {
                                 mMusicService.createChannel();
                                 mMusicService.createNotification(getActivity(), song, true);
-                                mMusicService.setCurrentPlay(pos);
+                                //  mMusicService.setCurrentPlay(pos);
+                                mMusicService.setIdPlay(song.getmSongID());
+
                                 mMusicService.playSong(song.getmSongArt());        //play nhac
                                 mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                                 setItemWhenPlay(song.getmSongID());
-
                             }
 
                             if (isVertical) {   //khi doc
@@ -383,6 +415,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         }
     }
 
+    protected abstract void absSetFavorite();
+
     protected abstract void updatePopupMenu(View v, Song song, int pos);
 
     @Override
@@ -418,6 +452,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 break;
             }
             case R.id.bottom: {
+
                 mCurrentPosition = mMusicService.getCurrentPlay();
                 Log.d("Bottom", "" + mCurrentPosition);
                 Song song = mMusicService.getListSong().get(mCurrentPosition);
@@ -425,8 +460,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(
                         song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
-                mediaPlaybackFragment.setMusicService(mMusicService);
 
+
+                mediaPlaybackFragment.setMusicService(mMusicService);
                 mediaPlaybackFragment.setSongList(mListSong);
                 mediaPlaybackFragment.setVertical(isVertical);
 
@@ -467,7 +503,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public void updateAllSong(int pos) {
 
-       setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
+        setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
 
         mSongAdapter.notifyDataSetChanged();
         setDataBottom();
@@ -490,7 +526,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     public void updateNotificationWhenNextAndPre(int pos) {
 
         //update Notification next  and pre
-      setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
+        setItemWhenPlay(mMusicService.getListSong().get(pos).getmSongID());
         setDataBottom();
     }
 

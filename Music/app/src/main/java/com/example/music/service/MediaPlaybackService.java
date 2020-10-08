@@ -46,11 +46,34 @@ public class MediaPlaybackService extends Service {
     public static final int NORMAL = 12;
     public static final int SHUFFLE = 13;
     private boolean isFist = true;
+
+    public long getIdPlay() {
+        return mIdPlay;
+    }
+
+    public void setIdPlay(long mIdPlay) {
+        this.mIdPlay = mIdPlay;
+    }
+
+    private long mIdPlay;
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    private boolean isFavorite=false;
+
     SharedPreferences sharedPreferencesCurrent;
 
     public boolean isFist() {
         return isFist;
     }
+
+
 
 
     public boolean isResume() {
@@ -397,6 +420,7 @@ public class MediaPlaybackService extends Service {
             pos = 0;                           //next media
         }
         mCurrentPlay = pos;
+        mIdPlay=mListSong.get(pos).getmSongID();
         playSong(mListSong.get(pos).getmSongArt());
     }
 
@@ -429,6 +453,7 @@ public class MediaPlaybackService extends Service {
             }
         }
         mCurrentPlay = pos;
+        mIdPlay=mListSong.get(pos).getmSongID();
         playSong(mListSong.get(pos).getmSongArt());
     }
 

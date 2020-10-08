@@ -157,6 +157,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             unbindService(serviceConnection);
         }
+        baseSongsFragment.saveData();
 
 
     }
@@ -166,7 +167,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onDestroy();
         if (mMusicService != null) {
             mMusicService.cancelNotification();
-            baseSongsFragment.saveData();
+
         }
         Log.d("ActivityOnDestroy", "onDestroy");
 
