@@ -133,6 +133,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mLikeMedia.setBackgroundResource(R.drawable.ic_like);
             mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
         }
+
         if (mMusicService != null) {
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
             mMusicService.setINextAndPreNotification(MediaPlaybackFragment.this);
@@ -146,11 +147,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     public void setData() {
         mMusicService = getMusicService();
-        if (mMusicService.isFavorite()) {
-            mSongList = SongManager.getFavorAllSongs(getContext());
-        } else {
-            mSongList = getListSong();
-        }
+
+        mSongList = getListSong();
 
         mSongListFavorite = SongManager.getFavorAllSongs(getContext());
     }
@@ -186,7 +184,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
             if (mMusicService != null && mSongList.size() > 0) {
-                //  update();
+               //  update();
             }
 
         } else {

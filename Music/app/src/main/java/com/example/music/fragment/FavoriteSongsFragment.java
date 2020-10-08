@@ -37,10 +37,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    @Override
-    protected void absSetFavorite() {
-        mMusicService.setIsFavorite(true);
-    }
 
     @Override
     protected void updatePopupMenu(View v, Song song, int pos) {

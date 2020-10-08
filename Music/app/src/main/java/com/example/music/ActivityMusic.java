@@ -111,18 +111,15 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         } else {
             Log.d("TAG", "serviceConnection" + "khi dã co quyen ok");
             getData();
-            //  getFragment();
+//            getFragment();
         }
 
     }
 
     public void getData() {
-
         mListSong = new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
         mSongAdapter = new SongAdapter(this, mListSong);
-
-
     }
 
     @Override
@@ -145,9 +142,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     @Override
     protected void onStart() {
-        setService();
-        Log.d("ActivityCheck", "onStart service = " + mMusicService);
         super.onStart();
+        setService();
+        getSupportActionBar().show();
     }
 
     @Override
@@ -178,10 +175,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     }
 
     private void setService() {
-        Intent intent = new Intent(this, MediaPlaybackService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-
+        Intent playIntent = new Intent(ActivityMusic.this, MediaPlaybackService.class);
+        playIntent.setAction("");
+        startService(playIntent);
+        bindService(playIntent, serviceConnection, BIND_AUTO_CREATE);
 
     }
 
@@ -197,10 +194,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 mMusicService.setShuffle(Shuffle);
                 Log.d("ActivityCheck", "service  ở onServiceConnected= " + mMusicService);
                 getFragment();
-
             }
-
-
         }
 
         @Override
@@ -243,7 +237,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     }
 
     public void getFragment() {
-
+        Log.d("sdhgfchgsdf", "getFragment: ");
         int mOrientation = getResources().getConfiguration().orientation;
 
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -282,7 +276,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 baseSongsFragment = new FavoriteSongsFragment();
                 getSupportActionBar().setTitle("Favorite Songs");
             } else {
-
                 baseSongsFragment = new AllSongsFragment();
                 getSupportActionBar().setTitle("Music");
 
@@ -331,7 +324,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Log.d("ActivityCheck", "doc");
                 baseSongsFragment = new AllSongsFragment();
                 baseSongsFragment.setVertical(isVertical);
-                baseSongsFragment.setFavorite(false);
+                baseSongsFragment.setFavorite(isFavorite);
+                getMusicService().setIsFavorite(isFavorite);
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
                 fragmentTransaction.replace(R.id.content, baseSongsFragment);
                 fragmentTransaction.commit();
@@ -343,11 +337,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 // Handle the gallery action (for now display a toast).
                 drawer.closeDrawer(GravityCompat.START);
                 isFavorite = true;
+                Log.d("ActivityCheck", "doc");
                 getSupportActionBar().setTitle("Favorite Songs");
                 getSupportActionBar().show();
                 baseSongsFragment = new FavoriteSongsFragment();
                 baseSongsFragment.setVertical(isVertical);
-                baseSongsFragment.setFavorite(true);
+                baseSongsFragment.setFavorite(isFavorite);
+                getMusicService().setIsFavorite(isFavorite);
                 FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
                 fragmentTransaction1.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
                 fragmentTransaction1.commit();

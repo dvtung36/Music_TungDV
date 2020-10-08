@@ -3,15 +3,11 @@ package com.example.music.fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.ContentObservable;
-import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -56,7 +52,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
 
     protected RecyclerView mRcvSong;
-    protected List<Song> mListSong;
+    protected List<Song> mListSong, mListSongFull;
     protected SongAdapter mSongAdapter;
     protected RelativeLayout mLlBottom;
     protected ImageView mSongArt;
@@ -102,8 +98,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     }
 
     public void setData() {
-        if (mMusicService.isFavorite()) {
-
+        mListSongFull=getListSong();
+        if (isFavorite) {
             mListSong = SongManager.getFavorAllSongs(getContext());
             mSongAdapter = new SongAdapter(getContext(), mListSong);
             mMusicService.setListSong(mListSong);
@@ -123,6 +119,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("TAG", "onCrsssseate: " + Log.getStackTraceString(new Throwable()));
         setHasOptionsMenu(true);
         sharedPreferences = getActivity().getSharedPreferences("DATA_CURRENT_PLAY", getActivity().MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -136,12 +133,10 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
         mMusicService = getMusicService();
-        Log.d("BaseOnCreateView", "" + mMusicService);
-        absSetFavorite();
         setData();
-        Log.d("onCreateViewBase", "" + mListSong.size());
         initView(view);
         setDataBottom();
+
         if (mMusicService != null && mSongAdapter != null) {
             mMusicService.setINextAndPreNotification(BaseSongsFragment.this);
             mMusicService.setIPauseNotification(BaseSongsFragment.this);
@@ -218,8 +213,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 long id = sharedPreferences.getLong("DATA_CURRENT_ID", -1);
                 int current = -1;
                 Log.d("ClickPlay", "" + id);
-                for (int i = 0; i < mListSong.size(); i++) {
-                    if (mListSong.get(i).getmSongID() == id) {
+                for (int i = 0; i < mListSongFull.size(); i++) {
+                    if (mListSongFull.get(i).getmSongID() == id) {
                         mMusicService.setCurrentPlay(i);
                         mMusicService.setIdPlay(id);
                         current = i;
@@ -230,22 +225,22 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                         mLlBottom.setVisibility(View.VISIBLE);
 
                     }
-                    mSongName.setText(mListSong.get(current).getmSongName());                         //Click item RecycleView
-                    mSongAuthor.setText(mListSong.get(current).getmSongAuthor());
-                    byte[] songArt = getAlbumArt(mListSong.get(current).getmSongArt());
+                    mSongName.setText(mListSongFull.get(current).getmSongName());                         //Click item RecycleView
+                    mSongAuthor.setText(mListSongFull.get(current).getmSongAuthor());
+                    byte[] songArt = getAlbumArt(mListSongFull.get(current).getmSongArt());
                     Glide.with(getContext()).asBitmap()
                             .error(R.drawable.ic_nct)
                             .load(songArt)
                             .into(mSongArt);
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                    setItemWhenPause(mListSong.get(current).getmSongID());
+                    setItemWhenPause(mListSongFull.get(current).getmSongID());
 
                 }
             }
 
-            if (mMusicService.getCurrentPlay() >= 0 && mListSong.size() > 0) {     //khi chạy nhạc
+            if (mMusicService.getCurrentPlay() >= 0 && mListSongFull.size() > 0) {     //khi chạy nhạc
 
-                Log.d("PlayMui", "size" + mListSong.size());
+                Log.d("PlayMui", "size" + mListSongFull.size());
                 if (isVertical)
                     mLlBottom.setVisibility(View.VISIBLE);
                 else mLlBottom.setVisibility(View.GONE);
@@ -253,16 +248,16 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 long id = mMusicService.getIdPlay();
                 Log.d("PlayMui", "id " + mMusicService.getIdPlay());
                 int temp = -1;
-                for (int i = 0; i < mListSong.size(); i++) {
-                    if (mListSong.get(i).getmSongID() == id) {
+                for (int i = 0; i < mListSongFull.size(); i++) {
+                    if (mListSongFull.get(i).getmSongID() == id) {
                         temp = i;
                     }
                 }
 
                 if (temp != -1) {
-                    mSongName.setText(mListSong.get(temp).getmSongName());                         //Click item RecycleView
-                    mSongAuthor.setText(mListSong.get(temp).getmSongAuthor());
-                    byte[] songArt = getAlbumArt(mListSong.get(temp).getmSongArt());
+                    mSongName.setText(mListSongFull.get(temp).getmSongName());                         //Click item RecycleView
+                    mSongAuthor.setText(mListSongFull.get(temp).getmSongAuthor());
+                    byte[] songArt = getAlbumArt(mListSongFull.get(temp).getmSongArt());
                     Glide.with(getContext()).asBitmap()
                             .error(R.drawable.ic_nct)
                             .load(songArt)
@@ -271,10 +266,10 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     if (mMusicService.isStatusPlay()) {
                         mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
 
-                        setItemWhenPlay(mListSong.get(temp).getmSongID());
+                        setItemWhenPlay(mListSongFull.get(temp).getmSongID());
                     } else {
                         mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
-                        setItemWhenPause(mListSong.get(temp).getmSongID());
+                        setItemWhenPause(mListSongFull.get(temp).getmSongID());
 
                     }
                 }
@@ -325,14 +320,14 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
         if (mMusicService != null && mMusicService.isStatusPlay()) { //khi chạy nhạc
             mLlBottom.setVisibility(View.VISIBLE);
-            int pos= -1;
-            long id= mMusicService.getIdPlay();
-            for(int i=0;i<mListSong.size();i++){
-                if(mListSong.get(1 ).getmSongID()==id){
-                    pos=i;
+            int pos = -1;
+            long id = mMusicService.getIdPlay();
+            for (int i = 0; i < mListSong.size(); i++) {
+                if (mListSong.get(1).getmSongID() == id) {
+                    pos = i;
                 }
             }
-            if(pos!=-1){
+            if (pos != -1) {
 
                 mSongName.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
                 mSongAuthor.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongAuthor());
@@ -426,7 +421,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         }
     }
 
-    protected abstract void absSetFavorite();
 
     protected abstract void updatePopupMenu(View v, Song song, int pos);
 
@@ -438,24 +432,24 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                 Log.d("ClickPlay", "" + mMusicService.getCurrentPlay());
                 int current = -1;
-                for (int i = 0; i < mListSong.size(); i++) {
-                    if (mListSong.get(i).getmSongID() == mMusicService.getIdPlay()) {
+                for (int i = 0; i < mListSongFull.size(); i++) {
+                    if (mListSongFull.get(i).getmSongID() == mMusicService.getIdPlay()) {
                         current = i;
                     }
                 }
                 if (mMusicService.isStatusPlay()) {
 
-                    setItemWhenPause(mListSong.get(current).getmSongID());
+                    setItemWhenPause(mListSongFull.get(current).getmSongID());
                     mMusicService.pauseSong();
                     mBtnPay.setBackgroundResource(R.drawable.ic_subplay);
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(), mListSong.get(current), false);
+                    mMusicService.createNotification(getActivity(), mListSongFull.get(current), false);
                 } else {
-                    setItemWhenPlay(mListSong.get(current).getmSongID());
+                    setItemWhenPlay(mListSongFull.get(current).getmSongID());
                     if (mMusicService.isResume())
                         mMusicService.reSumSong();
                     else {
-                        mMusicService.playSong(mListSong.get(current).getmSongArt());
+                        mMusicService.playSong(mListSongFull.get(current).getmSongArt());
                         int position = sharedPreferences.getInt("DATA_CURRENT_STREAM_POSITION", 0);
                         Log.d("DATA_CURRENT", "" + position);
                         mMusicService.seekTo(position);
@@ -464,23 +458,28 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                     mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                     mMusicService.createChannel();
-                    mMusicService.createNotification(getActivity(), mListSong.get(current), true);
+                    mMusicService.createNotification(getActivity(), mListSongFull.get(current), true);
                 }
                 break;
             }
             case R.id.bottom: {
+                 int temp=-1;
+                for(int i=0;i<mListSongFull.size();i++){
+                    if(mListSongFull.get(i).getmSongID()==mMusicService.getIdPlay()){
 
-                mCurrentPosition = mMusicService.getCurrentPlay();
-                Log.d("Bottom", "" + mCurrentPosition);
-                Song song = mMusicService.getListSong().get(mCurrentPosition);
+                        temp=i;
+                    }
+                }
+                Log.d("Bottom", "" + temp);
+                Song song = mListSongFull.get(temp);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(
-                        song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), mCurrentPosition);
+                        song.getmSongName(), song.getmSongAuthor(), song.getmSongArt(), temp);
 
 
                 mediaPlaybackFragment.setMusicService(mMusicService);
-                mediaPlaybackFragment.setSongList(mListSong);
+                mediaPlaybackFragment.setSongList(mListSongFull);
                 mediaPlaybackFragment.setVertical(isVertical);
 
                 ((AppCompatActivity) getActivity()).getSupportActionBar().hide();  // hide action bar

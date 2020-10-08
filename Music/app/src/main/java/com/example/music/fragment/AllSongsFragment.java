@@ -62,11 +62,6 @@ public class AllSongsFragment extends BaseSongsFragment {
     }
 
     @Override
-    protected void absSetFavorite() {
-        mMusicService.setIsFavorite(false);
-    }
-
-    @Override
     protected void updatePopupMenu(View v, final Song song, int pos) {
         final int id = (int) song.getmSongID();
         final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
