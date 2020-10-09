@@ -317,37 +317,43 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         switch (item.getItemId()) {
             case R.id.nav_listen_now:
-                isFavorite = false;
-                drawer.closeDrawer(GravityCompat.START);
-                getSupportActionBar().setTitle("Music");
-                getSupportActionBar().show();
-                Log.d("ActivityCheck", "doc");
-                baseSongsFragment = new AllSongsFragment();
-                baseSongsFragment.setVertical(isVertical);
-                baseSongsFragment.setFavorite(isFavorite);
-                getMusicService().setIsFavorite(isFavorite);
-                FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.replace(R.id.content, baseSongsFragment);
-                fragmentTransaction.commit();
+                if (isVertical) {
+                    isFavorite = false;
+                    drawer.closeDrawer(GravityCompat.START);
+                    getSupportActionBar().setTitle("Music");
+                    getSupportActionBar().show();
+                    Log.d("ActivityCheck", "doc");
+                    baseSongsFragment = new AllSongsFragment();
+                    baseSongsFragment.setVertical(isVertical);
+                    baseSongsFragment.setFavorite(isFavorite);
+                    getMusicService().setIsFavorite(isFavorite);
+                    FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                    fragmentTransaction.replace(R.id.content, baseSongsFragment);
+                    fragmentTransaction.commit();
 
 
-                Toast.makeText(this, "listen now", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "listen now", Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
             case R.id.nav_favorite_songs:
                 // Handle the gallery action (for now display a toast).
-                drawer.closeDrawer(GravityCompat.START);
-                isFavorite = true;
-                Log.d("ActivityCheck", "doc");
-                getSupportActionBar().setTitle("Favorite Songs");
-                getSupportActionBar().show();
-                baseSongsFragment = new FavoriteSongsFragment();
-                baseSongsFragment.setVertical(isVertical);
-                baseSongsFragment.setFavorite(isFavorite);
-                getMusicService().setIsFavorite(isFavorite);
-                FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
-                fragmentTransaction1.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
-                fragmentTransaction1.commit();
-                Toast.makeText(this, "favorite songs", Toast.LENGTH_SHORT).show();
+                if (isVertical) {
+                    drawer.closeDrawer(GravityCompat.START);
+                    isFavorite = true;
+                    Log.d("ActivityCheck", "doc");
+                    getSupportActionBar().setTitle("Favorite Songs");
+                    getSupportActionBar().show();
+                    baseSongsFragment = new FavoriteSongsFragment();
+                    baseSongsFragment.setVertical(isVertical);
+                    baseSongsFragment.setFavorite(isFavorite);
+                    getMusicService().setIsFavorite(isFavorite);
+                    FragmentTransaction fragmentTransaction1 = manager.beginTransaction();
+                    fragmentTransaction1.replace(R.id.content, baseSongsFragment);               //get fragment AllSongsFragment vào activity main
+                    fragmentTransaction1.commit();
+                    Toast.makeText(this, "favorite songs", Toast.LENGTH_SHORT).show();
+
+                }
 
 
                 return true;

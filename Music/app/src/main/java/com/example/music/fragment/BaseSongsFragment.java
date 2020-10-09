@@ -133,18 +133,21 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
         mMusicService = getMusicService();
-        setData();
-        initView(view);
-        setDataBottom();
+        if(mMusicService!=null){
+            setData();
+            initView(view);
+            setDataBottom();
 
-        if (mMusicService != null && mSongAdapter != null) {
-            mMusicService.setINextAndPreNotification(BaseSongsFragment.this);
-            mMusicService.setIPauseNotification(BaseSongsFragment.this);
-            mMusicService.setIUpdateUI(BaseSongsFragment.this);
-            mMusicService.setIUpdateAllSongWhenAutoNext(BaseSongsFragment.this);
-            mSongAdapter.notifyDataSetChanged();
+            if (mMusicService != null && mSongAdapter != null) {
+                mMusicService.setINextAndPreNotification(BaseSongsFragment.this);
+                mMusicService.setIPauseNotification(BaseSongsFragment.this);
+                mMusicService.setIUpdateUI(BaseSongsFragment.this);
+                mMusicService.setIUpdateAllSongWhenAutoNext(BaseSongsFragment.this);
+                mSongAdapter.notifyDataSetChanged();
 
+            }
         }
+
         return view;
     }
 

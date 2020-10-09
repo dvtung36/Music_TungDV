@@ -236,12 +236,15 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
     }
 
     public void checkSongFavorite() {
-        long idPlay = mMusicService.getIdPlay();
-        for (int i = 0; i < mSongListFavorite.size(); i++) {
-            if (mSongListFavorite.get(i).getmSongID() == idPlay) {
-                isSongFavorite = true;
+        if(mMusicService!=null){
+            long idPlay = mMusicService.getIdPlay();
+            for (int i = 0; i < mSongListFavorite.size(); i++) {
+                if (mSongListFavorite.get(i).getmSongID() == idPlay) {
+                    isSongFavorite = true;
+                }
             }
         }
+
     }
 
     public static MediaPlaybackFragment newInstance(String songName, String songArtist, String songArt, int mCurrentPosition) {
