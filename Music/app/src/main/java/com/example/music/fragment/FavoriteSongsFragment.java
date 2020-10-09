@@ -22,7 +22,6 @@ import com.example.music.R;
 import com.example.music.database.MusicDatabase;
 import com.example.music.database.MusicProvider;
 import com.example.music.model.Song;
-import com.example.music.service.MediaPlaybackService;
 import com.example.music.service.SongManager;
 
 
@@ -100,9 +99,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
         super.onStop();
     }
 
-    public void setMediaPlaybackService(MediaPlaybackService mMusicService) {
-        this.mMusicService = mMusicService;
-    }
 
     protected ActivityMusic getActivityMusic() {
         if (getActivity() instanceof ActivityMusic) {
@@ -114,7 +110,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
 
     @Override
     public void updateAdapter() {
-        //mMusicService.setIsFavorite(true);
         mListSong = SongManager.getFavorAllSongs(getContext());
         Log.d("SDd", "onCreate: " + mListSong.size());
 

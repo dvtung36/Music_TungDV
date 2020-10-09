@@ -70,7 +70,7 @@ public class AllSongsFragment extends BaseSongsFragment {
         PopupMenu popup = new PopupMenu(v.getContext(), v);             //gán menu_popup  khi click vào các option
         popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
 
-       /*setClick cho option menu*/
+        /*setClick cho option menu*/
         popup.setOnMenuItemClickListener(
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -85,18 +85,14 @@ public class AllSongsFragment extends BaseSongsFragment {
                             values.put(MusicDatabase.DATA, song.getmSongArt());
                             values.put(MusicDatabase.DURATION, song.getmSongTime());
                             values.put(MusicDatabase.IS_FAVORITE, 2);
-                            values.put(MusicDatabase.COUNT_OF_PLAY,3);
+                            values.put(MusicDatabase.COUNT_OF_PLAY, 3);
                             getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                             Toast.makeText(getActivity().getApplicationContext(), "Added favorites list",
                                     Toast.LENGTH_SHORT).show();
-                        }
-                        else if (item.getItemId() == R.id.action_remove_songs) {
+                        } else if (item.getItemId() == R.id.action_remove_songs) {
                             values.put(MusicDatabase.IS_FAVORITE, 0);
                             if (cursor != null) {
-                                getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID+"="+id, null);
-
-/*                        values.put(MusicDatabase.IS_FAVORITE, 1);
-                        getContext().getContentResolver().update(uri, values, null, null);*/
+                                getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
                             }
                             Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list",
                                     Toast.LENGTH_SHORT).show();
@@ -109,15 +105,6 @@ public class AllSongsFragment extends BaseSongsFragment {
 
         popup.show();
     }
-   /*  public void update(){
-        mListSong = SongManager.getFavorAllSongs(getContext());
-        Log.d("ClickDelete", "onCreate: " + mListSong.size());
-        mSongAdapter.setListSong(mListSong);
-        if (mListSong.size() <= 0) {
-            mTextView.setText(R.string.favorite_null);
-            mTextView.setVisibility(View.VISIBLE);
-        } else mTextView.setVisibility(View.INVISIBLE);
-    }*/
 
     @Override
     public void onResume() {
@@ -128,7 +115,6 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  SongManager.getSong(getContext(),mListSong);
     }
 
     @Override

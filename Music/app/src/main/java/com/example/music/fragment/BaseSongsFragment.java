@@ -98,7 +98,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     }
 
     public void setData() {
-        mListSongFull=getListSong();
+        mListSongFull = getListSong();
         if (isFavorite) {
             mListSong = SongManager.getFavorAllSongs(getContext());
             mSongAdapter = new SongAdapter(getContext(), mListSong);
@@ -133,7 +133,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.all_song_fragment, container, false);
         mMusicService = getMusicService();
-        if(mMusicService!=null){
+        if (mMusicService != null) {
             setData();
             initView(view);
             setDataBottom();
@@ -283,7 +283,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     }
 
-    public void inSert(Song song) {
+    public void insert(Song song) {
         ContentValues values = new ContentValues();
         values.put(MusicDatabase.ID_PROVIDER, song.getSongIDProvider());
         values.put(MusicDatabase.ID, song.getmSongID());
@@ -310,7 +310,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         mBtnPay.setOnClickListener(this);
         mLlBottom.setOnClickListener(this);
         // updateAdapter();
-
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
         mRcvSong.setLayoutManager(manager);
@@ -350,7 +349,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     new SongAdapter.IIClick() {
                         @Override
                         public void onItemClick(Song song, int pos) {
-/*                            final long id = song.getmSongID();
+                            /*     final long id = song.getmSongID();
                             final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                             final Cursor cursor = getContext().getContentResolver().query(uri,
                                     null,null,null, null, null);
@@ -361,7 +360,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                             getContext().getContentResolver().update(MusicProvider.CONTENT_URI,
                                     values, MusicDatabase.ID + "=" + id, null);
                             if (count >= 3) {
-                                 inSert(song);
+                                 insert(song);
                             }*/
                             if (mMusicService != null) {
                                 mMusicService.createChannel();
@@ -466,11 +465,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 break;
             }
             case R.id.bottom: {
-                 int temp=-1;
-                for(int i=0;i<mListSongFull.size();i++){
-                    if(mListSongFull.get(i).getmSongID()==mMusicService.getIdPlay()){
+                int temp = -1;
+                for (int i = 0; i < mListSongFull.size(); i++) {
+                    if (mListSongFull.get(i).getmSongID() == mMusicService.getIdPlay()) {
 
-                        temp=i;
+                        temp = i;
                     }
                 }
                 Log.d("Bottom", "" + temp);

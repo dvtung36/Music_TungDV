@@ -184,7 +184,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (isVertical) {
             mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
             if (mMusicService != null && mSongList.size() > 0) {
-               //  update();
+                //  update();
             }
 
         } else {
@@ -213,30 +213,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         });
     }
 
-    public void update() {                          //update khi all song click ll_bottom  ==>media
-
-        mSongName.setText(mSongNameMedia);
-        mSongAuthor.setText(mSongAuthorMedia);
-        byte[] Art = getAlbumArt(mSongArtMedia);
-        Glide.with(view.getContext()).asBitmap()
-                .load(Art)
-                .error(R.drawable.ic_nct)
-                .into(mArtMedia);
-        Glide.with(view.getContext()).asBitmap()
-                .load(Art)
-                .error(R.drawable.ic_nct)
-                .into(mBackground);
-        if (mMusicService.isStatusPlay()) {
-            mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
-        } else mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
-
-        mPlayTime.setText(formattedTime(String.valueOf(mMusicService.getCurrentStreamPosition())));
-        mEndTime.setText(formattedTime(mSongList.get(mMusicService.getCurrentPlay()).getmSongTime()));
-
-    }
-
     public void checkSongFavorite() {
-        if(mMusicService!=null){
+        if (mMusicService != null) {
             long idPlay = mMusicService.getIdPlay();
             for (int i = 0; i < mSongListFavorite.size(); i++) {
                 if (mSongListFavorite.get(i).getmSongID() == idPlay) {
@@ -405,7 +383,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                         mMusicService.pauseSong();
                         mPlayMedia.setBackgroundResource(R.drawable.ic_play_media);
                         mMusicService.createChannel();
-                        mMusicService.createNotification(getActivity(), mSongList.get(pos),false);
+                        mMusicService.createNotification(getActivity(), mSongList.get(pos), false);
 
                         if (!isVertical) {
                             iUpdateAllSongWhenPauseMedia.updateAllSongWhenPauseMedia(pos);
@@ -594,7 +572,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void updateUI(int pos) {
-        setDataTop();                                //override , update UI mediaFragment auto khi next bài
+        setDataTop();   //override , update UI mediaFragment auto khi next bài
         mMusicService.createChannel();
         mMusicService.createNotification(getActivity(), mSongList.get(pos), true);
     }
@@ -621,15 +599,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             mPlayMedia.setBackgroundResource(R.drawable.ic_pause_media);
         }
 
-
     }
-/*
-
-    @Override
-    public void UpdateMediaWhenAllSongClickItem(int pos) {
-
-    }
-*/
 
     public class UpdateSeekBarThread extends Thread {
         private Handler handler;

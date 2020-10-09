@@ -53,6 +53,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     private static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
     public boolean isVertical;
+    private Toolbar toolbar;
     public MediaPlaybackService mMusicService;
     private int Repeat = 11, Shuffle = 12;
     MediaPlaybackFragment mMediaPlaybackFragment;
@@ -111,7 +112,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         } else {
             Log.d("TAG", "serviceConnection" + "khi dã co quyen ok");
             getData();
-//            getFragment();
         }
 
     }
@@ -204,27 +204,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     };
 
     public void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.app_name,
-                R.string.app_name);
-
-        if (drawer != null) {
-            drawer.addDrawerListener(toggle);
-
-        }
-        toggle.setDrawerIndicatorEnabled(true);
-        toggle.syncState();
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_menu);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
-        }
 
     }
 
@@ -272,14 +253,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             fragmentTransaction.commit();
 
         } else {
-            if (isFavorite) {
-                baseSongsFragment = new FavoriteSongsFragment();
-                getSupportActionBar().setTitle("Favorite Songs");
-            } else {
-                baseSongsFragment = new AllSongsFragment();
-                getSupportActionBar().setTitle("Music");
-
-            }
+            baseSongsFragment = new AllSongsFragment();
+            getSupportActionBar().setTitle("Music");
 
             baseSongsFragment.setVertical(isVertical);
             mMusicService.setIUpdateUI(baseSongsFragment);
@@ -298,6 +273,27 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             FragmentTransaction mPlayFragment = manager.beginTransaction();
             mPlayFragment.replace(R.id.fragment_media, mMediaPlaybackFragment);
             mPlayFragment.commit();
+
+        }
+
+        if(isVertical){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.app_name,
+                    R.string.app_name);
+
+            if (drawer != null) {
+                drawer.addDrawerListener(toggle);
+
+            }
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.syncState();
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_menu);
+
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);        //show button navigationView
+            if (navigationView != null) {
+                navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
+            }
 
         }
     }
@@ -337,7 +333,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
                 return true;
             case R.id.nav_favorite_songs:
-                // Handle the gallery action (for now display a toast).
+
                 if (isVertical) {
                     drawer.closeDrawer(GravityCompat.START);
                     isFavorite = true;
