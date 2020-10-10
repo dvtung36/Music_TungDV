@@ -153,8 +153,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (mMusicService != null) {
             unbindService(serviceConnection);
         }
-        baseSongsFragment.saveData();
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            baseSongsFragment.saveData();
 
+        }
     }
 
     @Override
@@ -276,7 +278,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         }
 
-        if(isVertical){
+        if (isVertical) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.full);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.app_name,

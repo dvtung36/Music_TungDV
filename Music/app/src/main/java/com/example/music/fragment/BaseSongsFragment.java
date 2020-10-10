@@ -330,9 +330,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 }
             }
             if (pos != -1) {
-                mSongName.setText(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
-                mSongAuthor.setText(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongAuthor());
-                byte[] songArt = getAlbumArt(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongArt());
+                mSongName.setText(mListSongFull.get(pos).getmSongName());                                  //Click item RecycleView
+                mSongAuthor.setText(mListSongFull.get(pos).getmSongAuthor());
+                byte[] songArt = getAlbumArt(mListSongFull.get(pos).getmSongArt());
                 Glide.with(view.getContext()).asBitmap()
                         .error(R.drawable.ic_nct)
                         .load(songArt)
@@ -362,10 +362,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                                  insert(song);
                             }*/
                             if (mMusicService != null) {
+                                mMusicService.setIdPlay(song.getmSongID());
                                 mMusicService.createChannel();
                                 mMusicService.createNotification(getActivity(), song, true);
-                                //  mMusicService.setCurrentPlay(pos);
-                                mMusicService.setIdPlay(song.getmSongID());
+                                mMusicService.setCurrentPlay(pos);
+                                // mMusicService.setIdPlay(song.getmSongID());
                                 mMusicService.playSong(song.getmSongArt());        //play nhac
                                 mBtnPay.setBackgroundResource(R.drawable.ic_subpause);
                                 setItemWhenPlay(song.getmSongID());

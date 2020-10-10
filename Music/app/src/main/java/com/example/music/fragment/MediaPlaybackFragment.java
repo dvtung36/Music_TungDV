@@ -126,13 +126,16 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         setData();
         initView();
         checkSongFavorite();
+
         if (isSongFavorite) {
             mLikeMedia.setBackgroundResource(R.drawable.ic_liked);
-            mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+            isSongFavorite=true;
         } else {
             mLikeMedia.setBackgroundResource(R.drawable.ic_like);
-            mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+            isSongFavorite=false;
         }
+        mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
+        isSongDislike=true;
 
         if (mMusicService != null) {
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
@@ -147,9 +150,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
 
     public void setData() {
         mMusicService = getMusicService();
-
         mSongList = getListSong();
-
         mSongListFavorite = SongManager.getFavorAllSongs(getContext());
     }
 
@@ -266,8 +267,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         if (mMusicService != null) {
             if (mMusicService.getCurrentPlay() < 0) {   //chi set khi xoay man hình luc mới vào app
                 int current = sharedPreferencesCurrent.getInt("DATA_CURRENT", -1);
-
-                if (current > -1) {
+                if (current !=-1) {
                     mSongName.setText(mSongList.get(current).getmSongName());
                     mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
                     mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
@@ -290,16 +290,19 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mSeeBar.setProgress(position);
                     mPlayTime.setText(formattedTime(String.valueOf(position)));
                 }
-            } else {
+            }
+            else {                // khi đã chơi nhạc
                 int current = 0;
                 long IdPlay = mMusicService.getIdPlay();
+                Log.d("SetDataTop", "ID Play : : " + IdPlay);
                 for (int i = 0; i < mSongList.size(); i++) {
                     if (mSongList.get(i).getmSongID() == IdPlay) {
                         current = i;
                         mMusicService.setCurrentPlay(i);
+                        mMusicService.setIdPlay(IdPlay);
                     }
                 }
-                Log.d("SetDataTop", "" + current);
+                Log.d("SetDataTop", "Media : Current: " + current);
                 mSongName.setText(mSongList.get(current).getmSongName());
                 mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
                 mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
@@ -445,7 +448,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                             pos2 = i;
                         }
                     }
-                    mMusicService.previousSong(pos2);
+                      mMusicService.previousSong(pos2);
                     mCurrentPosition = mMusicService.getCurrentPlay();
                     Song song1 = mSongList.get(mCurrentPosition);
                     mSongNameMedia = song1.getmSongName();
