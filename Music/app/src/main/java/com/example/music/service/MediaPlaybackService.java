@@ -454,6 +454,7 @@ public class MediaPlaybackService extends Service {
 
 
     public void previousSong(int pos) {
+
         int seconds = getCurrentStreamPosition() / 1000 % 60;
         if (seconds <= 3) {
             pos--;

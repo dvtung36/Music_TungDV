@@ -102,11 +102,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         if (isFavorite) {
             mListSong = SongManager.getFavorAllSongs(getContext());
             mSongAdapter = new SongAdapter(getContext(), mListSong);
-            mMusicService.setListSong(mListSong);
+           // mMusicService.setListSong(mListSong);
         } else {
             mListSong = getListSong();
             mSongAdapter = getSongAdapter();
-            mMusicService.setListSong(mListSong);
+            //mMusicService.setListSong(mListSong);
         }
 
     }
