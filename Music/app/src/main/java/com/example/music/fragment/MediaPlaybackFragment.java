@@ -135,7 +135,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
             isSongFavorite=false;
         }
         mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
-        isSongDislike=true;
+
 
         if (mMusicService != null) {
             mMusicService.setIUpdateUI(MediaPlaybackFragment.this);
@@ -414,7 +414,8 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 break;
 
 
-            case R.id.btn_next_media:                            //buton điều hướng bên media
+            case R.id.btn_next_media:                           
+                mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
                 if (mMusicService.getCurrentPlay() >= 0) {
                     int pos1 = -1;
                     for (int i = 0; i < mSongList.size(); i++) {
@@ -440,6 +441,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.btn_pre_media:
+                mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
                 if (mMusicService.getCurrentPlay() >= 0) {
 
                     int pos2 = -1;
@@ -506,6 +508,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.btn_dislike_media:
+
                 if (isSongFavorite) {
                     isSongFavorite = false;
                     isSongDislike = true;
