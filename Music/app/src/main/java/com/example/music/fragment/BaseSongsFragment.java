@@ -330,10 +330,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 }
             }
             if (pos != -1) {
-
-                mSongName.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
-                mSongAuthor.setText(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongAuthor());
-                byte[] songArt = getAlbumArt(mMusicService.getListSong().get(mMusicService.getCurrentPlay()).getmSongArt());
+                mSongName.setText(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongName());                                  //Click item RecycleView
+                mSongAuthor.setText(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongAuthor());
+                byte[] songArt = getAlbumArt(mListSongFull.get(mMusicService.getCurrentPlay()).getmSongArt());
                 Glide.with(view.getContext()).asBitmap()
                         .error(R.drawable.ic_nct)
                         .load(songArt)
