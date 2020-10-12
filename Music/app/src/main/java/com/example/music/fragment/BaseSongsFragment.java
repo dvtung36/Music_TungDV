@@ -98,14 +98,18 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     }
 
     public void setData() {
+
+        Log.d("BaseSetData",""+isFavorite);
         mListSongFull = getListSong();
         if (isFavorite) {
+            getActivityMusic().getSupportActionBar().setTitle("Favorite Songs");
             mListSong = SongManager.getFavorAllSongs(getContext());
             mSongAdapter = new SongAdapter(getContext(), mListSong);
            // mMusicService.setListSong(mListSong);
         } else {
+            getActivityMusic().getSupportActionBar().setTitle("Music");
             mListSong = getListSong();
-            mSongAdapter = getSongAdapter();
+            mSongAdapter = new SongAdapter(getContext(), mListSong);
             //mMusicService.setListSong(mListSong);
         }
 
@@ -349,7 +353,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     new SongAdapter.IIClick() {
                         @Override
                         public void onItemClick(Song song, int pos) {
-                            /*     final long id = song.getmSongID();
+                         /*        final long id = song.getmSongID();
                             final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                             final Cursor cursor = getContext().getContentResolver().query(uri,
                                     null,null,null, null, null);
