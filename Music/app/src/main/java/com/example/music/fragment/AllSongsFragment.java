@@ -134,6 +134,7 @@ public class AllSongsFragment extends BaseSongsFragment {
         mListSong = new ArrayList<>();
         SongManager.getSong(getContext(), mListSong);
         mSongAdapter = new SongAdapter(getContext(), mListSong);
+
     }
 
 }

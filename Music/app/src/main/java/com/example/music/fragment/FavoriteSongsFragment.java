@@ -113,7 +113,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment {
         mListSong = SongManager.getFavorAllSongs(getContext());
         Log.d("SDd", "onCreate: " + mListSong.size());
 
-        mSongAdapter.setListSong(mListSong);
+        mSongAdapter.setMusicService(mMusicService);
         if (mListSong.size() <= 0) {
             mTextView.setText(R.string.favorite_null);
             mTextView.setVisibility(View.VISIBLE);

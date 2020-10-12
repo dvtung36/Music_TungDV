@@ -32,6 +32,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> im
     private List<Song> mListSongFull;
     private IIClick mListener;
 
+    public void setMusicService(MediaPlaybackService mMusicService) {
+        this.mMusicService = mMusicService;
+    }
+
+    private MediaPlaybackService mMusicService;
+
     public SongAdapter(Context mContext, List<Song> mListSong) {
         this.mContext = mContext;
         this.mListSong = mListSong;
@@ -88,6 +94,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> im
 
     @Override
     public Filter getFilter() {
+        Log.d("publishResults",""+mMusicService);
         return filter;
     }
 
@@ -116,6 +123,16 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> im
         protected void publishResults(CharSequence constraint, FilterResults results) {
             mListSong.clear();
             mListSong.addAll((Collection<? extends Song>) results.values);
+
+            for (int i = 0; i < mListSong.size(); i++) {
+                mListSong.get(i).setmIsPlay(false);
+                mListSong.get(i).setIsPause(false);
+            }
+            for (int i = 0; i < mListSong.size(); i++) {
+                if (mListSong.get(i).getmSongID() ==mMusicService.getIdPlay() ) {
+                    mListSong.get(i).setmIsPlay(true);
+                }
+            }
             notifyDataSetChanged();
         }
     };

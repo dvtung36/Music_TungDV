@@ -314,6 +314,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         manager.setOrientation(RecyclerView.VERTICAL);                                     //Set Layout
         mRcvSong.setLayoutManager(manager);
         mRcvSong.setAdapter(mSongAdapter);
+        mSongAdapter.setMusicService(mMusicService);
         setDataBottom();
         if (mSongAdapter != null) {
             mSongAdapter.notifyDataSetChanged();

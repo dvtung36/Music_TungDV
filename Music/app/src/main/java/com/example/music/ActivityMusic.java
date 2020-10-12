@@ -120,6 +120,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mListSong = new ArrayList<>();
         SongManager.getSong(this, mListSong);   //set List song cho activity
         mSongAdapter = new SongAdapter(this, mListSong);
+
     }
 
     @Override
