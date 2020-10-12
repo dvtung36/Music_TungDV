@@ -3,6 +3,8 @@ package com.example.music.fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 
@@ -39,6 +41,7 @@ import com.example.music.model.Song;
 import com.example.music.service.MediaPlaybackService;
 import com.example.music.service.SongManager;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -176,12 +179,19 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         searchView.setOnQueryTextListener((SearchView.OnQueryTextListener) this);
     }
 
-    public static byte[] getAlbumArt(String uri) {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(uri);
-        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();   // chuyển đổi đường dẫn file media thành đường dẫn file Ảnh
-        mediaMetadataRetriever.release();
-        return albumArt;
+    public static Bitmap getAlbumArt(String path) {
+        File file = new File(path);
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        try {
+            metadataRetriever.setDataSource(file.getAbsolutePath());
+        } catch (IllegalArgumentException e) {
+            Log.e("TAG", "parseAlbum: ", e);
+        }
+        byte[] albumData = metadataRetriever.getEmbeddedPicture();
+        if (albumData != null) {
+            return BitmapFactory.decodeByteArray(albumData, 0, albumData.length);
+        }
+        return null;
     }
 
     public void setItemWhenPause(long id) {
@@ -234,7 +244,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     }
                     mSongName.setText(mListSongFull.get(current).getmSongName());                         //Click item RecycleView
                     mSongAuthor.setText(mListSongFull.get(current).getmSongAuthor());
-                    byte[] songArt = getAlbumArt(mListSongFull.get(current).getmSongArt());
+                    Bitmap songArt = getAlbumArt(mListSongFull.get(current).getmSongArt());
                     Glide.with(getContext()).asBitmap()
                             .error(R.drawable.ic_nct)
                             .load(songArt)
@@ -264,7 +274,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 if (temp != -1) {
                     mSongName.setText(mListSongFull.get(temp).getmSongName());                         //Click item RecycleView
                     mSongAuthor.setText(mListSongFull.get(temp).getmSongAuthor());
-                    byte[] songArt = getAlbumArt(mListSongFull.get(temp).getmSongArt());
+                    Bitmap songArt = getAlbumArt(mListSongFull.get(temp).getmSongArt());
                     Glide.with(getContext()).asBitmap()
                             .error(R.drawable.ic_nct)
                             .load(songArt)
@@ -337,7 +347,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             if (pos != -1) {
                 mSongName.setText(mListSongFull.get(pos).getmSongName());                                  //Click item RecycleView
                 mSongAuthor.setText(mListSongFull.get(pos).getmSongAuthor());
-                byte[] songArt = getAlbumArt(mListSongFull.get(pos).getmSongArt());
+               Bitmap songArt = getAlbumArt(mListSongFull.get(pos).getmSongArt());
                 Glide.with(view.getContext()).asBitmap()
                         .error(R.drawable.ic_nct)
                         .load(songArt)
@@ -348,6 +358,30 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             }
 
         }
+//        E/AndroidRuntime: FATAL EXCEPTION: main
+//        Process: com.example.music_1, PID: 10251
+//        java.lang.IllegalArgumentException
+//        at android.media.MediaMetadataRetriever.setDataSource(MediaMetadataRetriever.java:77)
+//        at com.example.music_1.Services.MediaPlaybackService.getAlbumArt(MediaPlaybackService.java:508)
+//        at com.example.music_1.Services.MediaPlaybackService.createNotification(MediaPlaybackService.java:258)
+//        at com.example.music_1.Services.MediaPlaybackService.startForegroundService(MediaPlaybackService.java:209)
+//        at com.example.music_1.Services.MediaPlaybackService.playSong(MediaPlaybackService.java:401)
+//        at com.example.music_1.Fragment.BaseSongListFragment$1.ItemClick(BaseSongListFragment.java:251)
+//        at com.example.music_1.Adapter.SongAdapter$ViewHolder$1.onClick(SongAdapter.java:172)
+//        at android.view.View.performClick(View.java:7260)
+//        at android.view.View.performClickInternal(View.java:7237)
+//        at android.view.View.access$3600(View.java:802)
+//        at android.view.View$PerformClick.run(View.java:27906)
+//        at android.os.Handler.handleCallback(Handler.java:883)
+//        at android.os.Handler.dispatchMessage(Handler.java:100)
+//        at android.os.Looper.loop(Looper.java:214)
+//        at android.app.ActivityThread.main(ActivityThread.java:7399)
+//        at java.lang.reflect.Method.invoke(Native Method)
+//        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:492)
+//        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:935)
+
+
+
         if (mSongAdapter != null) {
             mSongAdapter.setSongAdapter(
                     new SongAdapter.IIClick() {
@@ -382,7 +416,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                                 mLlBottom.setVisibility(View.VISIBLE);
                                 mSongName.setText(song.getmSongName());                                  //Click item RecycleView
                                 mSongAuthor.setText(song.getmSongAuthor());
-                                byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());
+                                Bitmap songArt = getAlbumArt(mListSong.get(pos).getmSongArt());
                                 Glide.with(view.getContext()).asBitmap()
                                         .error(R.drawable.ic_nct)
                                         .load(songArt)
@@ -406,7 +440,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
                                 mSongNameMedia.setText(song.getmSongName());
                                 mSongAuthorMedia.setText(song.getmSongAuthor());
-                                byte[] songArt = getAlbumArt(mListSong.get(pos).getmSongArt());         //gán dữ liệu khi xoay màn hình
+                                Bitmap songArt = getAlbumArt(mListSong.get(pos).getmSongArt());         //gán dữ liệu khi xoay màn hình
                                 Glide.with(view.getContext()).asBitmap()
                                         .error(R.drawable.ic_nct)
                                         .load(songArt)

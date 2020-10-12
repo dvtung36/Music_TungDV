@@ -3,6 +3,8 @@ package com.example.music.fragment;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import com.example.music.service.MediaPlaybackService;
 import com.example.music.service.SongManager;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,7 +274,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     mSongName.setText(mSongList.get(current).getmSongName());
                     mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
                     mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
-                    byte[] Art = getAlbumArt(mSongList.get(current).getmSongArt());
+                    Bitmap Art = getAlbumArt(mSongList.get(current).getmSongArt());
                     Glide.with(view.getContext()).asBitmap()
                             .load(Art)
                             .error(R.drawable.ic_nct)
@@ -306,7 +309,7 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                 mSongName.setText(mSongList.get(current).getmSongName());
                 mSongAuthor.setText(mSongList.get(current).getmSongAuthor());
                 mEndTime.setText(formattedTime(mSongList.get(current).getmSongTime()));
-                byte[] Art = getAlbumArt(mSongList.get(current).getmSongArt());
+               Bitmap Art = getAlbumArt(mSongList.get(current).getmSongArt());
                 Glide.with(view.getContext()).asBitmap()                                 //set dữ liệu hiển thị đồng bộ khi play đang chạy
                         .load(Art)
                         .error(R.drawable.ic_nct)
@@ -358,12 +361,19 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    public static byte[] getAlbumArt(String uri) {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(uri);
-        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();     //chuyển đổi đường dẫn file media thành đường dẫn file Ảnh
-        mediaMetadataRetriever.release();
-        return albumArt;
+    public static Bitmap getAlbumArt(String path) {
+        File file = new File(path);
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        try {
+            metadataRetriever.setDataSource(file.getAbsolutePath());
+        } catch (IllegalArgumentException e) {
+            Log.e("TAG", "parseAlbum: ", e);
+        }
+        byte[] albumData = metadataRetriever.getEmbeddedPicture();
+        if (albumData != null) {
+            return BitmapFactory.decodeByteArray(albumData, 0, albumData.length);
+        }
+        return null;
     }
 
     public void setVertical(boolean vertical) {  //set ngang dọc
@@ -481,10 +491,6 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     getContext().getContentResolver().delete(MusicProvider.CONTENT_URI, MusicDatabase.ID + "=" + id, null);
                     Toast.makeText(getActivity().getApplicationContext(), "Removed favorites list", Toast.LENGTH_SHORT).show();
 
-                    if (isSongDislike) {
-                        mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
-                    }
-
                 } else {
                     isSongFavorite = true;
                     mLikeMedia.setBackgroundResource(R.drawable.ic_liked);
@@ -500,9 +506,9 @@ public class MediaPlaybackFragment extends Fragment implements View.OnClickListe
                     getContext().getContentResolver().insert(MusicProvider.CONTENT_URI, values);
                     Toast.makeText(mMusicService, "Added favorites list", Toast.LENGTH_SHORT).show();
 
-                    if (isSongDislike) {
-                        mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
-                    }
+                }
+                if (isSongDislike) {
+                    mDisLikeMedia.setBackgroundResource(R.drawable.ic_dislike);
                 }
 
                 break;
